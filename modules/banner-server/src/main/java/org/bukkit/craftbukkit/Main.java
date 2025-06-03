@@ -13,9 +13,10 @@ import java.util.logging.Logger;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.util.PathConverter;
+import net.minecrell.terminalconsole.TerminalConsoleAppender;
 import org.fusesource.jansi.AnsiConsole;
 
-public class Main {
+public class Main extends OptionParser{
     public static boolean useJline = true;
     public static boolean useConsole = true;
 
@@ -142,6 +143,14 @@ public class Main {
                         .defaultsTo(new File("spigot.yml"))
                         .describedAs("Yml file");
                 // Spigot End
+
+                // Banner Start
+                this.acceptsAll(asList("B", "banner-settings"), "File for banner settings")
+                        .withRequiredArg()
+                        .ofType(File.class)
+                        .defaultsTo(new File("banner-config","banner.yml"))
+                        .describedAs("Yml file");
+
             }
         };
 
@@ -221,5 +230,53 @@ public class Main {
 
     private static List<String> asList(String... params) {
         return Arrays.asList(params);
+    }
+
+    public static void handleParser(OptionParser parser, OptionSet options) {
+        if ((options == null) || (options.has("?"))) {
+            try {
+                parser.printHelpOn(System.out);
+            } catch (IOException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if (options.has("v")) {
+            System.out.println(CraftServer.class.getPackage().getImplementationVersion());
+        } else {
+            // Do you love Java using + and ! as string based identifiers? I sure do!
+            String path = new File(".").getAbsolutePath();
+            if (path.contains("!") || path.contains("+")) {
+                System.err.println("Cannot run server in a directory with ! or + in the pathname. Please rename the affected folders and try again.");
+                return;
+            }
+
+            float javaVersion = Float.parseFloat(System.getProperty("java.class.version"));
+            if (javaVersion < 61.0) {
+                System.err.println("Unsupported Java detected (" + javaVersion + "). This version of Minecraft requires at least Java 17. Check your Java version with the command 'java -version'.");
+                return;
+            }
+            if (javaVersion > 67.0) {
+                System.err.println("Unsupported Java detected (" + javaVersion + "). Only up to Java 21 is supported.");
+                return;
+            }
+
+            String javaVersionName = System.getProperty("java.version");
+            // J2SE SDK/JRE Version String Naming Convention
+            boolean isPreRelease = javaVersionName.contains("-");
+            if (isPreRelease && javaVersion == 61.0) {
+                System.err.println("Unsupported Java detected (" + javaVersionName + "). You are running an outdated, pre-release version. Only general availability versions of Java are supported. Please update your Java version.");
+                return;
+            }
+
+            if (options.has("nojline")) {
+                System.setProperty(TerminalConsoleAppender.JLINE_OVERRIDE_PROPERTY, "false");
+                useJline = false;
+            }
+
+            if (options.has("noconsole")) {
+                useConsole = false;
+                useJline = false;
+                System.setProperty(TerminalConsoleAppender.JLINE_OVERRIDE_PROPERTY, "false");
+            }
+        }
     }
 }

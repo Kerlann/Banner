@@ -705,7 +705,7 @@ public class CraftEventFactory {
 
         // Spigot start - SPIGOT-7523: Merge after spawn event and only merge if the event was not cancelled (gets checked above)
         if (entity instanceof net.minecraft.world.entity.ExperienceOrb xp) {
-            double radius = world.spigotConfig.expMerge;
+            double radius = world.bridge$spigotConfig().expMerge;
             if (radius > 0) {
                 List<Entity> entities = world.getEntities(entity, entity.getBoundingBox().inflate(radius, radius, radius));
                 for (Entity e : entities) {
@@ -904,7 +904,7 @@ public class CraftEventFactory {
         EntityDeathEvent event = new EntityDeathEvent(entity, bukkitDamageSource, drops, victim.getExpReward(world.getHandle(), damageSource.getEntity()));
         Bukkit.getServer().getPluginManager().callEvent(event);
 
-        victim.expToDrop = event.getDroppedExp();
+        victim.banner$setExpToDrop(event.getDroppedExp());
 
         for (org.bukkit.inventory.ItemStack stack : event.getDrops()) {
             if (stack == null || stack.getType() == Material.AIR || stack.getAmount() == 0) continue;
@@ -920,14 +920,14 @@ public class CraftEventFactory {
         CraftDamageSource bukkitDamageSource = new CraftDamageSource(damageSource);
         PlayerDeathEvent event = new PlayerDeathEvent(entity, bukkitDamageSource, drops, victim.getExpReward(victim.serverLevel(), damageSource.getEntity()), 0, deathMessage);
         event.setKeepInventory(keepInventory);
-        event.setKeepLevel(victim.keepLevel); // SPIGOT-2222: pre-set keepLevel
+        event.setKeepLevel(victim.bridge$keepLevel()); // SPIGOT-2222: pre-set keepLevel
         Bukkit.getServer().getPluginManager().callEvent(event);
 
-        victim.keepLevel = event.getKeepLevel();
-        victim.newLevel = event.getNewLevel();
-        victim.newTotalExp = event.getNewTotalExp();
-        victim.expToDrop = event.getDroppedExp();
-        victim.newExp = event.getNewExp();
+        victim.banner$setKeepLevel(event.getKeepLevel());
+        victim.banner$setNewLevel(event.getNewLevel());
+        victim.banner$setNewTotalExp(event.getNewTotalExp());
+        victim.banner$setExpToDrop(event.getDroppedExp());
+        victim.banner$setNewExp(event.getNewExp());
 
         for (org.bukkit.inventory.ItemStack stack : event.getDrops()) {
             if (stack == null || stack.getType() == Material.AIR) continue;
@@ -935,9 +935,9 @@ public class CraftEventFactory {
             if (stack instanceof CraftItemStack craftItemStack && craftItemStack.isForInventoryDrop()) {
                 victim.drop(CraftItemStack.asNMSCopy(stack), true, false, false); // SPIGOT-7800, SPIGOT-7801: Vanilla Behaviour for Player Inventory dropped items
             } else {
-                victim.forceDrops = true;
+                victim.banner$setForceDrops(true);
                 victim.spawnAtLocation(victim.serverLevel(), CraftItemStack.asNMSCopy(stack)); // SPIGOT-7806: Vanilla Behaviour for items not related to Player Inventory dropped items
-                victim.forceDrops = false;
+                victim.banner$setForceDrops(false);
             }
         }
 
@@ -1076,7 +1076,7 @@ public class CraftEventFactory {
         if (!event.isCancelled()) {
             event.getEntity().setLastDamageCause(event);
         } else {
-            damagee.lastDamageCancelled = true; // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Keep track if the event was canceled
+            damagee.banner$setLastDamageCancelled(true); // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Keep track if the event was canceled
         }
 
         return event;

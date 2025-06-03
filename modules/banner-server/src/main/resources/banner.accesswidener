@@ -318,7 +318,6 @@ transitive-accessible field net/minecraft/world/level/levelgen/structure/placeme
 transitive-accessible field net/minecraft/world/level/levelgen/structure/placement/StructurePlacement locateOffset Lnet/minecraft/core/Vec3i;
 transitive-accessible field net/minecraft/world/level/levelgen/structure/placement/StructurePlacement frequency F
 transitive-accessible field net/minecraft/server/level/Ticket key Ljava/lang/Object;
-transitive-accessible field net/minecraft/world/level/block/entity/BannerBlockEntity baseColor Lnet/minecraft/world/item/DyeColor;
 transitive-accessible field net/minecraft/world/level/storage/DimensionDataStorage cache Ljava/util/Map;
 transitive-accessible field net/minecraft/world/level/chunk/ChunkAccess blockEntities Ljava/util/Map;
 transitive-accessible field net/minecraft/world/level/chunk/ChunkAccess heightmaps Ljava/util/Map;
@@ -663,3 +662,5 @@ transitive-accessible field net/minecraft/world/item/enchantment/ItemEnchantment
 transitive-mutable field net/minecraft/world/item/enchantment/ItemEnchantments showInTooltip Z
 transitive-accessible field net/minecraft/world/item/enchantment/ItemEnchantments$Mutable showInTooltip Z
 transitive-mutable field net/minecraft/world/item/enchantment/ItemEnchantments$Mutable showInTooltip Z
+transitive-mutable field net/minecraft/world/level/block/entity/BannerBlockEntity baseColor Lnet/minecraft/world/item/DyeColor;
+transitive-accessible field net/minecraft/world/level/block/entity/BannerBlockEntity baseColor Lnet/minecraft/world/item/DyeColor;

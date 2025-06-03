@@ -161,7 +161,7 @@ public enum Particle implements Keyed {
      */
     BLOCK_MARKER("block_marker", BlockData.class);
 
-    private final NamespacedKey key;
+    public NamespacedKey key;
     private final Class<?> dataType;
     final boolean register;
 

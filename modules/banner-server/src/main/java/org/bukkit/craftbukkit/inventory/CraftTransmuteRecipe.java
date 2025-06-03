@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.inventory;
 
+import com.mohistmc.banner.bukkit.BukkitMethodHooks;
 import net.minecraft.core.Holder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.crafting.RecipeHolder;

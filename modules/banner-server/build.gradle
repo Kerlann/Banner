@@ -10,6 +10,11 @@ base {
 	archivesName = project.archives_base_name
 }
 
+loom {
+	// Chemin relatif au dossier du module
+	accessWidenerPath = file("src/main/resources/banner.accesswidener")
+}
+
 dependencies {
 	include(rootProject.project("banner-translate"))
 	include(rootProject.project("banner-bukkit-manager"))

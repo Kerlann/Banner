@@ -57,7 +57,9 @@ public abstract class MixinLeashFenceKnotEntity extends BlockAttachedEntity {
                     if (CraftEventFactory.callPlayerUnleashEntityEvent(entityinsentient, entityhuman, enumhand).isCancelled()) {
                         die = false;
                     } else {
-                        entityinsentient.dropLeash(true, !entityhuman.getAbilities().instabuild);
+                        //TODO : MODIF
+                      //  entityinsentient.dropLeash(true, !entityhuman.getAbilities().instabuild);
+                        entityinsentient.dropLeash();
                         flag1 = true;
                     }
                 }

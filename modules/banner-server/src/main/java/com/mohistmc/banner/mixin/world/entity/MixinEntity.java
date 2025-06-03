@@ -788,7 +788,7 @@ public abstract class MixinEntity implements Nameable, EntityAccess, CommandSour
          entityIn.getBukkitEntity().setHandle((Entity) (Object) this);
          this.bukkitEntity =  entityIn.getBukkitEntity();
         if (entityIn instanceof Mob) {
-            ((Mob) entityIn).dropLeash(true, false);
+            ((Mob) entityIn).dropLeash();
         }
     }
 

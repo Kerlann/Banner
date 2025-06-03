@@ -12,9 +12,10 @@ public class CraftInventoryLectern extends CraftInventory implements LecternInve
 
     public CraftInventoryLectern(Container inventory) {
         super(inventory);
-        if (inventory instanceof LecternBlockEntity.LecternInventory) {
+        // Banner TODO fixme
+       /* if (inventory instanceof LecternBlockEntity.LecternInventory) {
             this.tile = ((LecternBlockEntity.LecternInventory) inventory).getLectern();
-        }
+        }*/
     }
 
     @Override

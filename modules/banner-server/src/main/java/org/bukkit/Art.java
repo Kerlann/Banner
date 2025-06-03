@@ -2,7 +2,11 @@ package org.bukkit;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+
+import java.util.HashMap;
 import java.util.Locale;
+
+import com.google.common.collect.Maps;
 import org.bukkit.packs.DataPack;
 import org.bukkit.util.OldEnum;
 import org.jetbrains.annotations.NotNull;
@@ -68,6 +72,11 @@ public interface Art extends OldEnum<Art>, Keyed {
     Art POND = getArt("pond");
     Art SUNFLOWERS = getArt("sunflowers");
     Art TIDES = getArt("tides");
+
+
+
+    public static final HashMap<String, Art> BY_NAME = Maps.newHashMap();
+    public static final HashMap<Integer, Art> BY_ID = Maps.newHashMap();
 
     @NotNull
     private static Art getArt(@NotNull String key) {
@@ -155,4 +164,5 @@ public interface Art extends OldEnum<Art>, Keyed {
     static Art[] values() {
         return Lists.newArrayList(Registry.ART).toArray(new Art[0]);
     }
+
 }

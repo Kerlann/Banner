@@ -118,7 +118,7 @@ public class BukkitRegistry {
 
                 CraftMagicNumbers.ITEM_MATERIAL.put(item, material);
                 CraftMagicNumbers.MATERIAL_ITEM.put(material, item);
-                BannerMod.LOGGER.debug("Save-ITEM: " + material.name() + " - " + material.key);
+                BannerMod.LOGGER.debug("Save-ITEM: " + material.name() + " - " + material.getKey());
             }
         }
         BannerMod.LOGGER.info(I18n.as("registry.item"), newTypes.size());

@@ -35,4 +35,6 @@ public interface InjectionAbstractMinecart {
     default void setDerailedVelocityMod(Vector derailed) {
         throw new IllegalStateException("Not implemented");
     }
+
+    boolean bridge$isIncendiary();
 }

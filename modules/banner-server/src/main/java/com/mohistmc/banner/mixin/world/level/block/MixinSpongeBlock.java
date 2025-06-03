@@ -47,7 +47,7 @@ public abstract class MixinSpongeBlock extends Block {
 
         }, (blockposition1) -> {
             if (blockposition1.equals(blockposition)) {
-                return true;
+                return BlockPos.TraversalNodeStatus.ACCEPT;
             } else {
                 // CraftBukkit start
                 BlockState iblockdata = blockList.getBlockState(blockposition1);
@@ -55,14 +55,14 @@ public abstract class MixinSpongeBlock extends Block {
                 // CraftBukkit end
 
                 if (!fluid.is(FluidTags.WATER)) {
-                    return false;
+                    return BlockPos.TraversalNodeStatus.STOP;
                 } else {
                     Block block = iblockdata.getBlock();
 
                     if (block instanceof BucketPickup ifluidsource) {
 
                         if (!ifluidsource.pickupBlock(null, blockList, blockposition1, iblockdata).isEmpty()) { // CraftBukkit
-                            return true;
+                            return BlockPos.TraversalNodeStatus.ACCEPT;
                         }
                     }
 
@@ -70,7 +70,7 @@ public abstract class MixinSpongeBlock extends Block {
                         blockList.setBlock(blockposition1, Blocks.AIR.defaultBlockState(), 3); // CraftBukkit
                     } else {
                         if (!iblockdata.is(Blocks.KELP) && !iblockdata.is(Blocks.KELP_PLANT) && !iblockdata.is(Blocks.SEAGRASS) && !iblockdata.is(Blocks.TALL_SEAGRASS)) {
-                            return false;
+                            return BlockPos.TraversalNodeStatus.STOP;
                         }
 
                         // CraftBukkit start
@@ -81,7 +81,7 @@ public abstract class MixinSpongeBlock extends Block {
                         // CraftBukkit end
                     }
 
-                    return true;
+                    return BlockPos.TraversalNodeStatus.ACCEPT;
                 }
             }
         });

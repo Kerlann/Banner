@@ -46,7 +46,7 @@ public class CraftMenuType<V extends InventoryView> implements MenuType.Typed<V>
 
         final AbstractContainerMenu container = this.typeData.get().menuBuilder().build(serverPlayer, this.handle);
         container.setTitle(CraftChatMessage.fromString(title)[0]);
-        container.checkReachable = false;
+        container.banner$setCheckReachable(false);
         return (V) container.getBukkitView();
     }
 

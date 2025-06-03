@@ -204,8 +204,19 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         // Let the server handle cross world teleports
         if (location.getWorld() != null && !location.getWorld().equals(this.getWorld())) {
             // Prevent teleportation to an other world during world generation
-            Preconditions.checkState(!this.entity.generation, "Cannot teleport entity to an other world during world generation");
-            this.entity.teleport(new TeleportTransition(((CraftWorld) location.getWorld()).getHandle(), CraftLocation.toVec3D(location), Vec3.ZERO, location.getPitch(), location.getYaw(), Set.of(), TeleportTransition.DO_NOTHING, TeleportCause.PLUGIN));
+            Preconditions.checkState(!this.entity.bridge$generation(), "Cannot teleport entity to an other world during world generation");
+            //TODO : Important TeleportCause.PLUGIN ?
+           // this.entity.teleport(new TeleportTransition(((CraftWorld) location.getWorld()).getHandle(), CraftLocation.toVec3D(location), Vec3.ZERO, location.getPitch(), location.getYaw(), Set.of(), TeleportTransition.DO_NOTHING, TeleportCause.PLUGIN));
+            this.entity.teleport(new TeleportTransition(
+                    ((CraftWorld) location.getWorld()).getHandle(),   // ServerLevel
+                    CraftLocation.toVec3D(location),                  // position cible (Vec3)
+                    Vec3.ZERO,                                        // deltaMovement
+                    location.getYaw(),                                // yRot  (yaw)
+                    location.getPitch(),                              // xRot  (pitch)
+                    Set.of(),                                         // relatives
+                    TeleportTransition.DO_NOTHING
+            ));
+
             return true;
         }
 
@@ -229,7 +240,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     @Override
     public List<org.bukkit.entity.Entity> getNearbyEntities(double x, double y, double z) {
-        Preconditions.checkState(!this.entity.generation, "Cannot get nearby entities during world generation");
+        Preconditions.checkState(!this.entity.bridge$generation(), "Cannot get nearby entities during world generation");
         org.spigotmc.AsyncCatcher.catchOp("getNearbyEntities"); // Spigot
 
         List<Entity> notchEntityList = this.entity.level().getEntities(this.entity, this.entity.getBoundingBox().inflate(x, y, z), Predicates.alwaysTrue());
@@ -295,8 +306,9 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     @Override
     public void remove() {
-        this.entity.pluginRemoved = true;
-        this.entity.discard(this.getHandle().generation ? null : EntityRemoveEvent.Cause.PLUGIN);
+        //TODO :  GO FIX this.entity.pluginRemoved = true;
+     //   this.entity.pluginRemoved = true;
+        this.entity.discard(this.getHandle().bridge$generation() ? null : EntityRemoveEvent.Cause.PLUGIN);
     }
 
     @Override
@@ -306,7 +318,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     @Override
     public boolean isValid() {
-        return this.entity.isAlive() && this.entity.valid && this.entity.isChunkLoaded() && this.isInWorld();
+        return this.entity.isAlive() && this.entity.bridge$valid() && this.entity.isChunkLoaded() && this.isInWorld();
     }
 
     @Override
@@ -316,12 +328,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     @Override
     public boolean isPersistent() {
-        return this.entity.persist;
+        return this.entity.bridge$persist();
     }
 
     @Override
     public void setPersistent(boolean persistent) {
-        this.entity.persist = persistent;
+        this.entity.banner$setPersist(persistent);
     }
 
     public Vector getMomentum() {
@@ -399,6 +411,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         this.lastDamageEvent = event;
     }
 
+
     @Override
     public EntityDamageEvent getLastDamageCause() {
         return this.lastDamageEvent;
@@ -432,7 +445,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
     @Override
     public void playEffect(EntityEffect type) {
         Preconditions.checkArgument(type != null, "Type cannot be null");
-        Preconditions.checkState(!this.entity.generation, "Cannot play effect during world generation");
+        Preconditions.checkState(!this.entity.bridge$generation(), "Cannot play effect during world generation");
 
         if (type.getApplicable().isInstance(this)) {
             this.getHandle().level().broadcastEntityEvent(this.getHandle(), type.getData());
@@ -559,7 +572,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     @Override
     public void setVisibleByDefault(boolean visible) {
-        if (this.getHandle().visibleByDefault != visible) {
+        if (this.getHandle().bridge$visibleByDefault() != visible) {
             if (visible) {
                 // Making visible by default, reset and show to all players
                 for (Player player : this.server.getOnlinePlayers()) {
@@ -572,18 +585,18 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                 }
             }
 
-            this.getHandle().visibleByDefault = visible;
+            this.getHandle().banner$setVisibleByDefault(visible);
         }
     }
 
     @Override
     public boolean isVisibleByDefault() {
-        return this.getHandle().visibleByDefault;
+        return this.getHandle().bridge$visibleByDefault();
     }
 
     @Override
     public Set<Player> getTrackedBy() {
-        Preconditions.checkState(!this.entity.generation, "Cannot get tracking players during world generation");
+        Preconditions.checkState(!this.entity.bridge$generation(), "Cannot get tracking players during world generation");
         ImmutableSet.Builder<Player> players = ImmutableSet.builder();
 
         ServerLevel world = ((CraftWorld) this.getWorld()).getHandle();
@@ -781,13 +794,13 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     @Override
     public boolean isInWorld() {
-        return this.getHandle().inWorld;
+        return this.getHandle().bridge$inWorld();
     }
 
     @Override
     public String getAsString() {
         CompoundTag tag = new CompoundTag();
-        if (!this.getHandle().saveAsPassenger(tag, false)) {
+        if (!this.getHandle().saveAsPassenger(tag)) {
             return null;
         }
 
@@ -820,7 +833,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     private Entity copy(net.minecraft.world.level.Level level) {
         CompoundTag compoundTag = new CompoundTag();
-        this.getHandle().saveAsPassenger(compoundTag, false);
+        this.getHandle().saveAsPassenger(compoundTag);
 
         return net.minecraft.world.entity.EntityType.loadEntityRecursive(compoundTag, level, EntitySpawnReason.LOAD, java.util.function.Function.identity());
     }

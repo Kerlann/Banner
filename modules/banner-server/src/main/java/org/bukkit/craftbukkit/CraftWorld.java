@@ -1908,7 +1908,16 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, T data, boolean force) {
-        this.getHandle().sendParticlesSource(
+    /*    this.getHandle().sendParticlesSource(
+                null, // Sender
+                CraftParticle.createParticleParam(particle, data), // Particle
+                false, force,
+                x, y, z, // Position
+                count,  // Count
+                offsetX, offsetY, offsetZ, // Random offset
+                extra // Speed?
+        );*/
+        this.getHandle().sendParticles(
                 null, // Sender
                 CraftParticle.createParticleParam(particle, data), // Particle
                 false, force,
