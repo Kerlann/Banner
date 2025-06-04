@@ -17,6 +17,7 @@ public class MixinIngredient implements InjectionIngredient {
     @Nullable
     private List<ItemStack> itemStacks;
 
+    @org.spongepowered.asm.mixin.Unique
     private static Ingredient ofStacks(List<ItemStack> stacks) {
         Ingredient recipe = Ingredient.of(stacks.stream().map(ItemStack::getItem));
         recipe.banner$setItemStacks(stacks);

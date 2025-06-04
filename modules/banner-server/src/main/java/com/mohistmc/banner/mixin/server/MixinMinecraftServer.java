@@ -16,6 +16,7 @@ import io.izzel.arclight.mixin.Decorate;
 import io.izzel.arclight.mixin.DecorationOps;
 import io.izzel.arclight.mixin.Local;
 import it.unimi.dsi.fastutil.longs.LongIterator;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.Proxy;
 import java.util.Arrays;
@@ -168,14 +169,83 @@ public abstract class MixinMinecraftServer extends ReentrantBlockableEventLoop<T
     @Inject(method = "<init>", at = @At("RETURN"))
     private void banner$loadOptions(Thread thread, LevelStorageSource.LevelStorageAccess levelStorageAccess, PackRepository packRepository, WorldStem worldStem, Proxy proxy, DataFixer dataFixer, Services services, ChunkProgressListenerFactory chunkProgressListenerFactory, CallbackInfo ci) {
         OVERLOADED_THRESHOLD_NANOS  = 30L * TimeUtil.NANOSECONDS_PER_SECOND / 20L; // CraftBukkit
-        String[] arguments = ManagementFactory.getRuntimeMXBean().getInputArguments().toArray(new String[0]);
-        OptionParser parser = new Main();
-        try {
-            options = parser.parse(arguments);
-        } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+        
+        // Try to get options from CraftBukkit first
+        this.options = Main.getOptions();
+        if (this.options == null) {
+            // Create default options as CraftBukkit would
+            OptionParser parser = new OptionParser();
+            
+            // Add all the options that CraftBukkit expects
+            parser.acceptsAll(Arrays.asList("b", "bukkit-settings"), "File for bukkit settings")
+                    .withRequiredArg()
+                    .ofType(java.io.File.class)
+                    .defaultsTo(new java.io.File("bukkit.yml"))
+                    .describedAs("Yml file");
+
+            parser.acceptsAll(Arrays.asList("C", "commands-settings"), "File for command settings")
+                    .withRequiredArg()
+                    .ofType(java.io.File.class)
+                    .defaultsTo(new java.io.File("commands.yml"))
+                    .describedAs("Yml file");
+
+            parser.acceptsAll(Arrays.asList("P", "plugins"), "Plugin directory to use")
+                    .withRequiredArg()
+                    .ofType(java.io.File.class)
+                    .defaultsTo(new java.io.File("plugins"))
+                    .describedAs("Plugin directory");
+
+            parser.acceptsAll(Arrays.asList("S", "spigot-settings"), "File for spigot settings")
+                    .withRequiredArg()
+                    .ofType(java.io.File.class)
+                    .defaultsTo(new java.io.File("spigot.yml"))
+                    .describedAs("Yml file");
+
+            parser.acceptsAll(Arrays.asList("B", "banner-settings"), "File for banner settings")
+                    .withRequiredArg()
+                    .ofType(java.io.File.class)
+                    .defaultsTo(new java.io.File("banner-config", "banner.yml"))
+                    .describedAs("Yml file");
+                    
+            // Parse empty args to get default values
+            try {
+                this.options = parser.parse(new String[0]);
+                // Verify that our options were created correctly
+                LOGGER.info("[BANNER DEBUG] Created options with " + this.options.specs().size() + " specs");
+                LOGGER.info("[BANNER DEBUG] bukkit-settings spec exists: " + this.options.has("bukkit-settings"));
+                LOGGER.info("[BANNER DEBUG] bukkit-settings value: " + this.options.valueOf("bukkit-settings"));
+            } catch (Exception ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+                // Create minimal fallback options
+                this.options = parser.parse(new String[0]);
+            }
         }
-        Main.handleParser(parser, options);
+        
+        // Initialiser le ConsoleReader pour Banner
+        if (!Main.useConsole) {
+            this.reader = null;
+        } else {
+            try {
+                this.reader = new ConsoleReader(System.in, System.out);
+                this.reader.setBellEnabled(false);
+            } catch (Exception ex) {
+                LOGGER.warn("Could not initialize console reader: " + ex.getMessage());
+                this.reader = null;
+            }
+        }
+
+        if (this.reader == null) {
+            try {
+                // Initialiser un ConsoleReader basique pour Banner
+                this.reader = new ConsoleReader(System.in, System.out);
+                this.reader.setBellEnabled(false);
+            } catch (Exception e) {
+                System.err.println("Failed to initialize ConsoleReader: " + e.getMessage());
+                // Créer un mock ConsoleReader si nécessaire
+                this.reader = null;
+            }
+        }
+        
         this.vanillaCommandDispatcher = worldStem.dataPackResources().getCommands();
         this.worldLoader = BukkitSnapshotCaptures.getDataLoadContext();
     }
@@ -660,6 +730,14 @@ public abstract class MixinMinecraftServer extends ReentrantBlockableEventLoop<T
 
     @Override
     public OptionSet bridge$options() {
+        // Add debug logging
+        if (options == null) {
+            LOGGER.error("[BANNER DEBUG] Options is null in bridge$options()!");
+        } else {
+            LOGGER.info("[BANNER DEBUG] Options available with keys: " + options.specs().spliterator());
+            Object bukkitSettings = options.valueOf("bukkit-settings");
+            LOGGER.info("[BANNER DEBUG] bukkit-settings value: " + bukkitSettings);
+        }
         return options;
     }
 

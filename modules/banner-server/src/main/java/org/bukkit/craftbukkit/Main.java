@@ -19,6 +19,7 @@ import org.fusesource.jansi.AnsiConsole;
 public class Main extends OptionParser{
     public static boolean useJline = true;
     public static boolean useConsole = true;
+    private static OptionSet storedOptions = null;
 
     public static void main(String[] args) {
         // Todo: Installation script
@@ -221,6 +222,8 @@ public class Main extends OptionParser{
                 }
 
                 System.out.println("Loading libraries, please wait...");
+                // Store the options in a static field so they can be accessed by CraftServer
+                setOptions(options);
                 net.minecraft.server.Main.main(args);
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -230,6 +233,14 @@ public class Main extends OptionParser{
 
     private static List<String> asList(String... params) {
         return Arrays.asList(params);
+    }
+    
+    public static void setOptions(OptionSet options) {
+        storedOptions = options;
+    }
+    
+    public static OptionSet getOptions() {
+        return storedOptions;
     }
 
     public static void handleParser(OptionParser parser, OptionSet options) {

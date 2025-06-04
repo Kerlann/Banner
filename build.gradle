@@ -66,7 +66,8 @@ allprojects {
 
         implementation("org.yaml:snakeyaml:2.0")
         implementation("com.mohistmc:i18n:0.6")
-        implementation('com.mohistmc:json:0.5')
+        implementation("com.mohistmc:json:0.5")
+        implementation("com.google.code.gson:gson:2.11.0") // Force compatible Gson version
         implementation('com.mohistmc:tools:0.5.1')
         implementation('com.mohistmc:dynamicenum:0.3.1')
         // jansi support

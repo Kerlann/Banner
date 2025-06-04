@@ -65,8 +65,9 @@ public class BukkitMethodHooks {
             var applyBonemealMethod = BoneMealItem.class.getDeclaredMethod("applyBonemeal", UseOnContext.class);
             applyBonemeal = MethodHandles.lookup().unreflect(applyBonemealMethod);
             var reloadMethod = ReloadCommand.class.getDeclaredMethod("reload", MinecraftServer.class);
-            reload = MethodHandles.lookup().unreflect(applyBonemealMethod);
-            var ofStacksMethod = Ingredient.class.getDeclaredMethod("ofStacks", MinecraftServer.class);
+            reload = MethodHandles.lookup().unreflect(reloadMethod);
+            var ofStacksMethod = Ingredient.class.getDeclaredMethod("ofStacks", List.class);
+            ofStacksMethod.setAccessible(true);
             ofStacks = MethodHandles.lookup().unreflect(ofStacksMethod);
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw new RuntimeException(e);

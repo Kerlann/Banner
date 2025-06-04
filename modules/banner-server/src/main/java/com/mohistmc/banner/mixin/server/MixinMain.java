@@ -29,6 +29,12 @@ public abstract class MixinMain {
             remap = false
     )
     private static void banner$initMain(String[] strings, CallbackInfo ci, @Local OptionParser optionParser) {
+        // Get options from CraftBukkit if available
+        joptsimple.OptionSet craftBukkitOptions = org.bukkit.craftbukkit.Main.getOptions();
+        if (craftBukkitOptions != null) {
+            // Banner will use CraftBukkit's options instead of creating new ones
+            return;
+        }
         optionParser.acceptsAll(Arrays.asList("b", "bukkit-settings"), "File for bukkit settings")
                 .withRequiredArg()
                 .ofType(File.class)
@@ -69,14 +75,19 @@ public abstract class MixinMain {
             remap = false
     )
     private static void banner$addYmlInfo(String[] strings, CallbackInfo ci, @Local OptionSet optionSet) throws IOException {
+        // Use CraftBukkit options if available, otherwise use Minecraft options
+        joptsimple.OptionSet options = org.bukkit.craftbukkit.Main.getOptions();
+        if (options == null) {
+            options = optionSet;
+        }
         // CraftBukkit start - SPIGOT-5761: Create bukkit.yml and commands.yml if not present
-        File configFile = (File) optionSet.valueOf("bukkit-settings");
+        File configFile = (File) options.valueOf("bukkit-settings");
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
         configuration.options().copyDefaults(true);
         configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(BannerMod.class.getClassLoader().getResourceAsStream("configurations/bukkit.yml"), Charsets.UTF_8)));
         configuration.save(configFile);
 
-        File commandFile = (File) optionSet.valueOf("commands-settings");
+        File commandFile = (File) options.valueOf("commands-settings");
         YamlConfiguration commandsConfiguration = YamlConfiguration.loadConfiguration(commandFile);
         commandsConfiguration.options().copyDefaults(true);
         commandsConfiguration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(BannerMod.class.getClassLoader().getResourceAsStream("configurations/commands.yml"), Charsets.UTF_8)));

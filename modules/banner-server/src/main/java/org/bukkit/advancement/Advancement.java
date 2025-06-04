@@ -20,12 +20,7 @@ public interface Advancement extends Keyed {
     @NotNull
     Collection<String> getCriteria();
 
-    /**
-     * Returns the requirements for this advancement.
-     *
-     * @return an AdvancementRequirements object.
-     */
-    AdvancementRequirements getRequirements();
+
 
     /**
      * Returns the display information for this advancement.

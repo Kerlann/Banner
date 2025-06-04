@@ -30,7 +30,7 @@ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
         return Collections.unmodifiableCollection(this.handle.value().criteria().keySet());
     }
 
-    @Override
+
     public AdvancementRequirements getRequirements() {
         return new CraftAdvancementRequirements(handle.value().requirements());
     }

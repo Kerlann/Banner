@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jline.Terminal;
+import jline.console.ConsoleReader;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -24,7 +25,14 @@ public class ColouredConsoleSender extends CraftConsoleCommandSender {
 
     protected ColouredConsoleSender() {
         super();
-        this.terminal = ((CraftServer) this.getServer()).getReader().getTerminal();
+        // Vérification de sécurité pour Banner - éviter NullPointerException
+        ConsoleReader reader = ((CraftServer) this.getServer()).getReader();
+        if (reader != null) {
+            this.terminal = reader.getTerminal();
+        } else {
+            // Fallback pour Banner - pas de terminal disponible
+            this.terminal = null;
+        }
         this.jansiPassthrough = Boolean.getBoolean("jansi.passthrough");
 
         this.replacements.put(ChatColor.BLACK, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString());
@@ -54,7 +62,9 @@ public class ColouredConsoleSender extends CraftConsoleCommandSender {
     @Override
     public void sendMessage(String message) {
         // support jansi passthrough VM option when jansi doesn't detect an ANSI supported terminal
-        if (this.jansiPassthrough || this.terminal.isAnsiSupported()) {
+        boolean ansiSupported = this.terminal != null && this.terminal.isAnsiSupported();
+        
+        if (this.jansiPassthrough || ansiSupported) {
             if (!this.conversationTracker.isConversingModaly()) {
                 String result = ColouredConsoleSender.convertRGBColors(message);
                 for (ChatColor color : this.colors) {
@@ -91,7 +101,19 @@ public class ColouredConsoleSender extends CraftConsoleCommandSender {
         if (Bukkit.getConsoleSender() != null) {
             return Bukkit.getConsoleSender();
         } else {
-            return new ColouredConsoleSender();
+            try {
+                return new ColouredConsoleSender();
+            } catch (Exception e) {
+                // Fallback si la création du ColouredConsoleSender échoue
+                System.err.println("Failed to create ColouredConsoleSender: " + e.getMessage());
+                // Retourner un CraftConsoleCommandSender basique
+                return new org.bukkit.craftbukkit.command.CraftConsoleCommandSender() {
+                    @Override
+                    public void sendMessage(String message) {
+                        System.out.println(message);
+                    }
+                };
+            }
         }
     }
 }

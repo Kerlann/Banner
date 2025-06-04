@@ -14,16 +14,16 @@ public class EnumDefinalizer implements Implementer {
             "org/bukkit/Material",
             "org/bukkit/potion/PotionType",
             "org/bukkit/entity/EntityType",
-            "org/bukkit/block/Biome",
-            "org/bukkit/Art",
+            // "org/bukkit/block/Biome", // Banner Fix: Biome is now an interface, not an enum in 1.21.4+
+            // "org/bukkit/Art", // Banner Fix: Art is now an interface, not an enum in 1.21.4+
             "org/bukkit/Statistic",
             "org/bukkit/inventory/CreativeCategory",
             "org/bukkit/entity/SpawnCategory",
             "org/bukkit/entity/EnderDragon$Phase",
             "org/bukkit/inventory/recipe/CookingBookCategory",
-            "org/bukkit/Fluid",
-            "org/bukkit/entity/Spellcaster$Spell",
-            "org/bukkit/entity/Pose"
+            // "org/bukkit/Fluid", // Banner Fix: Fluid is now an interface, not an enum in 1.21.4+
+            // "org/bukkit/entity/Spellcaster$Spell", // Need to check this one
+            "org/bukkit/entity/Pose" // Still an enum in 1.21.4
     );
 
     @Override
