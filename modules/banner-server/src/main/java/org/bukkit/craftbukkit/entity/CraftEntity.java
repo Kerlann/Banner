@@ -189,8 +189,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         return this.teleport(location, TeleportCause.PLUGIN);
     }
 
-    @Override
-    public boolean teleport(Location location, TeleportCause cause) {
+    //@Override
+   /* public boolean teleport(Location location, TeleportCause cause) {
         Preconditions.checkArgument(location != null, "location cannot be null");
         location.checkFinite();
 
@@ -217,6 +217,34 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                     TeleportTransition.DO_NOTHING
             ));
 
+            return true;
+        }
+
+        // entity.setLocation() throws no event, and so cannot be cancelled
+        this.entity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        // SPIGOT-619: Force sync head rotation also
+        this.entity.setYHeadRot(location.getYaw());
+
+        return true;
+    }*/
+
+    @Override
+    public boolean teleport(Location location, TeleportCause cause) {
+        Preconditions.checkArgument(location != null, "location cannot be null");
+        location.checkFinite();
+
+        if (this.entity.isVehicle() || this.entity.isRemoved()) {
+            return false;
+        }
+
+        // If this entity is riding another entity, we must dismount before teleporting.
+        this.entity.stopRiding();
+
+        // Let the server handle cross world teleports
+        if (location.getWorld() != null && !location.getWorld().equals(this.getWorld())) {
+            // Prevent teleportation to an other world during world generation
+            Preconditions.checkState(!this.entity.bridge$generation(), "Cannot teleport entity to an other world during world generation");
+            entity.teleportTo(((CraftWorld) location.getWorld()).getHandle(), CraftLocation.toVec3D(location));
             return true;
         }
 
@@ -304,12 +332,38 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         return this.getHandle().isFullyFrozen();
     }
 
-    @Override
+/*    @Override
     public void remove() {
         //TODO :  GO FIX this.entity.pluginRemoved = true;
      //   this.entity.pluginRemoved = true;
         this.entity.discard(this.getHandle().bridge$generation() ? null : EntityRemoveEvent.Cause.PLUGIN);
+        Entity nms = this.getHandle();
+        if (nms.isRemoved()) {
+            return;
+        }
+        if (nms.level() == null) {
+            return;
+        }
+        nms.discard(nms.bridge$generation() ? null : EntityRemoveEvent.Cause.PLUGIN);
+    }*/
+@Override
+public void remove() {
+    net.minecraft.world.entity.Entity nms = this.getHandle();
+    if (!nms.isAlive()
+            || !nms.bridge$valid()
+            || !nms.isChunkLoaded()
+            || !nms.bridge$inWorld()
+    ) {
+        return;
     }
+
+    // Ici, on est sûr que l’entité est toujours “connectée” au niveau.
+    nms.discard(nms.bridge$generation()
+            ? null
+            : EntityRemoveEvent.Cause.PLUGIN);
+}
+
+
 
     @Override
     public boolean isDead() {

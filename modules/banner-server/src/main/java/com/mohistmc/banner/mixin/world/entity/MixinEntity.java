@@ -102,6 +102,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class MixinEntity implements Nameable, EntityAccess, CommandSource, InjectionEntity {
 
+    public boolean pluginRemoved = false;
+
     @Shadow
     private Level level;
     @Shadow @Final public static int TOTAL_AIR_SUPPLY;
@@ -217,9 +219,6 @@ public abstract class MixinEntity implements Nameable, EntityAccess, CommandSour
     @javax.annotation.Nullable
     private UUID originWorld;
     private transient EntityRemoveEvent.Cause banner$removeCause;
-    // Marks an entity, that it was removed by a plugin via Entity#remove
-    // Main use case currently is for SPIGOT-7487, preventing dropping of leash when leash is removed
-    public boolean pluginRemoved = false;
 
     @Override
     public void setOrigin(@NotNull Location location) {

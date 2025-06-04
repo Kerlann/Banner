@@ -590,6 +590,13 @@ public abstract class MixinServerPlayer extends Player implements InjectionServe
     @Redirect(method = "restoreFrom", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/ServerRecipeBook;copyOverData(Lnet/minecraft/stats/ServerRecipeBook;)V"))
     private void banner$copyOverData(ServerRecipeBook instance, ServerRecipeBook serverRecipeBook) {}
 
+    @Inject(method = "restoreFrom", at = @At("HEAD"))
+    private void banner$handlePlayer(ServerPlayer serverPlayer, boolean bl, CallbackInfo ci) {
+        serverPlayer.getBukkitEntity().setHandle(((ServerPlayer) (Object) this));
+        serverPlayer.banner$setBukkitEntity(serverPlayer.getBukkitEntity());
+    }
+
+
     @Redirect(method = "awardStat", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/scores/Scoreboard;forAllObjectives(Lnet/minecraft/world/scores/criteria/ObjectiveCriteria;Lnet/minecraft/world/scores/ScoreHolder;Ljava/util/function/Consumer;)V"))
     private void banner$addStats(Scoreboard instance, ObjectiveCriteria criteria, ScoreHolder scoreHolder, Consumer<ScoreAccess> points) {
         this.level().getCraftServer().getScoreboardManager().forAllObjectives(criteria, scoreHolder, points);

@@ -32,22 +32,26 @@ public class EnumTypeFactory implements TypeAdapterFactory {
 
     private static final class EnumTypeAdapter<T extends Enum<T>> extends TypeAdapter<T> {
 
-        private final Map<String, T> nameToConstant = new HashMap<String, T>();
-        private final Map<T, String> constantToName = new HashMap<T, String>();
-
+        private final Map<String, T> nameToConstant = new HashMap<>();
+        private final Map<T, String> constantToName = new HashMap<>();
         public EnumTypeAdapter(Class<T> classOfT) {
             for (T constant : classOfT.getEnumConstants()) {
-                String name = constant.name();
-                SerializedName annotation;
-                try {
-                    annotation = classOfT.getField(name).getAnnotation(SerializedName.class);
-                } catch (NoSuchFieldException e) {
-                    annotation = null;
+                if (constant == null) {          // ① ignorer les “trous”
+                    continue;
                 }
-                if (annotation != null) {
-                    name = annotation.value();
-                    for (String alternate : annotation.alternate()) {
-                        nameToConstant.put(alternate, constant);
+
+                String name = constant.name();
+                SerializedName ann;
+                try {
+                    ann = classOfT.getField(name).getAnnotation(SerializedName.class);
+                } catch (NoSuchFieldException ignored) {
+                    ann = null;
+                }
+
+                if (ann != null) {
+                    name = ann.value();
+                    for (String alt : ann.alternate()) {
+                        nameToConstant.put(alt, constant);
                     }
                 }
                 nameToConstant.put(name, constant);
@@ -61,7 +65,13 @@ public class EnumTypeFactory implements TypeAdapterFactory {
                 in.nextNull();
                 return null;
             }
-            return nameToConstant.get(in.nextString());
+            String key = in.nextString();
+            T constant = nameToConstant.get(key);
+            if (constant == null) {              // ② valeur inconnue : on lève ou on ignore
+                 return null;                  // ← laisser Essentials gérer
+                //throw new IllegalArgumentException("Unknown enum constant: " + key);
+            }
+            return constant;
         }
 
         @Override

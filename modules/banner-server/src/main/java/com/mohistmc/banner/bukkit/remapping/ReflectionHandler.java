@@ -24,6 +24,7 @@ import java.security.SecureClassLoader;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.regex.Pattern;
 
 /**
  * ReflectionHandler
@@ -35,6 +36,7 @@ import java.util.StringJoiner;
 public class ReflectionHandler extends ClassLoader {
 
     public static ClassLoaderRemapper remapper;
+    private static final Pattern VERSION_PATTERN = Pattern.compile("craftbukkit[/\\.]v\\d+_\\d+_R\\d+");
 
     public static Method[] redirectGetDeclaredMethods(Class<?> cl) {
         try {
@@ -220,19 +222,59 @@ public class ReflectionHandler extends ClassLoader {
     public static Class<?> redirectClassForName(String cl) throws ClassNotFoundException {
         return redirectClassForName(cl, true, Unsafe.getCallerClass().getClassLoader());
     }
-
     // bukkit -> srg
     public static Class<?> redirectClassForName(String cl, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException {
+        System.out.println("[BANNER] redirectClassForName called with: " + cl);
+
+        String originalClass = cl;
+
+        // Gestion spéciale pour les classes CraftBukkit versionnées en PREMIER
+        if (VERSION_PATTERN.matcher(cl).find()) {
+            cl = cl.replaceAll("[/\\.]v\\d+_\\d+_R\\d+", "");
+            System.out.println("[BANNER] Pre-mapping versioned class: " + originalClass + " -> " + cl);
+            try {
+                // Essayer d'abord sans le wrapped loader
+                Class<?> result = Class.forName(cl, initialize, classLoader);
+                System.out.println("[BANNER] Successfully loaded pre-mapped: " + cl);
+                return result;
+            } catch (ClassNotFoundException e) {
+                System.out.println("[BANNER] Pre-mapping failed for: " + cl + ", error: " + e.getMessage());
+            }
+        }
+
         try {
+            // Maintenant faire le remapping normal sur le nom déjà nettoyé
             String replace = remapper.mapType(cl.replace('.', '/')).replace('/', '.');
+            System.out.println("[BANNER] Attempting final mapping: " + cl + " -> " + replace);
+
+            // IMPORTANT: Si c'est toujours un nom versionné après remapping, le nettoyer
+            if (VERSION_PATTERN.matcher(replace).find()) {
+                replace = replace.replaceAll("[/\\.]v\\d+_\\d+_R\\d+", "");
+                System.out.println("[BANNER] Cleaned final mapping: " + replace);
+            }
+
             return Class.forName(replace, initialize, classLoader);
-        } catch (ClassNotFoundException e) { // nested/inner class
+        } catch (ClassNotFoundException e) {
+            System.out.println("[BANNER] Final mapping failed, error: " + e.getMessage());
+
+            // Logique existante pour les classes nested/inner
             int i = cl.lastIndexOf('.');
             if (i > 0) {
                 String replace = cl.substring(0, i).replace('.', '/') + "$" + cl.substring(i + 1);
                 replace = remapper.mapType(replace).replace('/', '.').replace('$', '.');
+
+                // Nettoyer aussi les noms versionnés dans les nested classes
+                if (VERSION_PATTERN.matcher(replace).find()) {
+                    replace = replace.replaceAll("[/\\.]v\\d+_\\d+_R\\d+", "");
+                    System.out.println("[BANNER] Cleaned nested class: " + replace);
+                }
+
+                System.out.println("[BANNER] Nested class attempt: " + cl + " -> " + replace);
                 return Class.forName(replace, initialize, classLoader);
-            } else throw e;
+            } else {
+                System.out.println("[BANNER] All attempts failed for original: " + originalClass);
+                throw new ClassNotFoundException("Failed to load class: " + originalClass + " (tried: " + cl + ")");
+            }
         }
     }
 
@@ -394,6 +436,16 @@ public class ReflectionHandler extends ClassLoader {
 
     // bukkit -> srg
     public static Class<?> redirectLookupFindClass(MethodHandles.Lookup lookup, String name) throws ClassNotFoundException {
+        // Gestion spéciale pour les classes CraftBukkit versionnées
+        if (VERSION_PATTERN.matcher(name).find()) {
+            String unversionedClass = name.replaceAll("[/\\.]v\\d+_\\d+_R\\d+", "");
+            System.out.println("[BANNER] LookupFindClass mapping: " + name + " -> " + unversionedClass);
+            try {
+                return redirectClassForName(unversionedClass, false, lookup.lookupClass().getClassLoader());
+            } catch (ClassNotFoundException e) {
+                System.out.println("[BANNER] LookupFindClass failed for: " + unversionedClass);
+            }
+        }
         return redirectClassForName(name, false, lookup.lookupClass().getClassLoader());
     }
 
@@ -420,11 +472,33 @@ public class ReflectionHandler extends ClassLoader {
     }
 
     public static Object[] handleClassLoaderLoadClass(ClassLoader loader, String binaryName) {
+        // Gestion spéciale pour les classes CraftBukkit versionnées
+        if (VERSION_PATTERN.matcher(binaryName).find()) {
+            String unversionedClass = binaryName.replaceAll("\\.v\\d+_\\d+_R\\d+", "");
+            return new Object[]{loader, unversionedClass};
+        }
+
         return new Object[]{loader, remapper.mapType(binaryName.replace('.', '/')).replace('/', '.')};
     }
 
     // bukkit -> srg
+    // bukkit -> srg
     public static Class<?> redirectClassLoaderLoadClass(ClassLoader loader, String binaryName) throws ClassNotFoundException {
+        // Gestion spéciale pour les classes CraftBukkit versionnées
+        if (VERSION_PATTERN.matcher(binaryName).find()) {
+            // Remplacer par la version non-versionnée utilisée par Banner
+            String unversionedClass = binaryName.replaceAll("\\.v\\d+_\\d+_R\\d+", "");
+            try {
+                System.out.println("[BANNER] ClassLoader mapping versioned CraftBukkit class: " + binaryName + " -> " + unversionedClass);
+                Class<?> result = loader.loadClass(unversionedClass);
+                System.out.println("[BANNER] ClassLoader successfully loaded: " + unversionedClass);
+                return result;
+            } catch (ClassNotFoundException e) {
+                System.out.println("[BANNER] ClassLoader failed to load mapped class: " + unversionedClass + ", trying normal remapping");
+                // Si ça ne marche pas, essayer le remapping normal
+            }
+        }
+
         String replace = remapper.mapType(binaryName.replace('.', '/')).replace('/', '.');
         return loader.loadClass(replace);
     }
@@ -647,6 +721,30 @@ public class ReflectionHandler extends ClassLoader {
         } else {
             RedirectAdapter.scanMethod(bytes);
             return bytes;
+        }
+    }
+
+    private static class VersionedClassLoader extends ClassLoader {
+        private final ClassLoader parent;
+
+        public VersionedClassLoader(ClassLoader parent) {
+            super(parent);
+            this.parent = parent;
+        }
+
+        @Override
+        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            // Gestion spéciale pour les classes CraftBukkit versionnées
+            if (VERSION_PATTERN.matcher(name).find()) {
+                String unversionedClass = name.replaceAll("[/\\.]v\\d+_\\d+_R\\d+", "");
+                System.out.println("[BANNER] VersionedClassLoader: " + name + " -> " + unversionedClass);
+                try {
+                    return parent.loadClass(unversionedClass);
+                } catch (ClassNotFoundException e) {
+                    System.out.println("[BANNER] VersionedClassLoader failed for: " + unversionedClass);
+                }
+            }
+            return parent.loadClass(name);
         }
     }
 }

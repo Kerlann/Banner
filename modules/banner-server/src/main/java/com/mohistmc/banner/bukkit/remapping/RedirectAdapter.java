@@ -182,7 +182,36 @@ public class RedirectAdapter implements PluginTransformer {
                         && Objects.equals(from.desc, methodNode.desc)) {
                         continue;
                     }
+                    
+                    // Transform versioned CraftBukkit class references in method calls
+                    if (from.owner.contains("craftbukkit/v") && from.owner.contains("_R")) {
+                        String unversionedOwner = from.owner.replaceAll("/v\\d+_\\d+_R\\d+", "");
+                        System.out.println("[BANNER] MethodInsn owner transform: " + from.owner + " -> " + unversionedOwner);
+                        from.owner = unversionedOwner;
+                    }
+                    
+                    // Transform method descriptor references
+                    if (from.desc.contains("craftbukkit/v") && from.desc.contains("_R")) {
+                        String unversionedDesc = from.desc.replaceAll("/v\\d+_\\d+_R\\d+", "");
+                        System.out.println("[BANNER] MethodInsn desc transform: " + from.desc + " -> " + unversionedDesc);
+                        from.desc = unversionedDesc;
+                    }
+                    
                     process(from, methodNode.instructions, remapper, classNode);
+                } else if (insnNode instanceof TypeInsnNode typeNode) {
+                    // Transform type instructions (NEW, CHECKCAST, INSTANCEOF)
+                    if (typeNode.desc.contains("craftbukkit/v") && typeNode.desc.contains("_R")) {
+                        String unversionedType = typeNode.desc.replaceAll("/v\\d+_\\d+_R\\d+", "");
+                        System.out.println("[BANNER] TypeInsn transform: " + typeNode.desc + " -> " + unversionedType);
+                        typeNode.desc = unversionedType;
+                    }
+                } else if (insnNode instanceof LdcInsnNode ldcNode) {
+                    // Transformer les constants de type String pour les classes versionnées CraftBukkit
+                    if (ldcNode.cst instanceof String str && str.contains("craftbukkit.v") && str.contains("_R")) {
+                        String unversionedClass = str.replaceAll("\\.v\\d+_\\d+_R\\d+", "");
+                        System.out.println("[BANNER] LDC String transform: " + str + " -> " + unversionedClass);
+                        ldcNode.cst = unversionedClass;
+                    }
                 } else if (insnNode.getOpcode() == Opcodes.INVOKEDYNAMIC) {
                     InvokeDynamicInsnNode invokeDynamic = (InvokeDynamicInsnNode) insnNode;
                     Object[] bsmArgs = invokeDynamic.bsmArgs;
@@ -194,6 +223,31 @@ public class RedirectAdapter implements PluginTransformer {
                             }
                         }
                     }
+                }
+            }
+            
+            // Transform method signature references in the method itself
+            if (methodNode.desc != null && methodNode.desc.contains("craftbukkit/v") && methodNode.desc.contains("_R")) {
+                String unversionedDesc = methodNode.desc.replaceAll("/v\\d+_\\d+_R\\d+", "");
+                System.out.println("[BANNER] Method desc transform: " + methodNode.desc + " -> " + unversionedDesc);
+                methodNode.desc = unversionedDesc;
+            }
+        }
+        
+        // Transform class-level references
+        if (classNode.superName != null && classNode.superName.contains("craftbukkit/v") && classNode.superName.contains("_R")) {
+            String unversionedSuper = classNode.superName.replaceAll("/v\\d+_\\d+_R\\d+", "");
+            System.out.println("[BANNER] SuperName transform: " + classNode.superName + " -> " + unversionedSuper);
+            classNode.superName = unversionedSuper;
+        }
+        
+        if (classNode.interfaces != null) {
+            for (int i = 0; i < classNode.interfaces.size(); i++) {
+                String interfaceName = classNode.interfaces.get(i);
+                if (interfaceName.contains("craftbukkit/v") && interfaceName.contains("_R")) {
+                    String unversionedInterface = interfaceName.replaceAll("/v\\d+_\\d+_R\\d+", "");
+                    System.out.println("[BANNER] Interface transform: " + interfaceName + " -> " + unversionedInterface);
+                    classNode.interfaces.set(i, unversionedInterface);
                 }
             }
         }

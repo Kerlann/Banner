@@ -33,11 +33,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
-import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
-import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
-import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
-import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
@@ -1908,25 +1904,52 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, T data, boolean force) {
-    /*    this.getHandle().sendParticlesSource(
-                null, // Sender
-                CraftParticle.createParticleParam(particle, data), // Particle
-                false, force,
-                x, y, z, // Position
-                count,  // Count
-                offsetX, offsetY, offsetZ, // Random offset
-                extra // Speed?
-        );*/
-        this.getHandle().sendParticles(
-                null, // Sender
-                CraftParticle.createParticleParam(particle, data), // Particle
-                false, force,
-                x, y, z, // Position
-                count,  // Count
-                offsetX, offsetY, offsetZ, // Random offset
-                extra // Speed?
+            //TODO : FIX TEMP PARTICLE
+   /*     try {
+            this.getHandle().sendParticles(
+                    null, // Sender
+                    CraftParticle.createParticleParam(particle, data), // Particle
+                    false, force,
+                    x, y, z, // Position
+                    count,  // Count
+                    offsetX, offsetY, offsetZ, // Random offset
+                    extra // Speed?
+            );
+        }catch (Exception e ){
+
+        }*/
+
+        net.minecraft.core.particles.ParticleOptions nmsParam = CraftParticle.createParticleParam(particle, data);
+
+        ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(
+                nmsParam,
+                false,   // overrideLimiter (ne force pas le bypass de vanilla, puisque c’est un appel "plugin")
+                force,   // alwaysShow = force (si true, le client reçoit même à grande distance)
+                x, y, z,
+                (float) offsetX,
+                (float) offsetY,
+                (float) offsetZ,
+                (float) extra,
+                count
         );
 
+        for (Player bukkitPlayer : this.getPlayers()) {
+            if (!(bukkitPlayer instanceof CraftPlayer)) {
+                continue;
+            }
+            CraftPlayer craft = (CraftPlayer) bukkitPlayer;
+            ServerPlayer nmsPlayer = craft.getHandle();
+            if (nmsPlayer.connection == null) {
+                continue;
+            }
+
+            Vec3 playerPos = new Vec3(nmsPlayer.getX(), nmsPlayer.getY(), nmsPlayer.getZ());
+            Vec3 effectCenter = new Vec3(x, y, z);
+            double maxDistance = force ? 512.0D : 32.0D;
+            if (playerPos.distanceToSqr(effectCenter) <= maxDistance * maxDistance) {
+                nmsPlayer.connection.send(packet);
+            }
+        }
     }
 
     @Deprecated

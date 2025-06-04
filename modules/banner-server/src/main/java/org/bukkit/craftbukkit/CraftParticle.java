@@ -37,6 +37,7 @@ import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.joml.Vector3f;
 
 public abstract class CraftParticle<D> implements Keyed {
 

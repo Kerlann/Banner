@@ -186,6 +186,8 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
         throw new ClassNotFoundException(name);
     }
 
+
+
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         if (name.startsWith("org.bukkit.") || name.startsWith("net.minecraft.")) {
@@ -263,6 +265,8 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
     Collection<Class<?>> getClasses() {
         return classes.values();
     }
+
+    public JavaPlugin getPlugin() { return plugin; }
 
     synchronized void initialize(@NotNull JavaPlugin javaPlugin) {
         Preconditions.checkArgument(javaPlugin != null, "Initializing plugin cannot be null");

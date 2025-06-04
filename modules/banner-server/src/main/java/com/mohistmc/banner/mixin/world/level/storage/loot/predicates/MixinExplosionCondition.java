@@ -1,11 +1,7 @@
 package com.mohistmc.banner.mixin.world.level.storage.loot.predicates;
 
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(ExplosionCondition.class)
 public class MixinExplosionCondition {
@@ -14,7 +10,11 @@ public class MixinExplosionCondition {
      * @author wdog5
      * @reason bukkit
      */
-    @Overwrite
+
+    //TODO : banner fix me (server crash on startup)
+    //Caused by: java.util.NoSuchElementException: minecraft:explosion_radius
+    //at …class_10352.method_64967(ContextParameterMap#getOrThrow)
+   /* @Overwrite
     public boolean test(LootContext lootContext) {
         Float float_ = (Float)lootContext.getParameter(LootContextParams.EXPLOSION_RADIUS);
         if (float_ != null) {
@@ -25,5 +25,5 @@ public class MixinExplosionCondition {
         } else {
             return true;
         }
-    }
+    }*/
 }

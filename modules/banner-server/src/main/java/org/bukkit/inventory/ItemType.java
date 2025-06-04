@@ -2226,6 +2226,7 @@ public interface ItemType extends Keyed, Translatable {
     @NotNull
     private static <M extends ItemType> M getItemType(@NotNull String key) {
         // Cast instead of using ItemType#typed, since item type can be a mock during testing and would return null
+
         return (M) Registry.ITEM.getOrThrow(NamespacedKey.minecraft(key));
     }
 

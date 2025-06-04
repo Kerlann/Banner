@@ -373,7 +373,21 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
         }
         this.damage = meta.damage;
         this.maxDamage = meta.maxDamage;
-        this.unhandledTags.build().copy(meta.unhandledTags.build());
+        // Banner fix: Use safe copying for unhandledTags to avoid UnsupportedOperationException
+        try {
+            // Copy each component individually instead of using the problematic copy() method
+            for (Map.Entry<DataComponentType<?>, Optional<?>> entry : meta.unhandledTags.build().entrySet()) {
+                if (entry.getValue().isPresent()) {
+                    this.unhandledTags.set((DataComponentType) entry.getKey(), entry.getValue().get());
+                } else {
+                    this.unhandledTags.remove(entry.getKey());
+                }
+            }
+        } catch (UnsupportedOperationException e) {
+            // Fallback: create a new builder if the copy operation fails
+            System.err.println("[Banner] Warning: Failed to copy unhandledTags, using fallback method: " + e.getMessage());
+            this.unhandledTags = DataComponentPatch.builder();
+        }
         this.removedTags.addAll(meta.removedTags);
         this.persistentDataContainer.putAll(meta.persistentDataContainer.getRaw());
 
@@ -740,7 +754,19 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
             try {
                 CompoundTag unhandledTag = NbtIo.readCompressed(buf, NbtAccounter.unlimitedHeap());
                 DataComponentPatch unhandledPatch = DataComponentPatch.CODEC.parse(BukkitMethodHooks.getDefaultRegistryAccess().createSerializationContext(NbtOps.INSTANCE), unhandledTag).result().get();
-                this.unhandledTags.build().copy(unhandledPatch);
+                // Banner fix: Use safe copying for unhandledTags to avoid UnsupportedOperationException
+                try {
+                    for (Map.Entry<DataComponentType<?>, Optional<?>> entry : unhandledPatch.entrySet()) {
+                        if (entry.getValue().isPresent()) {
+                            this.unhandledTags.set((DataComponentType) entry.getKey(), entry.getValue().get());
+                        } else {
+                            this.unhandledTags.remove(entry.getKey());
+                        }
+                    }
+                } catch (UnsupportedOperationException e) {
+                    System.err.println("[Banner] Warning: Failed to copy unhandledPatch, using fallback method: " + e.getMessage());
+                    this.unhandledTags = DataComponentPatch.builder();
+                }
 
                 for (Entry<DataComponentType<?>, Optional<?>> entry : unhandledPatch.entrySet()) {
                     // Move removed unhandled tags to dedicated removedTags

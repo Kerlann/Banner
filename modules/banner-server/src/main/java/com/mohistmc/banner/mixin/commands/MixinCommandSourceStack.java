@@ -55,6 +55,7 @@ public abstract class MixinCommandSourceStack implements InjectionCommandSourceS
         return this.source.banner$getBukkitSender((CommandSourceStack) (Object) this);
     }
 
+
     @Override
     public CommandSender banner$getBukkitSender() {
         return getBukkitSender();

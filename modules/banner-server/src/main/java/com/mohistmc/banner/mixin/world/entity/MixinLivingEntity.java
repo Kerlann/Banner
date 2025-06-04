@@ -604,7 +604,7 @@ public abstract class MixinLivingEntity extends Entity implements Attackable, In
         DecorationOps.blackhole().invoke();
     }*/
 
-    /*
+
     @Override
     public boolean damageEntity0(DamageSource damagesource, float f) {
         if (!this.isInvulnerableTo((ServerLevel) this.level(), damagesource)) {
@@ -674,7 +674,27 @@ public abstract class MixinLivingEntity extends Entity implements Attackable, In
             };
             float absorptionModifier = absorption.apply((double) f).floatValue();
 
-            EntityDamageEvent event = CraftEventFactory.handleLivingEntityDamageEvent(this, damagesource, originalDamage, hardHatModifier, blockingModifier, armorModifier, resistanceModifier, magicModifier, absorptionModifier, null, blocking, armor, resistance, magic, absorption);
+            Function<Double, Double> freezing = freeze -> 0.0;
+
+            EntityDamageEvent event = CraftEventFactory.handleLivingEntityDamageEvent(
+                    this,
+                    damagesource,
+                    originalDamage,
+                    0.0,
+                    hardHatModifier,
+                    blockingModifier,
+                    armorModifier,
+                    resistanceModifier,
+                    magicModifier,
+                    absorptionModifier,
+                    freezing,
+                    hardHat,
+                    blocking,
+                    armor,
+                    resistance,
+                    magic,
+                    absorption
+            );
             if (damagesource.getEntity() instanceof Player) {
                 ((Player) damagesource.getEntity()).resetAttackStrengthTicker(); // Moved from EntityHuman in order to make the cooldown reset get called after the damage event is fired
             }
@@ -777,7 +797,7 @@ public abstract class MixinLivingEntity extends Entity implements Attackable, In
             }
         }
         return banner$damageResult = false; // CraftBukkit
-    }*/
+    }
 
     private transient EntityRegainHealthEvent.RegainReason banner$regainReason;
 

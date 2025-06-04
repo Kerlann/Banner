@@ -9,11 +9,13 @@ public class ServerEventDispatcher {
 
     public static void dispatchServer() {
         ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
-            var links = server.serverLinks();
-            var wrapper = new CraftServerLinks(links);
-            var event = new PlayerLinksSendEvent(handler.bridge$player().getBukkitEntity(), wrapper);
-            Bukkit.getPluginManager().callEvent(event);
-            server.setServerLinks(wrapper.getServerLinks());
+            server.execute(() -> {
+                var links = server.serverLinks();
+                var wrapper = new CraftServerLinks(links);
+                var event = new PlayerLinksSendEvent(handler.bridge$player().getBukkitEntity(), wrapper);
+                Bukkit.getPluginManager().callEvent(event);
+                server.setServerLinks(wrapper.getServerLinks());
+            });
         });
     }
 }

@@ -1,10 +1,12 @@
 package com.mohistmc.banner.injection.commands;
 
+
 import net.minecraft.commands.CommandSourceStack;
+import org.bukkit.command.CommandSender;
 
 public interface InjectionCommandSource {
 
-    default org.bukkit.command.CommandSender banner$getBukkitSender(CommandSourceStack wrapper) {
-        throw new IllegalStateException("Not implemented");
-    }
+    CommandSender banner$getBukkitSender(CommandSourceStack wrapper);
+
+    CommandSender getBukkitSender(CommandSourceStack stack);
 }

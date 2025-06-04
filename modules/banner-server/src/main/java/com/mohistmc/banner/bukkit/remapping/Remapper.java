@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ArclightRemapper
@@ -74,6 +75,34 @@ public class Remapper {
         this.toBukkitRemapper = new LenientJarRemapper(toBukkitMapping);
         this.toNmsRemapper = new LenientJarRemapper(toNmsMapping);
         RemapSourceHandler.register();
+        addCraftBukkitCompatibilityMappings();
+        
+        // Generate versioned proxy classes
+        try {
+            VersionedClassGenerator.generateAllVersionProxies();
+            System.out.println("[BANNER] Generated versioned CraftBukkit proxy classes");
+        } catch (Exception e) {
+            System.err.println("[BANNER] Failed to generate proxy classes: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void addCraftBukkitCompatibilityMappings() {
+        // Mapping des classes CraftBukkit versionnées vers les non-versionnées
+        Map<String, String> craftBukkitMappings = Map.of(
+                "org/bukkit/craftbukkit/v1_21_R0/CraftWorld", "org/bukkit/craftbukkit/CraftWorld",
+                "org/bukkit/craftbukkit/v1_21_R0/CraftServer", "org/bukkit/craftbukkit/CraftServer",
+                "org/bukkit/craftbukkit/v1_21_R0/entity/CraftPlayer", "org/bukkit/craftbukkit/entity/CraftPlayer",
+                "org/bukkit/craftbukkit/v1_21_R0/inventory/CraftItemStack", "org/bukkit/craftbukkit/inventory/CraftItemStack"
+                // Ajouter d'autres mappings selon les besoins
+        );
+
+        for (Map.Entry<String, String> entry : craftBukkitMappings.entrySet()) {
+            this.toBukkitMapping.classes.put(entry.getKey(), entry.getValue());
+            this.toNmsMapping.classes.put(entry.getValue(), entry.getKey());
+        }
     }
 
     public static ClassLoaderRemapper createClassLoaderRemapper(ClassLoader classLoader) {

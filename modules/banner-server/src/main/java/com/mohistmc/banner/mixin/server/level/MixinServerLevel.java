@@ -112,7 +112,11 @@ public abstract class MixinServerLevel extends Level implements WorldGenLevel, I
 
     @Shadow public abstract List<ServerPlayer> players();
 
-    @Shadow public abstract boolean sendParticles(ServerPlayer player, boolean longDistance, double posX, double posY, double posZ, Packet<?> packet);
+    @Shadow
+    public abstract boolean sendParticles(ServerPlayer serverPlayer,
+                                          boolean longDistance,
+                                          double posX, double posY, double posZ,
+                                          Packet<?> packet);
     @Shadow @Final public ServerLevelData serverLevelData;
 
     @Shadow @NotNull public abstract MinecraftServer getServer();
@@ -228,29 +232,44 @@ public abstract class MixinServerLevel extends Level implements WorldGenLevel, I
         return this.chunkSource.getChunk(x, z, false);
     }
 
-    @Override
-    public <T extends ParticleOptions> int sendParticles(ServerPlayer sender, T t0, double d0, double d1, double d2, int i, double d3, double d4, double d5, double d6, boolean force) {
-        //TODO : fix ?
-        boolean overrideLimiter = false;     // keep normal particle-limiter
-        boolean alwaysShow      = force;     // old behaviour
 
-        ClientboundLevelParticlesPacket packet =
-                new ClientboundLevelParticlesPacket(t0,
-                        overrideLimiter,
-                        alwaysShow,
-                        d0, d1, d2,
-                        (float) d3, (float) d4, (float) d5, (float) d6,
-                        i);
-        int j = 0;
-        for (ServerPlayer entity : this.players()) {
-            if (sender == null || entity.getBukkitEntity().canSee(sender.getBukkitEntity())) {
-                if (this.sendParticles(entity, force, d0, d1, d2, packet)) {
-                    ++j;
+    public <T extends ParticleOptions> int sendParticles(ServerPlayer sender,
+                                                         T particleOptions,
+                                                         double x, double y, double z,
+                                                         int count,
+                                                         double xOffset, double yOffset, double zOffset,
+                                                         double speed,
+                                                         boolean force) {
+        System.out.println("---KERLANNICI----");
+        System.out.println(sender);
+        // Construction du Packet en passant "force" dans overrideLimiter, et on met toujours false pour "alwaysShow"
+        ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(
+                particleOptions,
+                force,          // overrideLimiter = force
+                false,          // alwaysShow = false
+                x, y, z,
+                (float) xOffset,
+                (float) yOffset,
+                (float) zOffset,
+                (float) speed,
+                count
+        );
+
+        int sent = 0;
+        // Boucle sur tous les joueurs présents dans ce ServerLevel
+        for (ServerPlayer recipient : this.players()) {
+            // Si sender est null (cas global) ou si recipient peut voir sender
+            if (sender == null || recipient.getBukkitEntity().canSee(sender.getBukkitEntity())) {
+                // On envoie le Packet en passant le même flag "force" (longDistance)
+                if (this.sendParticles(recipient, force, x, y, z, packet)) {
+                    sent++;
                 }
             }
         }
-        return j;
+        return sent;
     }
+
+
 
     @Inject(method = "tickNonPassenger", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/world/entity/Entity;tick()V"))
     private void banner$tickPortal(Entity entityIn, CallbackInfo ci) {
@@ -375,11 +394,43 @@ public abstract class MixinServerLevel extends Level implements WorldGenLevel, I
     }
 
 
-    @Redirect(method = "sendParticles(Lnet/minecraft/core/particles/ParticleOptions;ZZDDDIDDDD)I", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;sendParticles(Lnet/minecraft/server/level/ServerPlayer;ZDDDLnet/minecraft/network/protocol/Packet;)Z"))
+  /*  @Redirect(method = "sendParticles(Lnet/minecraft/core/particles/ParticleOptions;ZZDDDIDDDD)I", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;sendParticles(Lnet/minecraft/server/level/ServerPlayer;ZDDDLnet/minecraft/network/protocol/Packet;)Z"))
     public boolean banner$particleVisible(ServerLevel serverWorld, ServerPlayer player, boolean longDistance, double posX, double posY, double posZ, Packet<?> packet) {
+        System.out.println("---KERLANN-ICI2-----");
+        System.out.println(banner$force);
+        System.out.println(player);
         return this.sendParticles(player, banner$force, posX, posY, posZ, packet);
     }
+*/
+    @Redirect(
+            method = "sendParticles(Lnet/minecraft/core/particles/ParticleOptions;ZZDDDIDDDD)I",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/level/ServerLevel;"
+                            + "sendParticles(Lnet/minecraft/server/level/ServerPlayer;ZDDDLnet/minecraft/network/protocol/Packet;)Z"
+            )
+    )
+    public boolean banner$particleVisible(
+            ServerLevel serverWorld,
+            ServerPlayer player,
+            boolean longDistance,
+            double posX, double posY, double posZ,
+            Packet<?> packet
+    ) {
+        // 1) On vérifie d’abord si "player" est non-null :
+        if (player == null || player.getBukkitEntity() == null) {
+            System.out.println("---KERLANN-BUGIC-----");
+            System.out.println(banner$force);
+            System.out.println(player);
+            return false;
+        }
 
+        // 2) On peut logger pour debug :
+        System.out.println("---KERLANN-ICI2----- player=" + player.getGameProfile().getName());
+
+        // 3) On délègue au shadow sendParticles(...) en remplaçant longDistance par banner$force
+        return this.sendParticles(player, banner$force, posX, posY, posZ, packet);
+    }
 
 
     @Override
