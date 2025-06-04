@@ -421,7 +421,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
     @Override
     public int getPlayerListOrder() {
-        return this.getHandle().bridge$listOrder();;
+        return this.getHandle().bridge$listOrder();
     }
 
     @Override
@@ -747,9 +747,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
         // Construct the packets using the data allocated above and send then to the players
         for (Map.Entry<SectionPos, ChunkSectionChanges> entry : changes.entrySet()) {
+            // Banner start
             ChunkSectionChanges chunkChanges = entry.getValue();
-            ClientboundSectionBlocksUpdatePacket packet = new ClientboundSectionBlocksUpdatePacket(entry.getKey(), chunkChanges.positions(), chunkChanges.blockData().toArray(net.minecraft.world.level.block.state.BlockState[]::new));
-            this.getHandle().connection.send(packet);
+            ClientboundSectionBlocksUpdatePacket packet = new ClientboundSectionBlocksUpdatePacket(entry.getKey(), chunkChanges.positions(), null);
+            packet.putBukkitPacket(chunkChanges.blockData().toArray(net.minecraft.world.level.block.state.BlockState[]::new));
+            getHandle().connection.send(packet);
+            // Banner end
         }
     }
 
@@ -1306,7 +1309,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
     @Override
     public long getPlayerTimeOffset() {
-        return this.getHandle().bridge$timeOffset();;
+        return this.getHandle().bridge$timeOffset();
     }
 
     @Override
@@ -1316,7 +1319,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
     @Override
     public boolean isPlayerTimeRelative() {
-        return this.getHandle().bridge$relativeTime();;
+        return this.getHandle().bridge$relativeTime();
     }
 
     @Override

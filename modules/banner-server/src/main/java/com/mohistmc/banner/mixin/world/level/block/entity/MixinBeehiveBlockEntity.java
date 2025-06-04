@@ -76,7 +76,7 @@ public abstract class MixinBeehiveBlockEntity extends BlockEntity implements Inj
         return list.size() < this.maxBees ? 1 : 3;
     }
 
-    @Inject(method = "addOccupant", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;stopRiding()V"))
+  /*  @Inject(method = "addOccupant", cancellable = true, at = @At(value = "INVOKE", target = "net/minecraft/world/entity/Entity.stopRiding()V"))
     private void banner$beeEnterBlock(Entity entity, CallbackInfo ci) {
         if (this.level != null) {
             EntityEnterBlockEvent event = new EntityEnterBlockEvent(entity.getBukkitEntity(), CraftBlock.at(this.level, this.worldPosition));
@@ -88,7 +88,37 @@ public abstract class MixinBeehiveBlockEntity extends BlockEntity implements Inj
                 ci.cancel();
             }
         }
-    }
+    }*/
+
+    //TODO : FIX ME
+    /*@Inject(
+            method = "addOccupant",                       // nom lisible
+            at = @At(
+                    value  = "INVOKE",
+                    target = "Lnet/minecraft/entity/Entity;stopRiding()V"
+                    // pas de remap = false  →  on laisse mixin remapper
+            ),
+            cancellable = true
+    )
+    private void banner$beeEnterBlock(Bee entity, CallbackInfo ci) {
+        if (this.level != null) {
+            EntityEnterBlockEvent event = new EntityEnterBlockEvent(
+                    entity.getBukkitEntity(),
+                    CraftBlock.at(this.level, this.worldPosition)
+            );
+            Bukkit.getPluginManager().callEvent(event);
+
+            if (event.isCancelled()) {
+                if (entity instanceof Bee bee) {
+                    bee.setStayOutOfHiveCountdown(400);
+                }
+                ci.cancel();
+            }
+        }
+    }*/
+
+
+
 
     private static boolean releaseBee(Level world, BlockPos pos, BlockState state, BeehiveBlockEntity.BeeData beeData, @Nullable List<Entity> list, BeehiveBlockEntity.BeeReleaseStatus status, @Nullable BlockPos pos1, boolean force) {
         banner$force = force;

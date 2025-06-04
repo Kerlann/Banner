@@ -117,12 +117,48 @@ public abstract class MixinServerPlayerGameMode implements InjectionServerPlayer
         this.player.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE, this.player), this.player);
     }
 
-    @Redirect(method = "handleBlockBreakAction", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/server/network/ServerCommonPacketListenerImpl;send(Lnet/minecraft/network/protocol/Packet;)V"),
+/*    @Redirect(method = "handleBlockBreakAction", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/server/network/ServerCommonPacketListenerImpl;send(Lnet/minecraft/network/protocol/Packet;)V"),
             slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;mayInteract(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/BlockPos;)Z")))
     private void banner$mayNotInteractEvent(ServerGamePacketListenerImpl instance, Packet<?> packet, BlockPos blockPos, ServerboundPlayerActionPacket.Action action, Direction direction) throws Throwable {
         CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_BLOCK, blockPos, direction, this.player.getInventory().getSelected(), InteractionHand.MAIN_HAND);
         DecorationOps.callsite().invoke(instance, packet);
         BlockEntity blockEntity = this.level.getBlockEntity(blockPos);
+        if (blockEntity != null) {
+            this.player.connection.send(blockEntity.getUpdatePacket());
+        }
+    }*/
+
+    @Redirect(
+            method =
+                    "handleBlockBreakAction" +
+                            "(Lnet/minecraft/core/BlockPos;" +
+                            "Lnet/minecraft/network/protocol/game/ServerboundPlayerActionPacket$Action;" +
+                            "Lnet/minecraft/core/Direction;II)V",
+            at = @At(
+                    value  = "INVOKE",
+                    target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;" +
+                            "send(Lnet/minecraft/network/protocol/Packet;)V",
+                    ordinal = 0
+            ),
+            slice = @Slice(
+                    from = @At(
+                            value  = "INVOKE",
+                            target = "Lnet/minecraft/server/level/ServerLevel;" +
+                                    "mayInteract(Lnet/minecraft/world/entity/player/Player;" +
+                                    "Lnet/minecraft/core/BlockPos;)Z"
+                    )
+            )
+    )
+    private void banner$leftClickEvent(ServerGamePacketListenerImpl instance,
+                                       Packet<?> packet,
+                                       BlockPos pos,
+                                       ServerboundPlayerActionPacket.Action action,
+                                       Direction face,
+                                       int yLimit,
+                                       int sequence) throws Throwable {
+        CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_BLOCK, pos, face, this.player.getInventory().getSelected(), InteractionHand.MAIN_HAND);
+        DecorationOps.callsite().invoke(instance, action);
+        BlockEntity blockEntity = this.level.getBlockEntity(pos);
         if (blockEntity != null) {
             this.player.connection.send(blockEntity.getUpdatePacket());
         }

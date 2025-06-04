@@ -42,7 +42,9 @@ public abstract class MixinZombieVillager extends Zombie {
         pushEffectCause(EntityPotionEffectEvent.Cause.CONVERSION);
     }
 
-    @Eject(method = "finishConversion", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/monster/ZombieVillager;convertTo(Lnet/minecraft/world/entity/EntityType;Z)Lnet/minecraft/world/entity/Mob;"))
+    // Banner TODO fixme
+
+/*    @Inject(method = "finishConversion", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/monster/ZombieVillager;convertTo(Lnet/minecraft/world/entity/EntityType;Z)Lnet/minecraft/world/entity/Mob;"))
     private <T extends Mob> T banner$cure(net.minecraft.world.entity.monster.ZombieVillager zombieVillagerEntity, EntityType<T> entityType, boolean flag, CallbackInfo ci) {
         T t = this.convertTo(entityType, flag, EntityTransformEvent.TransformReason.CURED, CreatureSpawnEvent.SpawnReason.CURED);
         if (t == null) {
@@ -52,7 +54,7 @@ public abstract class MixinZombieVillager extends Zombie {
              t.pushEffectCause(EntityPotionEffectEvent.Cause.CONVERSION);
         }
         return t;
-    }
+    }*/
 
     // Banner TODO fixme
     /*

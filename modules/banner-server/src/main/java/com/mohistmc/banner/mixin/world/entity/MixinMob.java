@@ -249,11 +249,29 @@ public abstract class MixinMob extends LivingEntity implements InjectionMob {
         this.banner$setForceDrops(true);
     }*/
 
+
+/*
+
     @Inject(method = "startRiding", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;dropLeash(ZZ)V"))
     private void banner$unleashRide(Entity entityIn, boolean force, CallbackInfoReturnable<Boolean> cir) {
         Bukkit.getPluginManager().callEvent(new EntityUnleashEvent(this.getBukkitEntity(), EntityUnleashEvent.UnleashReason.UNKNOWN));
     }
+*/
 
+    @Inject(
+            method = "startRiding",
+            at = @At(
+                    value = "INVOKE",
+                    // Ancien : "Lnet/minecraft/world/entity/Mob;dropLeash(ZZ)V"
+                    target = "Lnet/minecraft/world/entity/Mob;dropLeash()V"
+            )
+    )
+    private void banner$unleashRide(Entity entityIn, boolean force,
+                                    CallbackInfoReturnable<Boolean> cir) {
+        Bukkit.getPluginManager().callEvent(
+                new EntityUnleashEvent(this.getBukkitEntity(),
+                        EntityUnleashEvent.UnleashReason.UNKNOWN));
+    }
     /*
     @Inject(method = "removeAfterChangingDimensions", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;dropLeash(ZZ)V"))
     private void banner$unleashDead(CallbackInfo ci) {

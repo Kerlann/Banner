@@ -1,5 +1,6 @@
 package com.mohistmc.banner.mixin.world.entity.vehicle;
 
+import com.mohistmc.banner.injection.world.entity.vehicle.BridgeMinecartTNT;
 import io.izzel.arclight.mixin.Eject;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -18,13 +19,37 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 // Banner TODO fixme
 @Mixin(MinecartTNT.class)
-public abstract class MixinMinecartTNT extends AbstractMinecart {
+public abstract class MixinMinecartTNT extends AbstractMinecart implements BridgeMinecartTNT {
 
     @Shadow
     public int fuse;
 
     protected MixinMinecartTNT(EntityType<?> entityType, Level level) {
         super(entityType, level);
+    }
+    // les deux champs privés que l’on veut rendre accessibles
+    @Shadow private float explosionPowerBase;
+    @Shadow private float explosionSpeedFactor;
+
+    // --- implémentation du bridge ----------------------------
+    @Override
+    public float banner$getExplosionPowerBase() {
+        return this.explosionPowerBase;
+    }
+
+    @Override
+    public void banner$setExplosionPowerBase(float value) {
+        this.explosionPowerBase = value;
+    }
+
+    @Override
+    public float banner$getExplosionSpeedFactor() {
+        return this.explosionSpeedFactor;
+    }
+
+    @Override
+    public void banner$setExplosionSpeedFactor(float value) {
+        this.explosionSpeedFactor = value;
     }
 
     /*

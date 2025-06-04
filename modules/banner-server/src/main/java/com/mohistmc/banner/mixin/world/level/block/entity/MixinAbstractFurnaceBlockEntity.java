@@ -64,6 +64,14 @@ public abstract class MixinAbstractFurnaceBlockEntity extends BaseContainerBlock
     private static ItemStack banner$item;
     private static int banner$captureAmount;
 
+
+    @Shadow public int cookingTotalTime;
+    @Shadow private int litTimeRemaining;
+    @Shadow private int litTotalTime;
+    @Shadow private int cookingTimer;
+
+
+
     protected MixinAbstractFurnaceBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
     }
@@ -246,5 +254,48 @@ public abstract class MixinAbstractFurnaceBlockEntity extends BaseContainerBlock
     @Override
     public Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> getRecipesUsed() {
         return this.recipesUsed;
+    }
+
+    // -------------------------------------------------------------------------
+// 2) implémentation des accesseurs / mutateurs de l’interface
+// -------------------------------------------------------------------------
+    @Override
+    public int banner$getLitTimeRemaining() {
+        return this.litTimeRemaining;
+    }
+
+    @Override
+    public void banner$setLitTimeRemaining(int value) {
+        this.litTimeRemaining = value;
+    }
+
+    @Override
+    public int banner$getLitTotalTime() {
+        return this.litTotalTime;
+    }
+
+    @Override
+    public void banner$setLitTotalTime(int value) {
+        this.litTotalTime = value;
+    }
+
+    @Override
+    public int banner$getCookingTimer() {
+        return this.cookingTimer;
+    }
+
+    @Override
+    public void banner$setCookingTimer(int value) {
+        this.cookingTimer = value;
+    }
+
+    @Override
+    public int banner$getCookingTotalTime() {
+        return this.cookingTotalTime;
+    }
+
+    @Override
+    public void banner$setCookingTotalTime(int value) {
+        this.cookingTotalTime = value;
     }
 }

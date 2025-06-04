@@ -1,5 +1,6 @@
 package com.mohistmc.banner.mixin.world.entity.moster;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,7 +21,7 @@ public abstract class MixinHusk extends Zombie {
     }
 
     @Inject(method = "doHurtTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"))
-    private void banner$reason(Entity entityIn, CallbackInfoReturnable<Boolean> cir) {
-        ((LivingEntity) entityIn).pushEffectCause(EntityPotionEffectEvent.Cause.ATTACK);
+    public void doHurtTarget(ServerLevel serverLevel, Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        ((LivingEntity) entity).pushEffectCause(EntityPotionEffectEvent.Cause.ATTACK);
     }
 }

@@ -252,6 +252,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.view.AnvilView;
+import org.bukkit.inventory.view.MerchantView;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
@@ -372,7 +373,8 @@ public class CraftEventFactory {
      * Trade Index Change Event
      */
     public static TradeSelectEvent callTradeSelectEvent(ServerPlayer player, int newIndex, MerchantMenu merchant) {
-        TradeSelectEvent tradeSelectEvent = new TradeSelectEvent(merchant.getBukkitView(), newIndex);
+        //TODO : fix ?
+        TradeSelectEvent tradeSelectEvent = new TradeSelectEvent((MerchantView) merchant.getBukkitView(), newIndex);
         Bukkit.getPluginManager().callEvent(tradeSelectEvent);
         return tradeSelectEvent;
     }
@@ -901,7 +903,7 @@ public class CraftEventFactory {
         CraftLivingEntity entity = (CraftLivingEntity) victim.getBukkitEntity();
         CraftDamageSource bukkitDamageSource = new CraftDamageSource(damageSource);
         CraftWorld world = (CraftWorld) entity.getWorld();
-        EntityDeathEvent event = new EntityDeathEvent(entity, bukkitDamageSource, drops, victim.getExpReward(world.getHandle(), damageSource.getEntity()));
+        EntityDeathEvent event = new EntityDeathEvent(entity, bukkitDamageSource, drops, victim.getExpReward(damageSource.getEntity()));
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         victim.banner$setExpToDrop(event.getDroppedExp());
@@ -918,7 +920,7 @@ public class CraftEventFactory {
     public static PlayerDeathEvent callPlayerDeathEvent(ServerPlayer victim, DamageSource damageSource, List<org.bukkit.inventory.ItemStack> drops, String deathMessage, boolean keepInventory) {
         CraftPlayer entity = victim.getBukkitEntity();
         CraftDamageSource bukkitDamageSource = new CraftDamageSource(damageSource);
-        PlayerDeathEvent event = new PlayerDeathEvent(entity, bukkitDamageSource, drops, victim.getExpReward(victim.serverLevel(), damageSource.getEntity()), 0, deathMessage);
+        PlayerDeathEvent event = new PlayerDeathEvent(entity, bukkitDamageSource, drops, victim.getExpReward(damageSource.getEntity()), 0, deathMessage);
         event.setKeepInventory(keepInventory);
         event.setKeepLevel(victim.bridge$keepLevel()); // SPIGOT-2222: pre-set keepLevel
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -1663,7 +1665,7 @@ public class CraftEventFactory {
         BlockPhysicsEvent event = new BlockPhysicsEvent(block, block.getBlockData());
         // Suppress during worldgen
         if (world instanceof Level) {
-            ((Level) world).getServer().server.getPluginManager().callEvent(event);
+            ((Level) world).getServer().bridge$server().getPluginManager().callEvent(event);
         }
         return event;
     }
@@ -1784,7 +1786,7 @@ public class CraftEventFactory {
         Entity entity = lootInfo.getOptionalParameter(LootContextParams.THIS_ENTITY);
         List<org.bukkit.inventory.ItemStack> bukkitLoot = loot.stream().map(CraftItemStack::asCraftMirror).collect(Collectors.toCollection(ArrayList::new));
 
-        LootGenerateEvent event = new LootGenerateEvent(world, (entity != null ? entity.getBukkitEntity() : null), inventory.getOwner(), lootTable.craftLootTable, CraftLootTable.convertContext(lootInfo), bukkitLoot, plugin);
+        LootGenerateEvent event = new LootGenerateEvent(world, (entity != null ? entity.getBukkitEntity() : null), inventory.getOwner(), lootTable.bridge$craftLootTable(), CraftLootTable.convertContext(lootInfo), bukkitLoot, plugin);
         Bukkit.getPluginManager().callEvent(event);
         return event;
     }

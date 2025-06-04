@@ -338,7 +338,15 @@ public abstract class MixinServerGamePacketListenerImpl extends MixinServerCommo
     @Overwrite
     public void handleMoveVehicle(final ServerboundMoveVehiclePacket packetplayinvehiclemove) {
         PacketUtils.ensureRunningOnSameThread(packetplayinvehiclemove, ((ServerGamePacketListener) (Object) this), this.player.serverLevel());
-        if (containsInvalidValues(packetplayinvehiclemove.getX(), packetplayinvehiclemove.getY(), packetplayinvehiclemove.getZ(), packetplayinvehiclemove.getYRot(), packetplayinvehiclemove.getXRot())) {
+
+        Vec3 pos = packetplayinvehiclemove.position();
+        double packetX = pos.x();
+        double packetY = pos.y();
+        double packetZ = pos.z();
+        float packetYaw   = packetplayinvehiclemove.yRot();
+        float packetPitch = packetplayinvehiclemove.xRot();
+
+        if (containsInvalidValues(packetX, packetY, packetZ, packetYaw, packetPitch)) {
             this.disconnect(Component.translatable("multiplayer.disconnect.invalid_vehicle_movement"));
         } else {
             Entity entity = this.player.getRootVehicle();
@@ -348,11 +356,11 @@ public abstract class MixinServerGamePacketListenerImpl extends MixinServerCommo
                 double d0 = entity.getX();
                 double d1 = entity.getY();
                 double d2 = entity.getZ();
-                double d3 = clampHorizontal(packetplayinvehiclemove.getX());
-                double d4 = clampVertical(packetplayinvehiclemove.getY());
-                double d5 = clampHorizontal(packetplayinvehiclemove.getZ());
-                float f = Mth.wrapDegrees(packetplayinvehiclemove.getYRot());
-                float f1 = Mth.wrapDegrees(packetplayinvehiclemove.getXRot());
+                double d3 = clampHorizontal(packetX);
+                double d4 = clampVertical(packetY);
+                double d5 = clampHorizontal(packetZ);
+                float  f   = Mth.wrapDegrees(packetYaw);
+                float  f1  = Mth.wrapDegrees(packetPitch);
                 double d6 = d3 - this.vehicleFirstGoodX;
                 double d7 = d4 - this.vehicleFirstGoodY;
                 double d8 = d5 - this.vehicleFirstGoodZ;
@@ -388,7 +396,7 @@ public abstract class MixinServerGamePacketListenerImpl extends MixinServerCommo
                 if (d10 - d9 > Math.max(100.0D, Math.pow((double) (10.0F * (float) i * speed), 2)) && !this.isSingleplayerOwner()) {
                     // CraftBukkit end
                     LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", new Object[]{entity.getName().getString(), this.player.getName().getString(), d6, d7, d8});
-                    this.connection.send(new ClientboundMoveVehiclePacket(entity));
+                    this.connection.send(ClientboundMoveVehiclePacket.fromEntity(entity));
                     return;
                 }
 
@@ -430,7 +438,7 @@ public abstract class MixinServerGamePacketListenerImpl extends MixinServerCommo
                 if (flag && (flag2 || !flag3)) {
                     entity.absMoveTo(d0, d1, d2, f, f1);
                     player.absMoveTo(d0, d1, d2, this.player.getYRot(), this.player.getXRot()); // CraftBukkit
-                    this.connection.send(new ClientboundMoveVehiclePacket(entity));
+                    this.connection.send(ClientboundMoveVehiclePacket.fromEntity(entity));
                     return;
                 }
 
@@ -440,14 +448,14 @@ public abstract class MixinServerGamePacketListenerImpl extends MixinServerCommo
                 Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
 
                 // If the packet contains movement information then we update the To location with the correct XYZ.
-                to.setX(packetplayinvehiclemove.getX());
-                to.setY(packetplayinvehiclemove.getY());
-                to.setZ(packetplayinvehiclemove.getZ());
+                to.setX(packetX);
+                to.setY(packetY);
+                to.setZ(packetZ);
 
 
                 // If the packet contains look information then we update the To location with the correct Yaw & Pitch.
-                to.setYaw(packetplayinvehiclemove.getYRot());
-                to.setPitch(packetplayinvehiclemove.getXRot());
+                to.setYaw(packetYaw);
+                to.setPitch(packetPitch);
 
                 // Prevent 40 event-calls for less than a single pixel of movement >.>
                 double delta = Math.pow(this.lastPosX - to.getX(), 2) + Math.pow(this.lastPosY - to.getY(), 2) + Math.pow(this.lastPosZ - to.getZ(), 2);

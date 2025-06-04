@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
+import com.mohistmc.banner.injection.world.entity.vehicle.BridgeMinecartTNT;
 import net.minecraft.world.entity.vehicle.MinecartTNT;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
@@ -12,7 +13,7 @@ public final class CraftMinecartTNT extends CraftMinecart implements ExplosiveMi
 
     @Override
     public float getYield() {
-        return this.getHandle().explosionPowerBase;
+        return ((BridgeMinecartTNT) this.getHandle()).banner$getExplosionPowerBase();
     }
 
     @Override
@@ -27,17 +28,17 @@ public final class CraftMinecartTNT extends CraftMinecart implements ExplosiveMi
 
     @Override
     public void setYield(float yield) {
-        this.getHandle().explosionPowerBase = yield;
+        ((BridgeMinecartTNT) this.getHandle()).banner$setExplosionPowerBase(yield);
     }
 
     @Override
     public float getExplosionSpeedFactor() {
-        return getHandle().explosionSpeedFactor;
+        return ((BridgeMinecartTNT) this.getHandle()).banner$getExplosionSpeedFactor();
     }
 
     @Override
     public void setExplosionSpeedFactor(float factor) {
-        getHandle().explosionSpeedFactor = factor;
+        ((BridgeMinecartTNT) this.getHandle()).banner$setExplosionSpeedFactor(factor);
     }
 
     @Override

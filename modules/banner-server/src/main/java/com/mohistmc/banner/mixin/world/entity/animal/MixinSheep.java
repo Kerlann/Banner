@@ -18,6 +18,8 @@ public abstract class MixinSheep extends Animal {
         super(entityType, level);
     }
 
+    //TODO : banner fix me
+/*
     @Inject(method = "shear", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Sheep;spawnAtLocation(Lnet/minecraft/world/level/ItemLike;I)Lnet/minecraft/world/entity/item/ItemEntity;"))
     private void banner$forceDrop(CallbackInfo ci) {
         this.banner$setForceDrops(true);
@@ -27,6 +29,7 @@ public abstract class MixinSheep extends Animal {
     private void banner$forceDropReset(CallbackInfo ci) {
         this.banner$setForceDrops(false);
     }
+*/
 
     @Inject(method = "ate", cancellable = true, at = @At("HEAD"))
     private void banner$regrow(CallbackInfo ci) {

@@ -26,4 +26,21 @@ public interface InjectionAbstractFurnaceBlockEntity {
     default List<RecipeHolder<?>> bridge$dropExp(ServerPlayer entity, ItemStack itemStack, int amount) {
         throw new IllegalStateException("Not implemented");
     }
+
+
+    /* Feu restant (ticks) */
+    int banner$getLitTimeRemaining();
+    void banner$setLitTimeRemaining(int value);
+
+    /* Durée totale du feu pour le combustible courant (ticks) */
+    int banner$getLitTotalTime();
+    void banner$setLitTotalTime(int value);
+
+    /* Temps de cuisson déjà écoulé (ticks) */
+    int banner$getCookingTimer();
+    void banner$setCookingTimer(int value);
+
+    /* Temps de cuisson total requis (ticks) */
+    int banner$getCookingTotalTime();
+    void banner$setCookingTotalTime(int value);
 }

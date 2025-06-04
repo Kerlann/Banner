@@ -230,7 +230,17 @@ public abstract class MixinServerLevel extends Level implements WorldGenLevel, I
 
     @Override
     public <T extends ParticleOptions> int sendParticles(ServerPlayer sender, T t0, double d0, double d1, double d2, int i, double d3, double d4, double d5, double d6, boolean force) {
-        ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(t0, force, d0, d1, d2, (float) d3, (float) d4, (float) d5, (float) d6, i);
+        //TODO : fix ?
+        boolean overrideLimiter = false;     // keep normal particle-limiter
+        boolean alwaysShow      = force;     // old behaviour
+
+        ClientboundLevelParticlesPacket packet =
+                new ClientboundLevelParticlesPacket(t0,
+                        overrideLimiter,
+                        alwaysShow,
+                        d0, d1, d2,
+                        (float) d3, (float) d4, (float) d5, (float) d6,
+                        i);
         int j = 0;
         for (ServerPlayer entity : this.players()) {
             if (sender == null || entity.getBukkitEntity().canSee(sender.getBukkitEntity())) {
@@ -364,10 +374,13 @@ public abstract class MixinServerLevel extends Level implements WorldGenLevel, I
         }
     }
 
-    @Redirect(method = "sendParticles(Lnet/minecraft/core/particles/ParticleOptions;DDDIDDDD)I", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;sendParticles(Lnet/minecraft/server/level/ServerPlayer;ZDDDLnet/minecraft/network/protocol/Packet;)Z"))
+
+    @Redirect(method = "sendParticles(Lnet/minecraft/core/particles/ParticleOptions;ZZDDDIDDDD)I", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;sendParticles(Lnet/minecraft/server/level/ServerPlayer;ZDDDLnet/minecraft/network/protocol/Packet;)Z"))
     public boolean banner$particleVisible(ServerLevel serverWorld, ServerPlayer player, boolean longDistance, double posX, double posY, double posZ, Packet<?> packet) {
         return this.sendParticles(player, banner$force, posX, posY, posZ, packet);
     }
+
+
 
     @Override
     public <T extends ParticleOptions> int sendParticles(T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed, boolean force) {

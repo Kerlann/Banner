@@ -15,7 +15,8 @@ public abstract class MixinChicken extends Animal {
     protected MixinChicken(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
     }
-
+    //TODO : banner fix me
+/*
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Chicken;spawnAtLocation(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/entity/item/ItemEntity;"))
     private void banner$forceDropOn(CallbackInfo ci) {
         this.banner$setForceDrops(true);
@@ -24,5 +25,5 @@ public abstract class MixinChicken extends Animal {
     @Inject(method = "aiStep", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/world/entity/animal/Chicken;spawnAtLocation(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/entity/item/ItemEntity;"))
     private void banner$$forceDropOff(CallbackInfo ci) {
         this.banner$setForceDrops(false);
-    }
+    }*/
 }

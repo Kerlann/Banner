@@ -1,5 +1,6 @@
 package com.mohistmc.banner.mixin.world.entity.animal;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Pufferfish;
 import net.minecraft.world.entity.player.Player;
@@ -13,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinPufferfish {
 
     @Inject(method = "touch", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"))
-    private void banner$attack(Mob mobEntity, CallbackInfo ci) {
-         mobEntity.pushEffectCause(EntityPotionEffectEvent.Cause.ATTACK);
+    private void touch(ServerLevel serverLevel, Mob mob, CallbackInfo ci) {
+        mob.pushEffectCause(EntityPotionEffectEvent.Cause.ATTACK);
     }
 
     @Inject(method = "playerTouch", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"))

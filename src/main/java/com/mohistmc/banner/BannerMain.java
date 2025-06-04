@@ -31,7 +31,7 @@ public class BannerMain {
             Thread.currentThread().setContextClassLoader(classloader);
             var cl = Class.forName(install.getKey(), false, classloader);
             var handle = MethodHandles.lookup().findStatic(cl, "main", MethodType.methodType(void.class, String[].class));
-            handle.invoke((Object) args);
+            handle.invoke(args);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Fail to launch Banner.");

@@ -36,7 +36,7 @@ public class BannerLauncher {
 
             String target = properties.getProperty("launch.mainClass");
             MethodHandle main = MethodHandles.lookup().findStatic(Class.forName(target), "main", MethodType.methodType(void.class, String[].class));
-            main.invoke((Object) args);
+            main.invoke(args);
         }
     }
 }

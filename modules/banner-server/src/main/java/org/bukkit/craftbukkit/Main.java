@@ -221,7 +221,7 @@ public class Main extends OptionParser{
                 }
 
                 System.out.println("Loading libraries, please wait...");
-                net.minecraft.server.Main.main(options);
+                net.minecraft.server.Main.main(args);
             } catch (Throwable t) {
                 t.printStackTrace();
             }

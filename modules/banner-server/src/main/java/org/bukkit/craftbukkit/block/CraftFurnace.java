@@ -2,6 +2,8 @@ package org.bukkit.craftbukkit.block;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+
+import com.mohistmc.banner.injection.world.level.block.entity.InjectionAbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import org.bukkit.Bukkit;
@@ -38,26 +40,35 @@ public abstract class CraftFurnace<T extends AbstractFurnaceBlockEntity> extends
         return new CraftInventoryFurnace(this.getTileEntity());
     }
 
+    // ajout à la classe :
+    private InjectionAbstractFurnaceBlockEntity banner$furnaceSnapshot() {
+        return (InjectionAbstractFurnaceBlockEntity) this.getSnapshot();
+    }
+
+    private InjectionAbstractFurnaceBlockEntity banner$furnaceTile() {
+        return (InjectionAbstractFurnaceBlockEntity) this.getTileEntity();
+    }
+
     @Override
     public short getBurnTime() {
-        return (short) this.getSnapshot().litTimeRemaining;
+        return (short) banner$furnaceSnapshot().banner$getLitTimeRemaining();
     }
 
     @Override
     public void setBurnTime(short burnTime) {
-        this.getSnapshot().litTimeRemaining  = burnTime;
+        this.getSnapshot().banner$setLitTimeRemaining(burnTime);
         // SPIGOT-844: Allow lighting and relighting using this API
         this.data = this.data.setValue(AbstractFurnaceBlock.LIT, burnTime > 0);
     }
 
     @Override
     public short getCookTime() {
-        return (short) this.getSnapshot().cookingTimer;
+        return (short) this.getSnapshot().banner$getCookingTimer();
     }
 
     @Override
     public void setCookTime(short cookTime) {
-        this.getSnapshot().cookingTimer = cookTime;
+        this.getSnapshot().banner$setCookingTimer(cookTime);
     }
 
     @Override

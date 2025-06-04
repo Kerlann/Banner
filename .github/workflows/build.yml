@@ -6,10 +6,10 @@ name: Build And Publish to Modrinth
 on : [push, pull_request]
 
 env:
-  MINECRAFT_VERSION: 1.21.3
-  VERSION: 1.21.3-snapshot
+  MINECRAFT_VERSION: 1.21.4
+  VERSION: 1.21.4-snapshot
   MODRINTH_TOKEN: ${{ secrets.PUBLISH_MODRINTH_TOKEN }}
-  RELEASE_NAME: banner-1.21.3
+  RELEASE_NAME: banner-1.21.4
 
 jobs:
   build:

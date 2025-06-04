@@ -26,14 +26,14 @@ public abstract class MixinAbstractSkeleton extends Monster {
 
     @Inject(method = "performRangedAttack", cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD,
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/monster/AbstractSkeleton;playSound(Lnet/minecraft/sounds/SoundEvent;FF)V"))
-    private void banner$shootBow(LivingEntity livingEntity, float f, CallbackInfo ci, ItemStack itemStack, ItemStack itemStack2, AbstractArrow abstractArrow, double d, double e, double g, double h) {
-        EntityShootBowEvent event = CraftEventFactory.callEntityShootBowEvent((AbstractSkeleton) (Object) this, this.getMainHandItem(), null, abstractArrow, InteractionHand.MAIN_HAND, 0.8F, true);
+    public void banner$shootBow(LivingEntity livingEntity, float f, CallbackInfo ci) {
+        EntityShootBowEvent event = CraftEventFactory.callEntityShootBowEvent((AbstractSkeleton) (Object) this, this.getMainHandItem(), null, livingEntity, InteractionHand.MAIN_HAND, 0.8F, true);
         if (event.isCancelled()) {
             event.getProjectile().remove();
             ci.cancel();
             return;
         }
-        if (event.getProjectile() !=  abstractArrow.getBukkitEntity()) {
+        if (event.getProjectile() !=  livingEntity.getBukkitEntity()) {
             this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
             ci.cancel();
         }
