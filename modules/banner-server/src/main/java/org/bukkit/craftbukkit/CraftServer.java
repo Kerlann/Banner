@@ -602,6 +602,11 @@ public final class CraftServer implements Server {
     }
 
     @Override
+    public String getMinecraftVersion() {
+        return this.console.getServerVersion();
+    }
+
+    @Override
     public List<CraftPlayer> getOnlinePlayers() {
         return this.playerView;
     }

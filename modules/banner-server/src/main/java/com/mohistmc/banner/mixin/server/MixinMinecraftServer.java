@@ -730,14 +730,6 @@ public abstract class MixinMinecraftServer extends ReentrantBlockableEventLoop<T
 
     @Override
     public OptionSet bridge$options() {
-        // Add debug logging
-        if (options == null) {
-            LOGGER.error("[BANNER DEBUG] Options is null in bridge$options()!");
-        } else {
-            LOGGER.info("[BANNER DEBUG] Options available with keys: " + options.specs().spliterator());
-            Object bukkitSettings = options.valueOf("bukkit-settings");
-            LOGGER.info("[BANNER DEBUG] bukkit-settings value: " + bukkitSettings);
-        }
         return options;
     }
 

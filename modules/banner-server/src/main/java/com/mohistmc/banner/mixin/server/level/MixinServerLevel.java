@@ -232,7 +232,6 @@ public abstract class MixinServerLevel extends Level implements WorldGenLevel, I
         return this.chunkSource.getChunk(x, z, false);
     }
 
-
     public <T extends ParticleOptions> int sendParticles(ServerPlayer sender,
                                                          T particleOptions,
                                                          double x, double y, double z,
@@ -240,13 +239,10 @@ public abstract class MixinServerLevel extends Level implements WorldGenLevel, I
                                                          double xOffset, double yOffset, double zOffset,
                                                          double speed,
                                                          boolean force) {
-        System.out.println("---KERLANNICI----");
-        System.out.println(sender);
-        // Construction du Packet en passant "force" dans overrideLimiter, et on met toujours false pour "alwaysShow"
         ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(
                 particleOptions,
-                force,          // overrideLimiter = force
-                false,          // alwaysShow = false
+                force,
+                false,
                 x, y, z,
                 (float) xOffset,
                 (float) yOffset,
@@ -256,11 +252,9 @@ public abstract class MixinServerLevel extends Level implements WorldGenLevel, I
         );
 
         int sent = 0;
-        // Boucle sur tous les joueurs présents dans ce ServerLevel
         for (ServerPlayer recipient : this.players()) {
-            // Si sender est null (cas global) ou si recipient peut voir sender
+
             if (sender == null || recipient.getBukkitEntity().canSee(sender.getBukkitEntity())) {
-                // On envoie le Packet en passant le même flag "force" (longDistance)
                 if (this.sendParticles(recipient, force, x, y, z, packet)) {
                     sent++;
                 }
@@ -417,18 +411,10 @@ public abstract class MixinServerLevel extends Level implements WorldGenLevel, I
             double posX, double posY, double posZ,
             Packet<?> packet
     ) {
-        // 1) On vérifie d’abord si "player" est non-null :
         if (player == null || player.getBukkitEntity() == null) {
-            System.out.println("---KERLANN-BUGIC-----");
-            System.out.println(banner$force);
-            System.out.println(player);
             return false;
         }
 
-        // 2) On peut logger pour debug :
-        System.out.println("---KERLANN-ICI2----- player=" + player.getGameProfile().getName());
-
-        // 3) On délègue au shadow sendParticles(...) en remplaçant longDistance par banner$force
         return this.sendParticles(player, banner$force, posX, posY, posZ, packet);
     }
 
