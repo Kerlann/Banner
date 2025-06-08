@@ -142,8 +142,7 @@ public abstract class MixinSignBlockEntity extends BlockEntity implements Comman
 
     public CommandSender getBukkitSender(CommandSourceStack wrapper) {
         // Banner TODO fixme
-        //return wrapper.getEntity() != null ? wrapper.getEntity().banner$getBukkitSender(wrapper) : new CraftBlockCommandSender(wrapper, (BlockEntity) (Object) this);
-        return null;
+        return wrapper.getEntity() != null ? ((CommandSource) wrapper.getEntity()).banner$getBukkitSender(wrapper) : new CraftBlockCommandSender(wrapper, (BlockEntity) (Object) this);
     }
 
     @Override

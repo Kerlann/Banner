@@ -21,6 +21,14 @@ import org.bukkit.event.entity.EntityEnterBlockEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
+// Imports requested by subtask
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+// net.minecraft.world.entity.animal.Bee is already imported
+// org.bukkit.Bukkit is already imported
+// org.bukkit.craftbukkit.block.CraftBlock is already imported
+// org.bukkit.event.entity.EntityEnterBlockEvent is already imported
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -91,16 +99,15 @@ public abstract class MixinBeehiveBlockEntity extends BlockEntity implements Inj
     }*/
 
     //TODO : FIX ME
-    /*@Inject(
-            method = "addOccupant",                       // nom lisible
+    @Inject(
+            method = "addOccupant",
             at = @At(
                     value  = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;stopRiding()V"
-                    // pas de remap = false  →  on laisse mixin remapper
+                    target = "Lnet/minecraft/world/entity/Entity;stopRiding()V" // Corrected path to Entity
             ),
             cancellable = true
     )
-    private void banner$beeEnterBlock(Bee entity, CallbackInfo ci) {
+    private void banner$beeEnterBlock(Entity entity, boolean hasNectar, CallbackInfo ci) { // Signature updated
         if (this.level != null) {
             EntityEnterBlockEvent event = new EntityEnterBlockEvent(
                     entity.getBukkitEntity(),
@@ -109,13 +116,13 @@ public abstract class MixinBeehiveBlockEntity extends BlockEntity implements Inj
             Bukkit.getPluginManager().callEvent(event);
 
             if (event.isCancelled()) {
-                if (entity instanceof Bee bee) {
+                if (entity instanceof Bee bee) { // Check if entity is a Bee
                     bee.setStayOutOfHiveCountdown(400);
                 }
                 ci.cancel();
             }
         }
-    }*/
+    }
 
 
 

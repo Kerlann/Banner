@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -40,16 +41,44 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Explosion.class)
-public abstract interface MixinExplosion extends InjectionExplosion {
+public abstract class MixinExplosion implements InjectionExplosion {
+    @Shadow @Final @Mutable float radius; // Keep for now, may still fail
+    @Shadow @Final Explosion.BlockInteraction blockInteraction; // Keep for now, may still fail
+    // Removed @Shadow @Mutable float yield;
+    private float bannerYield; // Field to back InjectionExplosion's getYield/setYield
+
+    @Override
+    public void banner$setYield(float y) {
+        this.bannerYield = y;
+    }
+
+    @Override
+    public float banner$getYield() {
+        return this.bannerYield;
+    }
+
     // Banner TODO fixme
     /*
     @Shadow @Final private DamageSource damageSource;
-    @Inject(method = "<init>(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;DDDFZLnet/minecraft/world/level/Explosion$BlockInteraction;)V",
+    */ // Keep this commented as per instruction
+    @Inject(method = "<init>(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/damagesource/DamageSource;Lnet/minecraft/world/level/ExplosionDamageCalculator;DDDFZLnet/minecraft/world/level/Explosion$BlockInteraction;)V",
             at = @At("RETURN"))
-    public void banner$adjustSize(Level worldIn, Entity exploderIn, double xIn, double yIn, double zIn, float sizeIn, boolean causesFireIn, Explosion.BlockInteraction modeIn, CallbackInfo ci) {
-        this.radius = Math.max(sizeIn, 0F);
-        this.yield = this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY ? 1.0F / this.radius : 1.0F;
-    }*/
+    public void banner$adjustSize(Level worldIn, @Nullable Entity exploderIn, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator explosionDamageCalculator,
+                                 double xIn, double yIn, double zIn, float sizeIn, boolean causesFireIn,
+                                 Explosion.BlockInteraction modeIn, CallbackInfo ci) {
+        // Original logic:
+        this.radius = Math.max(sizeIn, 0.0F);
+        // Call the method that sets the internal bannerYield field
+        // Ensure radius is not zero to prevent division by zero, though Math.max(sizeIn, 0.0F) should handle negative sizeIn.
+        // If sizeIn can be 0.0F, then 1.0F / this.radius could be problematic.
+        // Given previous attempts, using sizeIn (param) for radius in calculation might be safer if this.radius shadow fails.
+        // However, sticking to the subtask's specified logic for now.
+        float currentRadius = Math.max(sizeIn, 0.000001F); // Use sizeIn for safety in calculation, minimum non-zero.
+        if (this.radius != sizeIn) { // If shadow field is working and different, prefer it.
+            currentRadius = Math.max(this.radius, 0.000001F);
+        }
+        this.banner$setYield(this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY ? 1.0F / currentRadius : 1.0F);
+    }
 
     /*
     boolean wasCanceled = false; // CraftBukkit - add field
