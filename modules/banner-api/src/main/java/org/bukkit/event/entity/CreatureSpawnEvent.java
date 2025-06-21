@@ -57,7 +57,7 @@ public class CreatureSpawnEvent extends EntitySpawnEvent {
          * {@link ChunkLoadEvent#isNewChunk()} and {@link Chunk#getEntities()}
          * for similar effect.
          */
-        @Deprecated
+        @Deprecated(since = "1.14")
         CHUNK_GEN,
         /**
          * When a creature spawns from a spawner
@@ -75,6 +75,10 @@ public class CreatureSpawnEvent extends EntitySpawnEvent {
          * When a creature spawns from a Spawner Egg
          */
         SPAWNER_EGG,
+        /**
+         * When a creature spawns from a mob bucket
+         */
+        BUCKET,
         /**
          * When a creature spawns because of a lightning strike
          */

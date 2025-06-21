@@ -1,5 +1,6 @@
 package org.bukkit.entity;
 
+import org.bukkit.GameRule;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
@@ -35,7 +36,7 @@ public interface Minecart extends Vehicle {
 
     /**
      * Sets the maximum speed of a minecart. Must be nonnegative. Default is
-     * 0.4D.
+     * 0.4D or {@link GameRule#MINECART_MAX_SPEED}.
      *
      * @param speed The max speed
      */
@@ -143,4 +144,20 @@ public interface Minecart extends Vehicle {
      * @return the current block offset for this minecart.
      */
     public int getDisplayBlockOffset();
+
+    /**
+     * Sets the multiplier of the minecart's acceleration while on powered
+     * rails.
+     *
+     * @param multiplier a value of 1.0 is the default acceleration
+     */
+    public void setPoweredRailAccelerationMultiplier(double multiplier);
+
+    /**
+     * Gets the multiplier of the minecart's acceleration while on powered
+     * rails.
+     *
+     * @return acceleration multiplier
+     */
+    public double getPoweredRailAccelerationMultiplier();
 }

@@ -40,6 +40,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemCraftResult;
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MenuType;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -406,7 +407,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the default ticks per animal spawns value
      * @deprecated Deprecated in favor of {@link #getTicksPerSpawns(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     public int getTicksPerAnimalSpawns();
 
     /**
@@ -429,7 +430,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the default ticks per monsters spawn value
      * @deprecated Deprecated in favor of {@link #getTicksPerSpawns(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     public int getTicksPerMonsterSpawns();
 
     /**
@@ -451,7 +452,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the default ticks per water mobs spawn value
      * @deprecated Deprecated in favor of {@link #getTicksPerSpawns(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     public int getTicksPerWaterSpawns();
 
     /**
@@ -473,7 +474,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the default ticks per water ambient mobs spawn value
      * @deprecated Deprecated in favor of {@link #getTicksPerSpawns(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     public int getTicksPerWaterAmbientSpawns();
 
     /**
@@ -495,7 +496,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the default ticks per water underground creature spawn value
      * @deprecated Deprecated in favor of {@link #getTicksPerSpawns(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     public int getTicksPerWaterUndergroundCreatureSpawns();
 
     /**
@@ -517,7 +518,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the default ticks per ambient mobs spawn value
      * @deprecated Deprecated in favor of {@link #getTicksPerSpawns(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     public int getTicksPerAmbientSpawns();
 
     /**
@@ -689,7 +690,7 @@ public interface Server extends PluginMessageRecipient {
      * @return a map view if it exists, or null otherwise
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     @Nullable
     public MapView getMap(int id);
 
@@ -993,7 +994,7 @@ public interface Server extends PluginMessageRecipient {
      * @return true if the server should send a preview, false otherwise
      * @deprecated chat previews have been removed
      */
-    @Deprecated
+    @Deprecated(since = "1.19.3")
     public boolean shouldSendChatPreviews();
 
     /**
@@ -1072,7 +1073,7 @@ public interface Server extends PluginMessageRecipient {
      * @deprecated Persistent storage of users should be by UUID as names are no longer
      *             unique past a single session.
      */
-    @Deprecated
+    @Deprecated(since = "1.7.5")
     @NotNull
     public OfflinePlayer getOfflinePlayer(@NotNull String name);
 
@@ -1137,7 +1138,7 @@ public interface Server extends PluginMessageRecipient {
      *
      * @deprecated see {@link #banIP(InetAddress)}
      */
-    @Deprecated
+    @Deprecated(since = "1.20.1")
     public void banIP(@NotNull String address);
 
     /**
@@ -1147,7 +1148,7 @@ public interface Server extends PluginMessageRecipient {
      *
      * @deprecated see {@link #unbanIP(InetAddress)}
      */
-    @Deprecated
+    @Deprecated(since = "1.20.1")
     public void unbanIP(@NotNull String address);
 
     /**
@@ -1254,11 +1255,11 @@ public interface Server extends PluginMessageRecipient {
      * <br>
      * {@link InventoryType#WORKBENCH} will not process crafting recipes if
      * created with this method. Use
-     * {@link Player#openWorkbench(Location, boolean)} instead.
+     * {@link MenuType#CRAFTING} instead.
      * <br>
      * {@link InventoryType#ENCHANTING} will not process {@link ItemStack}s
      * for possible enchanting results. Use
-     * {@link Player#openEnchanting(Location, boolean)} instead.
+     * {@link MenuType#ENCHANTMENT} instead.
      *
      * @param owner the holder of the inventory, or null to indicate no holder
      * @param type the type of inventory to create
@@ -1280,11 +1281,11 @@ public interface Server extends PluginMessageRecipient {
      * <br>
      * {@link InventoryType#WORKBENCH} will not process crafting recipes if
      * created with this method. Use
-     * {@link Player#openWorkbench(Location, boolean)} instead.
+     * {@link MenuType#CRAFTING} instead.
      * <br>
      * {@link InventoryType#ENCHANTING} will not process {@link ItemStack}s
      * for possible enchanting results. Use
-     * {@link Player#openEnchanting(Location, boolean)} instead.
+     * {@link MenuType#ENCHANTMENT} instead.
      *
      * @param owner The holder of the inventory; can be null if there's no holder.
      * @param type The type of inventory to create.
@@ -1330,9 +1331,20 @@ public interface Server extends PluginMessageRecipient {
      * @param title the title of the corresponding merchant inventory, displayed
      * when the merchant inventory is viewed
      * @return a new merchant
+     * @deprecated The title parameter is no-longer needed when used with
+     * {@link MenuType#MERCHANT} and {@link MenuType.Typed#builder()}.
      */
+    @Deprecated(since = "1.21.4")
     @NotNull
     Merchant createMerchant(@Nullable String title);
+
+    /**
+     * Creates an empty merchant.
+     *
+     * @return a new merchant
+     */
+    @NotNull
+    Merchant createMerchant();
 
     /**
      * Gets the amount of consecutive neighbor updates before skipping
@@ -1350,7 +1362,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the monster spawn limit
      * @deprecated Deprecated in favor of {@link #getSpawnLimit(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     int getMonsterSpawnLimit();
 
     /**
@@ -1360,7 +1372,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the animal spawn limit
      * @deprecated Deprecated in favor of {@link #getSpawnLimit(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     int getAnimalSpawnLimit();
 
     /**
@@ -1370,7 +1382,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the water animal spawn limit
      * @deprecated Deprecated in favor of {@link #getSpawnLimit(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     int getWaterAnimalSpawnLimit();
 
     /**
@@ -1380,7 +1392,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the water ambient spawn limit
      * @deprecated Deprecated in favor of {@link #getSpawnLimit(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     int getWaterAmbientSpawnLimit();
 
     /**
@@ -1389,7 +1401,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the water underground creature limit
      * @deprecated Deprecated in favor of {@link #getSpawnLimit(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     int getWaterUndergroundCreatureSpawnLimit();
 
     /**
@@ -1399,7 +1411,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the ambient spawn limit
      * @deprecated Deprecated in favor of {@link #getSpawnLimit(SpawnCategory)}
      */
-    @Deprecated
+    @Deprecated(since = "1.18.1")
     int getAmbientSpawnLimit();
 
     /**
@@ -1564,6 +1576,24 @@ public interface Server extends PluginMessageRecipient {
      * @return the idle timeout in minutes
      */
     public int getIdleTimeout();
+
+    /**
+     * Gets the pause when empty threshold seconds. To save resources, the
+     * pause most functions after this time if there are no players online.
+     *
+     * @return the pause threshold in seconds
+     */
+    public int getPauseWhenEmptyTime();
+
+    /**
+     * Sets the pause when empty threshold seconds. To save resources, the
+     * pause most functions after this time if there are no players online.
+     * <p>
+     * A value of less than 0 will disable the setting
+     *
+     * @param seconds the pause threshold in seconds
+     */
+    public void setPauseWhenEmptyTime(int seconds);
 
     /**
      * Create a ChunkData for use in a generator.
@@ -1831,45 +1861,7 @@ public interface Server extends PluginMessageRecipient {
      * @return the unsafe values instance
      * @see UnsafeValues
      */
-    @Deprecated
+    @Deprecated(since = "1.7.2")
     @NotNull
     UnsafeValues getUnsafe();
-
-    // Spigot start
-    public class Spigot {
-
-        @NotNull
-        public org.bukkit.configuration.file.YamlConfiguration getConfig() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        /**
-         * Sends the component to the player
-         *
-         * @param component the components to send
-         */
-        public void broadcast(@NotNull net.md_5.bungee.api.chat.BaseComponent component) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        /**
-         * Sends an array of components as a single message to the player
-         *
-         * @param components the components to send
-         */
-        public void broadcast(@NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        /**
-         * Restart the server. If the server administrator has not configured restarting, the server will stop.
-         */
-        public void restart() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
-
-    @NotNull
-    Spigot spigot();
-    // Spigot end
 }

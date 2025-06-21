@@ -6,6 +6,7 @@ import java.util.Locale;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.bukkit.registry.RegistryAware;
 import org.bukkit.util.OldEnum;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +31,7 @@ public final class MapCursor {
      * @param visible Whether the cursor is visible by default.
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     public MapCursor(byte x, byte y, byte direction, byte type, boolean visible) {
         this(x, y, direction, type, visible, null);
     }
@@ -59,7 +60,7 @@ public final class MapCursor {
      * @param caption cursor caption
      * @deprecated Magic value, use {@link #MapCursor(byte, byte, byte, Type, boolean, String)}
      */
-    @Deprecated
+    @Deprecated(since = "1.13")
     public MapCursor(byte x, byte y, byte direction, byte type, boolean visible, @Nullable String caption) {
         this.x = x;
         this.y = y;
@@ -131,7 +132,7 @@ public final class MapCursor {
      * @return The type (color/style) of the map cursor.
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     public byte getRawType() {
         return type.getValue();
     }
@@ -188,7 +189,7 @@ public final class MapCursor {
      * @param type The type (color/style) of the map cursor.
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     public void setRawType(byte type) {
         Type enumType = Type.byValue(type);
         Preconditions.checkArgument(enumType != null, "Unknown type by id %s", type);
@@ -229,7 +230,7 @@ public final class MapCursor {
      * index in the file './assets/minecraft/textures/map/map_icons.png' from minecraft.jar or from a
      * resource pack.
      */
-    public interface Type extends OldEnum<Type>, Keyed {
+    public interface Type extends OldEnum<Type>, Keyed, RegistryAware {
 
         Type PLAYER = getType("player");
         Type FRAME = getType("frame");
@@ -273,12 +274,24 @@ public final class MapCursor {
         }
 
         /**
+         * {@inheritDoc}
+         *
+         * @see #getKeyOrThrow()
+         * @see #isRegistered()
+         * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+         */
+        @NotNull
+        @Override
+        @Deprecated(since = "1.21.4")
+        NamespacedKey getKey();
+
+        /**
          * Gets the internal value of the cursor.
          *
          * @return the value
          * @deprecated Magic value
          */
-        @Deprecated
+        @Deprecated(since = "1.6.2")
         byte getValue();
 
         /**
@@ -288,7 +301,7 @@ public final class MapCursor {
          * @return the matching type
          * @deprecated Magic value
          */
-        @Deprecated
+        @Deprecated(since = "1.6.2")
         @Nullable
         static Type byValue(byte value) {
             for (Type t : values()) {

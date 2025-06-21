@@ -47,10 +47,12 @@ import org.bukkit.block.data.type.Comparator;
 import org.bukkit.block.data.type.CopperBulb;
 import org.bukkit.block.data.type.CoralWallFan;
 import org.bukkit.block.data.type.Crafter;
+import org.bukkit.block.data.type.CreakingHeart;
 import org.bukkit.block.data.type.DaylightDetector;
 import org.bukkit.block.data.type.DecoratedPot;
 import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.block.data.type.Door;
+import org.bukkit.block.data.type.DriedGhast;
 import org.bukkit.block.data.type.Dripleaf;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.block.data.type.EnderChest;
@@ -62,17 +64,20 @@ import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.GlassPane;
 import org.bukkit.block.data.type.GlowLichen;
 import org.bukkit.block.data.type.Grindstone;
+import org.bukkit.block.data.type.HangingMoss;
 import org.bukkit.block.data.type.HangingSign;
 import org.bukkit.block.data.type.Hopper;
 import org.bukkit.block.data.type.Jigsaw;
 import org.bukkit.block.data.type.Jukebox;
 import org.bukkit.block.data.type.Ladder;
 import org.bukkit.block.data.type.Lantern;
+import org.bukkit.block.data.type.LeafLitter;
 import org.bukkit.block.data.type.Leaves;
 import org.bukkit.block.data.type.Lectern;
 import org.bukkit.block.data.type.Light;
 import org.bukkit.block.data.type.LightningRod;
 import org.bukkit.block.data.type.MangrovePropagule;
+import org.bukkit.block.data.type.MossyCarpet;
 import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.block.data.type.Observer;
 import org.bukkit.block.data.type.PinkPetals;
@@ -84,6 +89,7 @@ import org.bukkit.block.data.type.RedstoneRail;
 import org.bukkit.block.data.type.RedstoneWallTorch;
 import org.bukkit.block.data.type.RedstoneWire;
 import org.bukkit.block.data.type.Repeater;
+import org.bukkit.block.data.type.ResinClump;
 import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.block.data.type.Sapling;
 import org.bukkit.block.data.type.Scaffolding;
@@ -102,6 +108,7 @@ import org.bukkit.block.data.type.StructureBlock;
 import org.bukkit.block.data.type.Switch;
 import org.bukkit.block.data.type.TNT;
 import org.bukkit.block.data.type.TechnicalPiston;
+import org.bukkit.block.data.type.TestBlock;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.block.data.type.TrialSpawner;
 import org.bukkit.block.data.type.Tripwire;
@@ -113,6 +120,7 @@ import org.bukkit.block.data.type.WallHangingSign;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.block.data.type.WallSkull;
 import org.bukkit.inventory.ItemType;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -125,7 +133,7 @@ import org.jetbrains.annotations.Nullable;
  * changes may occur. Do not use this API in plugins.
  */
 @ApiStatus.Internal
-public interface BlockType extends Keyed, Translatable {
+public interface BlockType extends Keyed, Translatable, RegistryAware {
 
     /**
      * Typed represents a subtype of {@link BlockType}s that have a known block
@@ -205,6 +213,7 @@ public interface BlockType extends Keyed, Translatable {
     BlockType.Typed<BlockData> ACACIA_PLANKS = getBlockType("acacia_planks");
     BlockType.Typed<BlockData> CHERRY_PLANKS = getBlockType("cherry_planks");
     BlockType.Typed<BlockData> DARK_OAK_PLANKS = getBlockType("dark_oak_planks");
+    BlockType.Typed<BlockData> PALE_OAK_PLANKS = getBlockType("pale_oak_planks");
     BlockType.Typed<BlockData> MANGROVE_PLANKS = getBlockType("mangrove_planks");
     BlockType.Typed<BlockData> BAMBOO_PLANKS = getBlockType("bamboo_planks");
     BlockType.Typed<BlockData> BAMBOO_MOSAIC = getBlockType("bamboo_mosaic");
@@ -236,6 +245,10 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Sapling}
      */
     BlockType.Typed<Sapling> DARK_OAK_SAPLING = getBlockType("dark_oak_sapling");
+    /**
+     * BlockData: {@link Sapling}
+     */
+    BlockType.Typed<Sapling> PALE_OAK_SAPLING = getBlockType("pale_oak_sapling");
     /**
      * BlockData: {@link MangrovePropagule}
      */
@@ -298,6 +311,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link Orientable}
      */
+    BlockType.Typed<Orientable> PALE_OAK_LOG = getBlockType("pale_oak_log");
+    /**
+     * BlockData: {@link Orientable}
+     */
     BlockType.Typed<Orientable> MANGROVE_LOG = getBlockType("mangrove_log");
     /**
      * BlockData: {@link Waterlogged}
@@ -335,6 +352,10 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Orientable}
      */
     BlockType.Typed<Orientable> STRIPPED_DARK_OAK_LOG = getBlockType("stripped_dark_oak_log");
+    /**
+     * BlockData: {@link Orientable}
+     */
+    BlockType.Typed<Orientable> STRIPPED_PALE_OAK_LOG = getBlockType("stripped_pale_oak_log");
     /**
      * BlockData: {@link Orientable}
      */
@@ -378,6 +399,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link Orientable}
      */
+    BlockType.Typed<Orientable> PALE_OAK_WOOD = getBlockType("pale_oak_wood");
+    /**
+     * BlockData: {@link Orientable}
+     */
     BlockType.Typed<Orientable> MANGROVE_WOOD = getBlockType("mangrove_wood");
     /**
      * BlockData: {@link Orientable}
@@ -410,6 +435,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link Orientable}
      */
+    BlockType.Typed<Orientable> STRIPPED_PALE_OAK_WOOD = getBlockType("stripped_pale_oak_wood");
+    /**
+     * BlockData: {@link Orientable}
+     */
     BlockType.Typed<Orientable> STRIPPED_MANGROVE_WOOD = getBlockType("stripped_mangrove_wood");
     /**
      * BlockData: {@link Leaves}
@@ -439,6 +468,10 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Leaves}
      */
     BlockType.Typed<Leaves> DARK_OAK_LEAVES = getBlockType("dark_oak_leaves");
+    /**
+     * BlockData: {@link Leaves}
+     */
+    BlockType.Typed<Leaves> PALE_OAK_LEAVES = getBlockType("pale_oak_leaves");
     /**
      * BlockData: {@link Leaves}
      */
@@ -548,6 +581,9 @@ public interface BlockType extends Keyed, Translatable {
     BlockType.Typed<BlockData> SHORT_GRASS = getBlockType("short_grass");
     BlockType.Typed<BlockData> FERN = getBlockType("fern");
     BlockType.Typed<BlockData> DEAD_BUSH = getBlockType("dead_bush");
+    BlockType.Typed<BlockData> BUSH = getBlockType("bush");
+    BlockType.Typed<BlockData> SHORT_DRY_GRASS = getBlockType("short_dry_grass");
+    BlockType.Typed<BlockData> TALL_DRY_GRASS = getBlockType("tall_dry_grass");
     BlockType.Typed<BlockData> SEAGRASS = getBlockType("seagrass");
     /**
      * BlockData: {@link Bisected}
@@ -623,6 +659,10 @@ public interface BlockType extends Keyed, Translatable {
     BlockType.Typed<BlockData> SOUL_FIRE = getBlockType("soul_fire");
     BlockType.Typed<BlockData> SPAWNER = getBlockType("spawner");
     /**
+     * BlockData: {@link Fire}
+     */
+    BlockType.Typed<CreakingHeart> CREAKING_HEART = getBlockType("creaking_heart");
+    /**
      * BlockData: {@link Stairs}
      */
     BlockType.Typed<Stairs> OAK_STAIRS = getBlockType("oak_stairs");
@@ -681,6 +721,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link Sign}
      */
+    BlockType.Typed<Sign> PALE_OAK_SIGN = getBlockType("pale_oak_sign");
+    /**
+     * BlockData: {@link Sign}
+     */
     BlockType.Typed<Sign> MANGROVE_SIGN = getBlockType("mangrove_sign");
     /**
      * BlockData: {@link Sign}
@@ -733,6 +777,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link WallSign}
      */
+    BlockType.Typed<WallSign> PALE_OAK_WALL_SIGN = getBlockType("pale_oak_wall_sign");
+    /**
+     * BlockData: {@link WallSign}
+     */
     BlockType.Typed<WallSign> MANGROVE_WALL_SIGN = getBlockType("mangrove_wall_sign");
     /**
      * BlockData: {@link WallSign}
@@ -766,6 +814,10 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link HangingSign}
      */
     BlockType.Typed<HangingSign> DARK_OAK_HANGING_SIGN = getBlockType("dark_oak_hanging_sign");
+    /**
+     * BlockData: {@link HangingSign}
+     */
+    BlockType.Typed<HangingSign> PALE_OAK_HANGING_SIGN = getBlockType("pale_oak_hanging_sign");
     /**
      * BlockData: {@link HangingSign}
      */
@@ -810,6 +862,10 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link WallHangingSign}
      */
     BlockType.Typed<WallHangingSign> DARK_OAK_WALL_HANGING_SIGN = getBlockType("dark_oak_wall_hanging_sign");
+    /**
+     * BlockData: {@link WallHangingSign}
+     */
+    BlockType.Typed<WallHangingSign> PALE_OAK_WALL_HANGING_SIGN = getBlockType("pale_oak_wall_hanging_sign");
     /**
      * BlockData: {@link WallHangingSign}
      */
@@ -869,6 +925,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link Powerable}
      */
+    BlockType.Typed<Powerable> PALE_OAK_PRESSURE_PLATE = getBlockType("pale_oak_pressure_plate");
+    /**
+     * BlockData: {@link Powerable}
+     */
     BlockType.Typed<Powerable> MANGROVE_PRESSURE_PLATE = getBlockType("mangrove_pressure_plate");
     /**
      * BlockData: {@link Powerable}
@@ -904,6 +964,7 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Ageable}
      */
     BlockType.Typed<Ageable> CACTUS = getBlockType("cactus");
+    BlockType.Typed<BlockData> CACTUS_FLOWER = getBlockType("cactus_flower");
     BlockType.Typed<BlockData> CLAY = getBlockType("clay");
     /**
      * BlockData: {@link Ageable}
@@ -1001,6 +1062,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link TrapDoor}
      */
+    BlockType.Typed<TrapDoor> PALE_OAK_TRAPDOOR = getBlockType("pale_oak_trapdoor");
+    /**
+     * BlockData: {@link TrapDoor}
+     */
     BlockType.Typed<TrapDoor> MANGROVE_TRAPDOOR = getBlockType("mangrove_trapdoor");
     /**
      * BlockData: {@link TrapDoor}
@@ -1069,6 +1134,10 @@ public interface BlockType extends Keyed, Translatable {
      */
     BlockType.Typed<GlowLichen> GLOW_LICHEN = getBlockType("glow_lichen");
     /**
+     * BlockData: {@link ResinClump}
+     */
+    BlockType.Typed<ResinClump> RESIN_CLUMP = getBlockType("resin_clump");
+    /**
      * BlockData: {@link Gate}
      */
     BlockType.Typed<Gate> OAK_FENCE_GATE = getBlockType("oak_fence_gate");
@@ -1089,6 +1158,21 @@ public interface BlockType extends Keyed, Translatable {
      */
     BlockType.Typed<Snowable> MYCELIUM = getBlockType("mycelium");
     BlockType.Typed<BlockData> LILY_PAD = getBlockType("lily_pad");
+    BlockType.Typed<BlockData> RESIN_BLOCK = getBlockType("resin_block");
+    BlockType.Typed<BlockData> RESIN_BRICKS = getBlockType("resin_bricks");
+    /**
+     * BlockData: {@link Stairs}
+     */
+    BlockType.Typed<Stairs> RESIN_BRICK_STAIRS = getBlockType("resin_brick_stairs");
+    /**
+     * BlockData: {@link Slab}
+     */
+    BlockType.Typed<Slab> RESIN_BRICK_SLAB = getBlockType("resin_brick_slab");
+    /**
+     * BlockData: {@link Wall}
+     */
+    BlockType.Typed<Wall> RESIN_BRICK_WALL = getBlockType("resin_brick_wall");
+    BlockType.Typed<BlockData> CHISELED_RESIN_BRICKS = getBlockType("chiseled_resin_bricks");
     BlockType.Typed<BlockData> NETHER_BRICKS = getBlockType("nether_bricks");
     /**
      * BlockData: {@link Fence}
@@ -1185,6 +1269,7 @@ public interface BlockType extends Keyed, Translatable {
     BlockType.Typed<BlockData> POTTED_ACACIA_SAPLING = getBlockType("potted_acacia_sapling");
     BlockType.Typed<BlockData> POTTED_CHERRY_SAPLING = getBlockType("potted_cherry_sapling");
     BlockType.Typed<BlockData> POTTED_DARK_OAK_SAPLING = getBlockType("potted_dark_oak_sapling");
+    BlockType.Typed<BlockData> POTTED_PALE_OAK_SAPLING = getBlockType("potted_pale_oak_sapling");
     BlockType.Typed<BlockData> POTTED_MANGROVE_PROPAGULE = getBlockType("potted_mangrove_propagule");
     BlockType.Typed<BlockData> POTTED_FERN = getBlockType("potted_fern");
     BlockType.Typed<BlockData> POTTED_DANDELION = getBlockType("potted_dandelion");
@@ -1240,6 +1325,10 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Switch}
      */
     BlockType.Typed<Switch> DARK_OAK_BUTTON = getBlockType("dark_oak_button");
+    /**
+     * BlockData: {@link Switch}
+     */
+    BlockType.Typed<Switch> PALE_OAK_BUTTON = getBlockType("pale_oak_button");
     /**
      * BlockData: {@link Switch}
      */
@@ -1452,6 +1541,10 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Stairs}
      */
     BlockType.Typed<Stairs> DARK_OAK_STAIRS = getBlockType("dark_oak_stairs");
+    /**
+     * BlockData: {@link Stairs}
+     */
+    BlockType.Typed<Stairs> PALE_OAK_STAIRS = getBlockType("pale_oak_stairs");
     /**
      * BlockData: {@link Stairs}
      */
@@ -1718,6 +1811,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link Slab}
      */
+    BlockType.Typed<Slab> PALE_OAK_SLAB = getBlockType("pale_oak_slab");
+    /**
+     * BlockData: {@link Slab}
+     */
     BlockType.Typed<Slab> MANGROVE_SLAB = getBlockType("mangrove_slab");
     /**
      * BlockData: {@link Slab}
@@ -1814,6 +1911,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link Gate}
      */
+    BlockType.Typed<Gate> PALE_OAK_FENCE_GATE = getBlockType("pale_oak_fence_gate");
+    /**
+     * BlockData: {@link Gate}
+     */
     BlockType.Typed<Gate> MANGROVE_FENCE_GATE = getBlockType("mangrove_fence_gate");
     /**
      * BlockData: {@link Gate}
@@ -1846,6 +1947,10 @@ public interface BlockType extends Keyed, Translatable {
     /**
      * BlockData: {@link Fence}
      */
+    BlockType.Typed<Fence> PALE_OAK_FENCE = getBlockType("pale_oak_fence");
+    /**
+     * BlockData: {@link Fence}
+     */
     BlockType.Typed<Fence> MANGROVE_FENCE = getBlockType("mangrove_fence");
     /**
      * BlockData: {@link Fence}
@@ -1875,6 +1980,10 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Door}
      */
     BlockType.Typed<Door> DARK_OAK_DOOR = getBlockType("dark_oak_door");
+    /**
+     * BlockData: {@link Door}
+     */
+    BlockType.Typed<Door> PALE_OAK_DOOR = getBlockType("pale_oak_door");
     /**
      * BlockData: {@link Door}
      */
@@ -2125,6 +2234,10 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Hatchable}
      */
     BlockType.Typed<Hatchable> SNIFFER_EGG = getBlockType("sniffer_egg");
+    /**
+     * BlockData: {@link DriedGhast}
+     */
+    BlockType.Typed<DriedGhast> DRIED_GHAST = getBlockType("dried_ghast");
     BlockType.Typed<BlockData> DEAD_TUBE_CORAL_BLOCK = getBlockType("dead_tube_coral_block");
     BlockType.Typed<BlockData> DEAD_BRAIN_CORAL_BLOCK = getBlockType("dead_brain_coral_block");
     BlockType.Typed<BlockData> DEAD_BUBBLE_CORAL_BLOCK = getBlockType("dead_bubble_coral_block");
@@ -2636,6 +2749,11 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Jigsaw}
      */
     BlockType.Typed<Jigsaw> JIGSAW = getBlockType("jigsaw");
+    /**
+     * BlockData: {@link TestBlock}
+     */
+    BlockType.Typed<TestBlock> TEST_BLOCK = getBlockType("test_block");
+    BlockType.Typed<BlockData> TEST_INSTANCE_BLOCK = getBlockType("test_instance_block");
     /**
      * BlockData: {@link Levelled}
      */
@@ -3176,12 +3294,29 @@ public interface BlockType extends Keyed, Translatable {
     BlockType.Typed<BlockData> SPORE_BLOSSOM = getBlockType("spore_blossom");
     BlockType.Typed<BlockData> AZALEA = getBlockType("azalea");
     BlockType.Typed<BlockData> FLOWERING_AZALEA = getBlockType("flowering_azalea");
-    BlockType.Typed<BlockData> MOSS_CARPET = getBlockType("moss_carpet");
     /**
      * BlockData: {@link PinkPetals}
      */
     BlockType.Typed<PinkPetals> PINK_PETALS = getBlockType("pink_petals");
+    /**
+     * BlockData: {@link PinkPetals}
+     */
+    BlockType.Typed<PinkPetals> WILDFLOWERS = getBlockType("wildflowers");
+    /**
+     * BlockData: {@link LeafLitter}
+     */
+    BlockType.Typed<LeafLitter> LEAF_LITTER = getBlockType("leaf_litter");
+    BlockType.Typed<BlockData> MOSS_CARPET = getBlockType("moss_carpet");
     BlockType.Typed<BlockData> MOSS_BLOCK = getBlockType("moss_block");
+    /**
+     * BlockData: {@link MossyCarpet}
+     */
+    BlockType.Typed<MossyCarpet> PALE_MOSS_CARPET = getBlockType("pale_moss_carpet");
+    /**
+     * BlockData: {@link HangingMoss}
+     */
+    BlockType.Typed<HangingMoss> PALE_HANGING_MOSS = getBlockType("pale_hanging_moss");
+    BlockType.Typed<BlockData> PALE_MOSS_BLOCK = getBlockType("pale_moss_block");
     /**
      * BlockData: {@link BigDripleaf}
      */
@@ -3295,7 +3430,6 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link TrialSpawner}
      */
     BlockType.Typed<TrialSpawner> TRIAL_SPAWNER = getBlockType("trial_spawner");
-
     /**
      * BlockData: {@link Vault}
      */
@@ -3304,6 +3438,11 @@ public interface BlockType extends Keyed, Translatable {
      * BlockData: {@link Waterlogged}
      */
     BlockType.Typed<Waterlogged> HEAVY_CORE = getBlockType("heavy_core");
+    BlockType.Typed<BlockData> OPEN_EYEBLOSSOM = getBlockType("open_eyeblossom");
+    BlockType.Typed<BlockData> CLOSED_EYEBLOSSOM = getBlockType("closed_eyeblossom");
+    BlockType.Typed<BlockData> POTTED_OPEN_EYEBLOSSOM = getBlockType("potted_open_eyeblossom");
+    BlockType.Typed<BlockData> POTTED_CLOSED_EYEBLOSSOM = getBlockType("potted_closed_eyeblossom");
+    BlockType.Typed<BlockData> FIREFLY_BUSH = getBlockType("firefly_bush");
     //</editor-fold>
 
     @NotNull
@@ -3490,12 +3629,24 @@ public interface BlockType extends Keyed, Translatable {
     boolean isEnabledByFeature(@NotNull World world);
 
     /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
+    @NotNull
+    @Override
+    @Deprecated(since = "1.21.4")
+    NamespacedKey getKey();
+
+    /**
      * Tries to convert this BlockType into a Material
      *
      * @return the converted Material or null
      * @deprecated only for internal use
      */
     @Nullable
-    @Deprecated
+    @Deprecated(since = "1.20.6")
     Material asMaterial();
 }

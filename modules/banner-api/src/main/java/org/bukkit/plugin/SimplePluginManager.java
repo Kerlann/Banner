@@ -48,10 +48,10 @@ public final class SimplePluginManager implements PluginManager {
     private final Server server;
     private final Map<Pattern, PluginLoader> fileAssociations = new HashMap<Pattern, PluginLoader>();
     private final List<Plugin> plugins = new ArrayList<Plugin>();
-    public final Map<String, Plugin> lookupNames = new HashMap<String, Plugin>();
+    private final Map<String, Plugin> lookupNames = new HashMap<String, Plugin>();
     private MutableGraph<String> dependencyGraph = GraphBuilder.directed().build();
     private File updateDirectory;
-    public final SimpleCommandMap commandMap;
+    private final SimpleCommandMap commandMap;
     private final Map<String, Permission> permissions = new HashMap<String, Permission>();
     private final Map<Boolean, Set<Permission>> defaultPerms = new LinkedHashMap<Boolean, Set<Permission>>();
     private final Map<String, Map<Permissible, Boolean>> permSubs = new HashMap<String, Map<Permissible, Boolean>>();
@@ -370,7 +370,6 @@ public final class SimplePluginManager implements PluginManager {
             }
         }
 
-        org.bukkit.command.defaults.TimingsCommand.timingStart = System.nanoTime(); // Spigot
         return result.toArray(new Plugin[result.size()]);
     }
 
@@ -708,7 +707,7 @@ public final class SimplePluginManager implements PluginManager {
         addPermission(perm, true);
     }
 
-    @Deprecated
+    @Deprecated(since = "1.12")
     public void addPermission(@NotNull Permission perm, boolean dirty) {
         String name = perm.getName().toLowerCase(Locale.ROOT);
 
@@ -761,7 +760,7 @@ public final class SimplePluginManager implements PluginManager {
         }
     }
 
-    @Deprecated
+    @Deprecated(since = "1.12")
     public void dirtyPermissibles() {
         dirtyPermissibles(true);
         dirtyPermissibles(false);

@@ -4,6 +4,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -89,7 +90,7 @@ public interface Wolf extends Tameable, Sittable {
     /**
      * Represents the variant of a wolf.
      */
-    interface Variant extends Keyed {
+    interface Variant extends Keyed, RegistryAware {
 
         Variant PALE = getVariant("pale");
         Variant SPOTTED = getVariant("spotted");
@@ -105,5 +106,17 @@ public interface Wolf extends Tameable, Sittable {
         private static Variant getVariant(@NotNull String key) {
             return Registry.WOLF_VARIANT.getOrThrow(NamespacedKey.minecraft(key));
         }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @see #getKeyOrThrow()
+         * @see #isRegistered()
+         * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+         */
+        @NotNull
+        @Override
+        @Deprecated(since = "1.21.4")
+        NamespacedKey getKey();
     }
 }

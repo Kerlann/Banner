@@ -13,6 +13,7 @@ import org.bukkit.BanEntry;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
+import org.bukkit.Input;
 import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -105,6 +106,21 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @param name new player list name
      */
     public void setPlayerListName(@Nullable String name);
+
+    /**
+     * Gets the relative order that the player is shown on the player list.
+     *
+     * @return the player list order
+     */
+    public int getPlayerListOrder();
+
+    /**
+     * Sets the relative order that the player is shown on the in-game player
+     * list.
+     *
+     * @param order new player list order, must be non-negative
+     */
+    public void setPlayerListOrder(int order);
 
     /**
      * Gets the currently displayed player list header for this player.
@@ -344,7 +360,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * context/time which it is accessed
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "1.16.1")
     public boolean isOnGround();
 
     /**
@@ -377,15 +393,15 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
 
     /**
      * Saves the players current location, health, inventory, motion, and
-     * other information into the username.dat file, in the world/player
-     * folder
+     * other information into the uuid.dat file, in the &lt;main
+     * world&gt;/playerdata folder.
      */
     public void saveData();
 
     /**
      * Loads the players current location, health, inventory, motion, and
-     * other information from the username.dat file, in the world/player
-     * folder.
+     * other information from the uuid.dat file, in the &lt;main
+     * world&gt;/playerdata folder.
      * <p>
      * Note: This will overwrite the players current inventory, health,
      * motion, etc, with the state from the saved dat file.
@@ -421,7 +437,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      */
     @Nullable
     @Override
-    @Deprecated
+    @Deprecated(since = "1.20.4")
     public Location getBedSpawnLocation();
 
     /**
@@ -443,7 +459,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @deprecated Misleading name. This method sets the player's respawn
      * location more generally and is not limited to beds.
      */
-    @Deprecated
+    @Deprecated(since = "1.20.4")
     public void setBedSpawnLocation(@Nullable Location location);
 
     /**
@@ -464,7 +480,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @deprecated Misleading name. This method sets the player's respawn
      * location more generally and is not limited to beds.
      */
-    @Deprecated
+    @Deprecated(since = "1.20.4")
     public void setBedSpawnLocation(@Nullable Location location, boolean force);
 
     /**
@@ -477,6 +493,30 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
     public void setRespawnLocation(@Nullable Location location, boolean force);
 
     /**
+     * Gets the ender pearls currently associated with this entity.
+     * <p>
+     * The returned list will not be directly linked to the entity's current
+     * pearls, and no guarantees are made as to its mutability.
+     *
+     * @return collection of entities corresponding to current pearls.
+     */
+    @NotNull
+    @ApiStatus.Experimental
+    public Collection<EnderPearl> getEnderPearls();
+
+    /**
+     * Gets the current movement input, as last provided by the player.
+     * <br>
+     * <b>Note: that this may not always be consistent with the current movement
+     * of the player.</b>
+     *
+     * @return current input
+     */
+    @NotNull
+    @ApiStatus.Experimental
+    public Input getCurrentInput();
+
+    /**
      * Play a note for the player at a location. <br>
      * This <i>will</i> work with cake.
      *
@@ -485,7 +525,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @param note The note ID.
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     public void playNote(@NotNull Location loc, byte instrument, byte note);
 
     /**
@@ -716,7 +756,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @param data a data bit needed for some effects
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     public void playEffect(@NotNull Location loc, @NotNull Effect effect, int data);
 
     /**
@@ -762,7 +802,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @param data The block data
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     public void sendBlockChange(@NotNull Location loc, @NotNull Material material, byte data);
 
     /**
@@ -816,7 +856,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @deprecated suppressLightUpdates is not functional in versions greater
      * than 1.19.4
      */
-    @Deprecated
+    @Deprecated(since = "1.20")
     public void sendBlockChanges(@NotNull Collection<BlockState> blocks, boolean suppressLightUpdates);
 
     /**
@@ -1276,7 +1316,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @param player Player to hide
      * @deprecated see {@link #hidePlayer(Plugin, Player)}
      */
-    @Deprecated
+    @Deprecated(since = "1.12.2")
     public void hidePlayer(@NotNull Player player);
 
     /**
@@ -1293,7 +1333,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @param player Player to show
      * @deprecated see {@link #showPlayer(Plugin, Player)}
      */
-    @Deprecated
+    @Deprecated(since = "1.12.2")
     public void showPlayer(@NotNull Player player);
 
     /**
@@ -1423,7 +1463,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @deprecated Minecraft no longer uses textures packs. Instead you
      *     should use {@link #setResourcePack(String)}.
      */
-    @Deprecated
+    @Deprecated(since = "1.7.2")
     public void setTexturePack(@NotNull String url);
 
     /**
@@ -1878,7 +1918,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @param subtitle Subtitle text
      * @deprecated API behavior subject to change
      */
-    @Deprecated
+    @Deprecated(since = "1.8.7")
     public void sendTitle(@Nullable String title, @Nullable String subtitle);
 
     /**
@@ -2248,92 +2288,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      */
     public boolean isAllowingServerListings();
 
-    // Spigot start
-    public class Spigot extends Entity.Spigot {
-
-        /**
-         * Gets the connection address of this player, regardless of whether it
-         * has been spoofed or not.
-         *
-         * @return the player's connection address
-         */
-        @NotNull
-        public InetSocketAddress getRawAddress() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        /**
-         * Respawns the player if dead.
-         */
-        public void respawn() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        /**
-         * Gets all players hidden with {@link #hidePlayer(org.bukkit.entity.Player)}.
-         *
-         * @return a Set with all hidden players
-         */
-        @NotNull
-        public java.util.Set<Player> getHiddenPlayers() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void sendMessage(@NotNull net.md_5.bungee.api.chat.BaseComponent component) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void sendMessage(@NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        /**
-         * Sends the component to the specified screen position of this player
-         *
-         * @param position the screen position
-         * @param component the components to send
-         */
-        public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @NotNull net.md_5.bungee.api.chat.BaseComponent component) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        /**
-         * Sends an array of components as a single message to the specified screen position of this player
-         *
-         * @param position the screen position
-         * @param components the components to send
-         */
-        public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        /**
-         * Sends the component to the specified screen position of this player
-         *
-         * @param position the screen position
-         * @param sender the sender of the message
-         * @param component the components to send
-         */
-        public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @Nullable java.util.UUID sender, @NotNull net.md_5.bungee.api.chat.BaseComponent component) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        /**
-         * Sends an array of components as a single message to the specified screen position of this player
-         *
-         * @param position the screen position
-         * @param sender the sender of the message
-         * @param components the components to send
-         */
-        public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @Nullable java.util.UUID sender, @NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
-
-    @NotNull
-    @Override
-    Spigot spigot();
-    // Spigot end
+    /**
+     * Clear the player's open dialog.
+     */
+    @ApiStatus.Experimental
+    public void clearDialog();
 }

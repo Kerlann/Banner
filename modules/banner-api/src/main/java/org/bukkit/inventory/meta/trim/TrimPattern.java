@@ -5,12 +5,13 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Translatable;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a pattern that may be used in an {@link ArmorTrim}.
  */
-public interface TrimPattern extends Keyed, Translatable {
+public interface TrimPattern extends Keyed, Translatable, RegistryAware {
 
     /**
      * {@link Material#SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE}.
@@ -89,4 +90,16 @@ public interface TrimPattern extends Keyed, Translatable {
     private static TrimPattern getTrimPattern(@NotNull String key) {
         return Registry.TRIM_PATTERN.getOrThrow(NamespacedKey.minecraft(key));
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
+    @NotNull
+    @Override
+    @Deprecated(since = "1.21.4")
+    NamespacedKey getKey();
 }

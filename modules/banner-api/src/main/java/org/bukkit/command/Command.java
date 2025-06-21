@@ -33,7 +33,6 @@ public abstract class Command {
     protected String usageMessage;
     private String permission;
     private String permissionMessage;
-    public org.spigotmc.CustomTimingsHandler timings; // Spigot
 
     protected Command(@NotNull String name) {
         this(name, "", "/" + name, new ArrayList<String>());
@@ -47,7 +46,6 @@ public abstract class Command {
         this.usageMessage = (usageMessage == null) ? "/" + name : usageMessage;
         this.aliases = aliases;
         this.activeAliases = new ArrayList<String>(aliases);
-        this.timings = new org.spigotmc.CustomTimingsHandler("** Command: " + name); // Spigot
     }
 
     /**
@@ -245,7 +243,6 @@ public abstract class Command {
         }
         this.nextLabel = name;
         if (!isRegistered()) {
-            this.timings = new org.spigotmc.CustomTimingsHandler("** Command: " + name); // Spigot
             this.label = name;
             return true;
         }
@@ -324,7 +321,7 @@ public abstract class Command {
      * consoles or when this command is executed with
      * {@link Bukkit#dispatchCommand(CommandSender, String)}.
      */
-    @Deprecated
+    @Deprecated(since = "1.20.4")
     @Nullable
     public String getPermissionMessage() {
         return permissionMessage;
@@ -395,7 +392,7 @@ public abstract class Command {
      * consoles or when this command is executed with
      * {@link Bukkit#dispatchCommand(CommandSender, String)}.
      */
-    @Deprecated
+    @Deprecated(since = "1.20.4")
     @NotNull
     public Command setPermissionMessage(@Nullable String permissionMessage) {
         this.permissionMessage = permissionMessage;

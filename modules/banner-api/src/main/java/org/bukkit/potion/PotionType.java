@@ -1,11 +1,13 @@
 package org.bukkit.potion;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Suppliers;
 import java.util.List;
 import java.util.function.Supplier;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * This enum reflects and matches each potion state that can be obtained from
  * the Creative mode inventory
  */
-public enum PotionType implements Keyed {
+public enum PotionType implements Keyed, RegistryAware {
     WATER("water"),
     MUNDANE("mundane"),
     THICK("thick"),
@@ -67,7 +69,7 @@ public enum PotionType implements Keyed {
     private final Supplier<InternalPotionData> internalPotionDataSupplier;
 
     PotionType(String key) {
-        this.key = NamespacedKey.fromString(key);
+        this.key = NamespacedKey.minecraft(key);
         this.internalPotionDataSupplier = Suppliers.memoize(() -> Bukkit.getUnsafe().getInternalPotionData(this.key));
     }
 
@@ -76,7 +78,7 @@ public enum PotionType implements Keyed {
      * @deprecated Potions can have multiple effects use {@link #getPotionEffects()}
      */
     @Nullable
-    @Deprecated
+    @Deprecated(since = "1.20.2")
     public PotionEffectType getEffectType() {
         return internalPotionDataSupplier.get().getEffectType();
     }
@@ -94,7 +96,7 @@ public enum PotionType implements Keyed {
      * @deprecated PotionType can have multiple effects, some of which can be instant and others not.
      * Use {@link PotionEffectType#isInstant()} in combination with {@link #getPotionEffects()} and {@link PotionEffect#getType()}
      */
-    @Deprecated
+    @Deprecated(since = "1.20.2")
     public boolean isInstant() {
         return internalPotionDataSupplier.get().isInstant();
     }
@@ -124,12 +126,30 @@ public enum PotionType implements Keyed {
         return internalPotionDataSupplier.get().getMaxLevel();
     }
 
+    @NotNull
+    @Override
+    public NamespacedKey getKeyOrThrow() {
+        Preconditions.checkState(isRegistered(), "Cannot get key of this registry item, because it is not registered. Use #isRegistered() before calling this method.");
+        return this.key;
+    }
+
+    @Nullable
+    @Override
+    public NamespacedKey getKeyOrNull() {
+        return this.key;
+    }
+
+    @Override
+    public boolean isRegistered() {
+        return this.key != null;
+    }
+
     /**
      * @param effectType the effect to get by
      * @return the matching potion type
      * @deprecated Misleading
      */
-    @Deprecated
+    @Deprecated(since = "1.9")
     @Nullable
     public static PotionType getByEffect(@Nullable PotionEffectType effectType) {
         if (effectType == null)
@@ -141,16 +161,24 @@ public enum PotionType implements Keyed {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
     @NotNull
     @Override
+    @Deprecated(since = "1.21.4")
     public NamespacedKey getKey() {
-        return key;
+        return getKeyOrThrow();
     }
 
     /**
      * @deprecated Do not use, interface will get removed, and the plugin won't run
      */
-    @Deprecated
+    @Deprecated(since = "1.20.2")
     @ApiStatus.Internal
     public interface InternalPotionData {
 

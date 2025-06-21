@@ -10,6 +10,7 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Translatable;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Represents a type of potion and its effect on an entity.
  */
-public abstract class PotionEffectType implements Keyed, Translatable {
+public abstract class PotionEffectType implements Keyed, Translatable, RegistryAware {
     private static final BiMap<Integer, PotionEffectType> ID_MAP = HashBiMap.create();
 
     /**
@@ -266,12 +267,24 @@ public abstract class PotionEffectType implements Keyed, Translatable {
     public abstract Color getColor();
 
     /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
+    @NotNull
+    @Override
+    @Deprecated(since = "1.21.4")
+    public abstract NamespacedKey getKey();
+
+    /**
      * Returns the duration modifier applied to effects of this type.
      *
      * @return duration modifier
      * @deprecated unused, always 1.0
      */
-    @Deprecated
+    @Deprecated(since = "1.14")
     public abstract double getDurationModifier();
 
     /**
@@ -280,7 +293,7 @@ public abstract class PotionEffectType implements Keyed, Translatable {
      * @return Unique ID
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     public abstract int getId();
 
     /**
@@ -290,7 +303,7 @@ public abstract class PotionEffectType implements Keyed, Translatable {
      * @deprecated only for backwards compatibility, use {@link #getKey()} instead.
      */
     @NotNull
-    @Deprecated
+    @Deprecated(since = "1.20.3")
     public abstract String getName();
 
     /**
@@ -302,7 +315,7 @@ public abstract class PotionEffectType implements Keyed, Translatable {
      */
     @Contract("null -> null")
     @Nullable
-    @Deprecated
+    @Deprecated(since = "1.20.3")
     public static PotionEffectType getByKey(@Nullable NamespacedKey key) {
         if (key == null) {
             return null;
@@ -318,7 +331,7 @@ public abstract class PotionEffectType implements Keyed, Translatable {
      * @return Resulting type, or null if not found.
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     @Nullable
     public static PotionEffectType getById(int id) {
         PotionEffectType type = ID_MAP.get(id);
@@ -345,7 +358,7 @@ public abstract class PotionEffectType implements Keyed, Translatable {
      * @deprecated only for backwards compatibility, use {@link Registry#get(NamespacedKey)} instead.
      */
     @Nullable
-    @Deprecated
+    @Deprecated(since = "1.20.3")
     public static PotionEffectType getByName(@NotNull String name) {
         Preconditions.checkArgument(name != null, "name cannot be null");
         return Registry.EFFECT.get(NamespacedKey.fromString(name.toLowerCase(Locale.ROOT)));
@@ -356,7 +369,7 @@ public abstract class PotionEffectType implements Keyed, Translatable {
      * @deprecated use {@link Registry#iterator()}.
      */
     @NotNull
-    @Deprecated
+    @Deprecated(since = "1.20.3")
     public static PotionEffectType[] values() {
         return Lists.newArrayList(Registry.EFFECT).toArray(new PotionEffectType[0]);
     }

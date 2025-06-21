@@ -4,6 +4,7 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Translatable;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  * @see <a href="https://minecraft.wiki/w/Damage_type">Minecraft Wiki</a>
  */
 @ApiStatus.Experimental
-public interface DamageType extends Keyed, Translatable {
+public interface DamageType extends Keyed, Translatable, RegistryAware {
 
     public static final DamageType IN_FIRE = getDamageType("in_fire");
     public static final DamageType CAMPFIRE = getDamageType("campfire");
@@ -31,6 +32,7 @@ public interface DamageType extends Keyed, Translatable {
     public static final DamageType STARVE = getDamageType("starve");
     public static final DamageType CACTUS = getDamageType("cactus");
     public static final DamageType FALL = getDamageType("fall");
+    public static final DamageType ENDER_PEARL = getDamageType("ender_pearl");
     public static final DamageType FLY_INTO_WALL = getDamageType("fly_into_wall");
     public static final DamageType OUT_OF_WORLD = getDamageType("out_of_world");
     public static final DamageType GENERIC = getDamageType("generic");
@@ -66,6 +68,7 @@ public interface DamageType extends Keyed, Translatable {
     public static final DamageType OUTSIDE_BORDER = getDamageType("outside_border");
     public static final DamageType GENERIC_KILL = getDamageType("generic_kill");
     public static final DamageType WIND_CHARGE = getDamageType("wind_charge");
+    public static final DamageType MACE_SMASH = getDamageType("mace_smash");
 
     @NotNull
     private static DamageType getDamageType(@NotNull String key) {
@@ -115,4 +118,16 @@ public interface DamageType extends Keyed, Translatable {
      * @return the exhaustion
      */
     public float getExhaustion();
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
+    @NotNull
+    @Override
+    @Deprecated(since = "1.21.4")
+    NamespacedKey getKey();
 }

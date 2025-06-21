@@ -146,6 +146,10 @@ public enum InventoryType {
      */
     JUKEBOX(1, "Jukebox", null, false),
     /**
+     * Pseudo decorated pot inventory with 1 slot of undefined type.
+     */
+    DECORATED_POT(1, "Decorated Pot", null, false),
+    /**
      * A crafter inventory, with 9 CRAFTING slots.
      */
     @ApiStatus.Experimental
@@ -155,7 +159,7 @@ public enum InventoryType {
      *
      * @deprecated use {@link #SMITHING}
      */
-    @Deprecated
+    @Deprecated(since = "1.20.1")
     SMITHING_NEW(4, "Upgrade Gear", MenuType.SMITHING),
     ;
 

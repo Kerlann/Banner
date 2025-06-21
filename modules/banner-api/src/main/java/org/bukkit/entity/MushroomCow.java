@@ -6,9 +6,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a mushroom {@link Cow}
+ * Represents a mushroom {@link AbstractCow}
  */
-public interface MushroomCow extends Cow {
+public interface MushroomCow extends AbstractCow {
 
     /**
      * Checks for the presence of custom potion effects to be applied to the

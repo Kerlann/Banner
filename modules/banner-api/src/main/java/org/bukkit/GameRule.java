@@ -30,6 +30,11 @@ public final class GameRule<T> {
     public static final GameRule<Boolean> COMMAND_BLOCK_OUTPUT = new GameRule<>("commandBlockOutput", Boolean.class);
 
     /**
+     * Whether the server should skip checking player speed.
+     */
+    public static final GameRule<Boolean> DISABLE_PLAYER_MOVEMENT_CHECK = new GameRule<>("disablePlayerMovementCheck", Boolean.class);
+
+    /**
      * Whether the server should skip checking player speed when the player is
      * wearing elytra.
      */
@@ -49,6 +54,11 @@ public final class GameRule<T> {
      * Whether fire should spread and naturally extinguish.
      */
     public static final GameRule<Boolean> DO_FIRE_TICK = new GameRule<>("doFireTick", Boolean.class);
+
+    /**
+     * Whether fire should spread and naturally extinguish when there are no players nearby.
+     */
+    public static final GameRule<Boolean> ALLOW_FIRE_TICKS_AWAY_FROM_PLAYER = new GameRule<>("allowFireTicksAwayFromPlayer", Boolean.class);
 
     /**
      * Whether players should only be able to craft recipes they've unlocked
@@ -215,6 +225,14 @@ public final class GameRule<T> {
      * Whether ender pearls will vanish on player death.
      */
     public static final GameRule<Boolean> ENDER_PEARLS_VANISH_ON_DEATH = new GameRule<>("enderPearlsVanishOnDeath", Boolean.class);
+    /**
+     * Whether TNT explodes.
+     */
+    public static final GameRule<Boolean> TNT_EXPLODES = new GameRule<>("tntExplodes", Boolean.class);
+    /**
+     * Whether the locator bar is enabled.
+     */
+    public static final GameRule<Boolean> LOCATOR_BAR = new GameRule<>("locatorBar", Boolean.class);
 
     // Numerical rules
     /**
@@ -277,6 +295,12 @@ public final class GameRule<T> {
      * portal before the portal activates.
      */
     public static final GameRule<Integer> PLAYERS_NETHER_PORTAL_CREATIVE_DELAY = new GameRule<>("playersNetherPortalCreativeDelay", Integer.class);
+
+    /**
+     * The maximum speed of minecarts (when the new movement algorithm is
+     * enabled).
+     */
+    public static final GameRule<Integer> MINECART_MAX_SPEED = new GameRule<>("minecartMaxSpeed", Integer.class);
 
     /**
      * The number of chunks around spawn which will be kept loaded at all times.

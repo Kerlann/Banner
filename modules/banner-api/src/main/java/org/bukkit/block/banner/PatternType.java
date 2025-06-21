@@ -6,12 +6,13 @@ import java.util.Locale;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.bukkit.registry.RegistryAware;
 import org.bukkit.util.OldEnum;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface PatternType extends OldEnum<PatternType>, Keyed {
+public interface PatternType extends OldEnum<PatternType>, Keyed, RegistryAware {
     PatternType BASE = getType("base");
     PatternType SQUARE_BOTTOM_LEFT = getType("square_bottom_left");
     PatternType SQUARE_BOTTOM_RIGHT = getType("square_bottom_right");
@@ -56,9 +57,17 @@ public interface PatternType extends OldEnum<PatternType>, Keyed {
     PatternType FLOW = getType("flow");
     PatternType GUSTER = getType("guster");
 
-    @Override
+    /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
     @NotNull
-    public NamespacedKey getKey();
+    @Override
+    @Deprecated(since = "1.21.4")
+    NamespacedKey getKey();
 
     /**
      * Returns the identifier used to represent
@@ -69,7 +78,7 @@ public interface PatternType extends OldEnum<PatternType>, Keyed {
      * @deprecated magic value
      */
     @NotNull
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.20.4", forRemoval = true)
     public String getIdentifier();
 
     /**
@@ -83,7 +92,7 @@ public interface PatternType extends OldEnum<PatternType>, Keyed {
      */
     @Contract("null -> null")
     @Nullable
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.20.4", forRemoval = true)
     public static PatternType getByIdentifier(@Nullable String identifier) {
         if (identifier == null) {
             return null;

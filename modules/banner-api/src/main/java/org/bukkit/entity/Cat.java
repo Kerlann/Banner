@@ -7,6 +7,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.bukkit.registry.RegistryAware;
 import org.bukkit.util.OldEnum;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +49,7 @@ public interface Cat extends Tameable, Sittable {
     /**
      * Represents the various different cat types there are.
      */
-    interface Type extends OldEnum<Type>, Keyed {
+    interface Type extends OldEnum<Type>, Keyed, RegistryAware {
 
         Type TABBY = getType("tabby");
         Type BLACK = getType("black");
@@ -66,6 +67,18 @@ public interface Cat extends Tameable, Sittable {
         private static Type getType(@NotNull String key) {
             return Registry.CAT_VARIANT.getOrThrow(NamespacedKey.minecraft(key));
         }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @see #getKeyOrThrow()
+         * @see #isRegistered()
+         * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+         */
+        @NotNull
+        @Override
+        @Deprecated(since = "1.21.4")
+        NamespacedKey getKey();
 
         /**
          * @param name of the cat type.

@@ -8,6 +8,23 @@ import org.jetbrains.annotations.Nullable;
 public interface HorseInventory extends AbstractHorseInventory {
 
     /**
+     * Gets the item in the horse's saddle slot.
+     *
+     * @return the saddle item
+     */
+    @Nullable
+    @Override
+    ItemStack getSaddle();
+
+    /**
+     * Sets the item in the horse's saddle slot.
+     *
+     * @param stack the new item
+     */
+    @Override
+    void setSaddle(@Nullable ItemStack stack);
+
+    /**
      * Gets the item in the horse's armor slot.
      *
      * @return the armor item

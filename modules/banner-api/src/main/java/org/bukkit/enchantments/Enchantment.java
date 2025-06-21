@@ -7,6 +7,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Translatable;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The various type of enchantments that may be added to armour or weapons
  */
-public abstract class Enchantment implements Keyed, Translatable {
+public abstract class Enchantment implements Keyed, Translatable, RegistryAware {
     /**
      * Provides protection against environmental damage
      */
@@ -239,7 +240,7 @@ public abstract class Enchantment implements Keyed, Translatable {
      * @deprecated enchantments are badly named, use {@link #getKey()}.
      */
     @NotNull
-    @Deprecated
+    @Deprecated(since = "1.13")
     public abstract String getName();
 
     /**
@@ -263,7 +264,7 @@ public abstract class Enchantment implements Keyed, Translatable {
      * @deprecated enchantment groupings are now managed by tags, not categories
      */
     @NotNull
-    @Deprecated
+    @Deprecated(since = "1.20.5")
     public abstract EnchantmentTarget getItemTarget();
 
     /**
@@ -275,7 +276,7 @@ public abstract class Enchantment implements Keyed, Translatable {
      * @return true if the enchantment is a treasure enchantment
      * @deprecated enchantment types are now managed by tags
      */
-    @Deprecated
+    @Deprecated(since = "1.21")
     public abstract boolean isTreasure();
 
     /**
@@ -288,7 +289,7 @@ public abstract class Enchantment implements Keyed, Translatable {
      * only for {@link Enchantment#BINDING_CURSE} and
      * {@link Enchantment#VANISHING_CURSE}.
      */
-    @Deprecated
+    @Deprecated(since = "1.13")
     public abstract boolean isCursed();
 
     /**
@@ -312,6 +313,18 @@ public abstract class Enchantment implements Keyed, Translatable {
     public abstract boolean canEnchantItem(@NotNull ItemStack item);
 
     /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
+    @NotNull
+    @Override
+    @Deprecated(since = "1.21.4")
+    public abstract NamespacedKey getKey();
+
+    /**
      * Gets the Enchantment at the specified key
      *
      * @param key key to fetch
@@ -320,7 +333,7 @@ public abstract class Enchantment implements Keyed, Translatable {
      */
     @Contract("null -> null")
     @Nullable
-    @Deprecated
+    @Deprecated(since = "1.20.3")
     public static Enchantment getByKey(@Nullable NamespacedKey key) {
         if (key == null) {
             return null;
@@ -335,7 +348,7 @@ public abstract class Enchantment implements Keyed, Translatable {
      * @return Resulting Enchantment, or null if not found
      * @deprecated enchantments are badly named, use {@link #getByKey(org.bukkit.NamespacedKey)}.
      */
-    @Deprecated
+    @Deprecated(since = "1.13")
     @Contract("null -> null")
     @Nullable
     public static Enchantment getByName(@Nullable String name) {
@@ -353,7 +366,7 @@ public abstract class Enchantment implements Keyed, Translatable {
      * @deprecated use {@link Registry#iterator() Registry.ENCHANTMENT.iterator()}
      */
     @NotNull
-    @Deprecated
+    @Deprecated(since = "1.20.3")
     public static Enchantment[] values() {
         return Lists.newArrayList(Registry.ENCHANTMENT).toArray(new Enchantment[0]);
     }

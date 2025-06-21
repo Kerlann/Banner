@@ -10,6 +10,26 @@ import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Translatable;
 import org.bukkit.World;
+import org.bukkit.entity.boat.AcaciaBoat;
+import org.bukkit.entity.boat.AcaciaChestBoat;
+import org.bukkit.entity.boat.BambooChestRaft;
+import org.bukkit.entity.boat.BambooRaft;
+import org.bukkit.entity.boat.BirchBoat;
+import org.bukkit.entity.boat.BirchChestBoat;
+import org.bukkit.entity.boat.CherryBoat;
+import org.bukkit.entity.boat.CherryChestBoat;
+import org.bukkit.entity.boat.DarkOakBoat;
+import org.bukkit.entity.boat.DarkOakChestBoat;
+import org.bukkit.entity.boat.JungleBoat;
+import org.bukkit.entity.boat.JungleChestBoat;
+import org.bukkit.entity.boat.MangroveBoat;
+import org.bukkit.entity.boat.MangroveChestBoat;
+import org.bukkit.entity.boat.OakBoat;
+import org.bukkit.entity.boat.OakChestBoat;
+import org.bukkit.entity.boat.PaleOakBoat;
+import org.bukkit.entity.boat.PaleOakChestBoat;
+import org.bukkit.entity.boat.SpruceBoat;
+import org.bukkit.entity.boat.SpruceChestBoat;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.entity.minecart.HopperMinecart;
@@ -19,11 +39,12 @@ import org.bukkit.entity.minecart.SpawnerMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public enum EntityType implements Keyed, Translatable {
+public enum EntityType implements Keyed, Translatable, RegistryAware {
 
     // These strings MUST match the strings in nms.EntityTypes and are case sensitive.
     /**
@@ -92,7 +113,11 @@ public enum EntityType implements Keyed, Translatable {
     /**
      * A flying splash potion.
      */
-    POTION("potion", ThrownPotion.class, 16),
+    SPLASH_POTION("splash_potion", SplashPotion.class, 16),
+    /**
+     * A flying lingering splash potion.
+     */
+    LINGERING_POTION("lingering_potion", LingeringPotion.class, -1),
     /**
      * A flying experience bottle.
      */
@@ -181,10 +206,6 @@ public enum EntityType implements Keyed, Translatable {
      * @see CommandMinecart
      */
     COMMAND_BLOCK_MINECART("command_block_minecart", CommandMinecart.class, 40),
-    /**
-     * A placed boat.
-     */
-    BOAT("boat", Boat.class, 41),
     /**
      * @see RideableMinecart
      */
@@ -275,7 +296,6 @@ public enum EntityType implements Keyed, Translatable {
     GOAT("goat", Goat.class, -1),
     MARKER("marker", Marker.class, -1),
     ALLAY("allay", Allay.class, -1),
-    CHEST_BOAT("chest_boat", ChestBoat.class, -1),
     FROG("frog", Frog.class, -1),
     TADPOLE("tadpole", Tadpole.class, -1),
     WARDEN("warden", Warden.class, -1),
@@ -291,6 +311,28 @@ public enum EntityType implements Keyed, Translatable {
     ARMADILLO("armadillo", Armadillo.class, -1),
     BOGGED("bogged", Bogged.class, -1),
     OMINOUS_ITEM_SPAWNER("ominous_item_spawner", OminousItemSpawner.class, -1),
+    ACACIA_BOAT("acacia_boat", AcaciaBoat.class, -1),
+    ACACIA_CHEST_BOAT("acacia_chest_boat", AcaciaChestBoat.class, -1),
+    BAMBOO_RAFT("bamboo_raft", BambooRaft.class, -1),
+    BAMBOO_CHEST_RAFT("bamboo_chest_raft", BambooChestRaft.class, -1),
+    BIRCH_BOAT("birch_boat", BirchBoat.class, -1),
+    BIRCH_CHEST_BOAT("birch_chest_boat", BirchChestBoat.class, -1),
+    CHERRY_BOAT("cherry_boat", CherryBoat.class, -1),
+    CHERRY_CHEST_BOAT("cherry_chest_boat", CherryChestBoat.class, -1),
+    DARK_OAK_BOAT("dark_oak_boat", DarkOakBoat.class, -1),
+    DARK_OAK_CHEST_BOAT("dark_oak_chest_boat", DarkOakChestBoat.class, -1),
+    JUNGLE_BOAT("jungle_boat", JungleBoat.class, -1),
+    JUNGLE_CHEST_BOAT("jungle_chest_boat", JungleChestBoat.class, -1),
+    MANGROVE_BOAT("mangrove_boat", MangroveBoat.class, -1),
+    MANGROVE_CHEST_BOAT("mangrove_chest_boat", MangroveChestBoat.class, -1),
+    OAK_BOAT("oak_boat", OakBoat.class, -1),
+    OAK_CHEST_BOAT("oak_chest_boat", OakChestBoat.class, -1),
+    PALE_OAK_BOAT("pale_oak_boat", PaleOakBoat.class, -1),
+    PALE_OAK_CHEST_BOAT("pale_oak_chest_boat", PaleOakChestBoat.class, -1),
+    SPRUCE_BOAT("spruce_boat", SpruceBoat.class, -1),
+    SPRUCE_CHEST_BOAT("spruce_chest_boat", SpruceChestBoat.class, -1),
+    CREAKING("creaking", Creaking.class, -1),
+    HAPPY_GHAST("happy_ghast", HappyGhast.class, -1),
     /**
      * A fishing line and bobber.
      */
@@ -311,10 +353,10 @@ public enum EntityType implements Keyed, Translatable {
     private final Class<? extends Entity> clazz;
     private final short typeId;
     private final boolean independent, living;
-    public NamespacedKey key;
+    private final NamespacedKey key;
 
-    public static Map<String, EntityType> NAME_MAP = new HashMap<String, EntityType>();
-    public static Map<Short, EntityType> ID_MAP = new HashMap<Short, EntityType>();
+    private static final Map<String, EntityType> NAME_MAP = new HashMap<String, EntityType>();
+    private static final Map<Short, EntityType> ID_MAP = new HashMap<Short, EntityType>();
 
     static {
         for (EntityType type : values()) {
@@ -346,18 +388,24 @@ public enum EntityType implements Keyed, Translatable {
      * @return the entity type's name
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     @Nullable
     public String getName() {
         return name;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
     @NotNull
     @Override
+    @Deprecated(since = "1.21.4")
     public NamespacedKey getKey() {
-        Preconditions.checkArgument(key != null, "EntityType doesn't have key! Is it UNKNOWN?");
-
-        return key;
+        return getKeyOrThrow();
     }
 
     @Nullable
@@ -371,7 +419,7 @@ public enum EntityType implements Keyed, Translatable {
      * @return the raw type id
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     public short getTypeId() {
         return typeId;
     }
@@ -383,7 +431,7 @@ public enum EntityType implements Keyed, Translatable {
      * @return the matching entity type or null
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     @Contract("null -> null")
     @Nullable
     public static EntityType fromName(@Nullable String name) {
@@ -400,7 +448,7 @@ public enum EntityType implements Keyed, Translatable {
      * @return the matching entity type or null
      * @deprecated Magic value
      */
-    @Deprecated
+    @Deprecated(since = "1.6.2")
     @Nullable
     public static EntityType fromId(int id) {
         if (id > Short.MAX_VALUE) {
@@ -439,5 +487,23 @@ public enum EntityType implements Keyed, Translatable {
      */
     public boolean isEnabledByFeature(@NotNull World world) {
         return Bukkit.getDataPackManager().isEnabledByFeature(this, world);
+    }
+
+    @NotNull
+    @Override
+    public NamespacedKey getKeyOrThrow() {
+        Preconditions.checkState(isRegistered(), "Cannot get key of this registry item, because it is not registered. Use #isRegistered() before calling this method.");
+        return this.key;
+    }
+
+    @Nullable
+    @Override
+    public NamespacedKey getKeyOrNull() {
+        return this.key;
+    }
+
+    @Override
+    public boolean isRegistered() {
+        return this != UNKNOWN;
     }
 }

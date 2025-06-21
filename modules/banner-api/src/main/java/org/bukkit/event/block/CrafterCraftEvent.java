@@ -1,5 +1,7 @@
 package org.bukkit.event.block;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.block.Block;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -15,12 +17,19 @@ public class CrafterCraftEvent extends BlockEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private final CraftingRecipe recipe;
     private ItemStack result;
+    private List<ItemStack> remainingItems;
     private boolean cancelled;
 
+    @Deprecated(since = "1.21.4")
     public CrafterCraftEvent(@NotNull Block theBlock, @NotNull CraftingRecipe recipe, @NotNull ItemStack result) {
+        this(theBlock, recipe, result, new ArrayList<>());
+    }
+
+    public CrafterCraftEvent(@NotNull Block theBlock, @NotNull CraftingRecipe recipe, @NotNull ItemStack result, @NotNull List<ItemStack> remainingItems) {
         super(theBlock);
         this.result = result;
         this.recipe = recipe;
+        this.remainingItems = remainingItems;
     }
 
     /**
@@ -40,6 +49,16 @@ public class CrafterCraftEvent extends BlockEvent implements Cancellable {
      */
     public void setResult(@NotNull ItemStack result) {
         this.result = result.clone();
+    }
+
+    /**
+     * Gets the items that will remain after the recipe has been crafted.
+     *
+     * @return a list of the remaining items
+     */
+    @NotNull
+    public List<ItemStack> getRemainingItems() {
+        return remainingItems;
     }
 
     /**

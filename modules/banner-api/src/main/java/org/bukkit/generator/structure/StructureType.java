@@ -3,6 +3,7 @@ package org.bukkit.generator.structure;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * structure types added by data packs), which can be received via
  * {@link Registry#STRUCTURE_TYPE}.
  */
-public abstract class StructureType implements Keyed {
+public abstract class StructureType implements Keyed, RegistryAware {
 
     public static final StructureType BURIED_TREASURE = getStructureType("buried_treasure");
     public static final StructureType DESERT_PYRAMID = getStructureType("desert_pyramid");
@@ -36,4 +37,16 @@ public abstract class StructureType implements Keyed {
     private static StructureType getStructureType(@NotNull String name) {
         return Registry.STRUCTURE_TYPE.getOrThrow(NamespacedKey.minecraft(name));
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
+    @NotNull
+    @Override
+    @Deprecated(since = "1.21.4")
+    public abstract NamespacedKey getKey();
 }

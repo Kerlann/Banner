@@ -4,11 +4,13 @@ import com.google.common.collect.Multimap;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.Biome;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.damage.DamageEffect;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Villager;
 import org.bukkit.inventory.CreativeCategory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  * may be poorly named, throw exceptions, have misleading parameters, or any
  * other bad programming practice.
  */
-@Deprecated
+@Deprecated(since = "1.7.2")
 public interface UnsafeValues {
 
     Material toLegacy(Material material);
@@ -98,6 +100,7 @@ public interface UnsafeValues {
 
     String getTranslationKey(ItemStack itemStack);
 
+    @Deprecated(since = "1.21.3", forRemoval = true)
     String getTranslationKey(Attribute attribute);
 
     @Nullable
@@ -132,4 +135,13 @@ public interface UnsafeValues {
 
     @ApiStatus.Internal
     <B extends Keyed> B get(Registry<B> registry, NamespacedKey key);
+
+    @ApiStatus.Internal
+    Biome getCustomBiome();
+
+    @ApiStatus.Internal
+    Villager.ReputationType createReputationType(String key);
+
+    @ApiStatus.Internal
+    Villager.ReputationEvent createReputationEvent(String key);
 }

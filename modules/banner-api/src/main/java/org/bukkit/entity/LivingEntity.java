@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.bukkit.Color;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attributable;
@@ -353,7 +355,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
      * @deprecated no need to force since multiple effects of the same type are
      * now supported.
      */
-    @Deprecated
+    @Deprecated(since = "1.15.2")
     public boolean addPotionEffect(@NotNull PotionEffect effect, boolean force);
 
     /**
@@ -771,7 +773,7 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
      * @deprecated entity groupings are now managed by tags, not categories
      */
     @NotNull
-    @Deprecated
+    @Deprecated(since = "1.20.5")
     public EntityCategory getCategory();
 
     /**
@@ -787,4 +789,34 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
      * @return Whether the entity is invisible
      */
     public boolean isInvisible();
+
+    /**
+     * Gets the waypoint color of this entity or null if default/not set.
+     *
+     * @return waypoint color
+     */
+    @Nullable
+    public Color getWaypointColor();
+
+    /**
+     * Sets the waypoint color of this entity, null to reset to default.
+     *
+     * @param color new color
+     */
+    public void setWaypointColor(@Nullable Color color);
+
+    /**
+     * Gets the waypoint style of this entity.
+     *
+     * @return waypoint style
+     */
+    @NotNull
+    public NamespacedKey getWaypointStyle();
+
+    /**
+     * Sets the waypoint style of this entity.
+     *
+     * @param key new style key or null for default
+     */
+    public void setWaypointStyle(@Nullable NamespacedKey key);
 }
