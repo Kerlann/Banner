@@ -1,13 +1,14 @@
 package org.bukkit.craftbukkit.map;
 
-import com.mohistmc.banner.bukkit.BukkitMethodHooks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.logging.Level;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.bukkit.Bukkit;
@@ -19,24 +20,24 @@ import org.bukkit.map.MapView;
 
 public final class CraftMapView implements MapView {
 
-    private final Map<CraftPlayer, RenderData> renderCache = new HashMap<CraftPlayer, RenderData>();
-    private final List<MapRenderer> renderers = new ArrayList<MapRenderer>();
-    private final Map<MapRenderer, Map<CraftPlayer, CraftMapCanvas>> canvases = new HashMap<MapRenderer, Map<CraftPlayer, CraftMapCanvas>>();
-    protected final MapItemSavedData worldMap;
+    private final Map<CraftPlayer, RenderData> renderCache = new WeakHashMap<>();
+    private final List<MapRenderer> renderers = new ArrayList<>();
+    private final Map<MapRenderer, Map<CraftPlayer, CraftMapCanvas>> canvases = new HashMap<>();
+    final MapItemSavedData worldMap;
 
     public CraftMapView(MapItemSavedData worldMap) {
         this.worldMap = worldMap;
-        this.addRenderer(new CraftMapRenderer(this, worldMap));
+        this.addRenderer(new CraftMapRenderer(worldMap));
     }
 
     @Override
     public int getId() {
-        return this.worldMap.bridge$mapView().getId();
+        return this.worldMap.id.id();
     }
 
     @Override
     public boolean isVirtual() {
-        return this.renderers.size() > 0 && !(this.renderers.get(0) instanceof CraftMapRenderer);
+        return !this.renderers.isEmpty() && !(this.renderers.get(0) instanceof CraftMapRenderer);
     }
 
     @Override
@@ -52,14 +53,14 @@ public final class CraftMapView implements MapView {
     @Override
     public World getWorld() {
         ResourceKey<net.minecraft.world.level.Level> dimension = this.worldMap.dimension;
-        ServerLevel world = BukkitMethodHooks.getServer().getLevel(dimension);
+        ServerLevel world = MinecraftServer.getServer().getLevel(dimension);
 
         if (world != null) {
             return world.getWorld();
         }
 
-        if (this.worldMap.bridge$uniqueId() != null) {
-            return Bukkit.getServer().getWorld(this.worldMap.bridge$uniqueId());
+        if (this.worldMap.uniqueId != null) {
+            return Bukkit.getServer().getWorld(this.worldMap.uniqueId);
         }
         return null;
     }
@@ -67,7 +68,7 @@ public final class CraftMapView implements MapView {
     @Override
     public void setWorld(World world) {
         this.worldMap.dimension = ((CraftWorld) world).getHandle().dimension();
-        this.worldMap.banner$setUniqueId(world.getUID());
+        this.worldMap.uniqueId = world.getUID();
     }
 
     @Override
@@ -99,7 +100,7 @@ public final class CraftMapView implements MapView {
     public void addRenderer(MapRenderer renderer) {
         if (!this.renderers.contains(renderer)) {
             this.renderers.add(renderer);
-            this.canvases.put(renderer, new HashMap<CraftPlayer, CraftMapCanvas>());
+            this.canvases.put(renderer, new WeakHashMap<>());
             renderer.initialize(this);
         }
     }

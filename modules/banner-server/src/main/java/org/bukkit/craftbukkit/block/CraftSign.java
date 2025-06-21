@@ -24,8 +24,8 @@ public class CraftSign<T extends SignBlockEntity> extends CraftBlockEntityState<
     private final CraftSignSide front;
     private final CraftSignSide back;
 
-    public CraftSign(World world, T tileEntity) {
-        super(world, tileEntity);
+    public CraftSign(World world, T blockEntity) {
+        super(world, blockEntity);
         this.front = new CraftSignSide(this.getSnapshot().getFrontText());
         this.back = new CraftSignSide(this.getSnapshot().getBackText());
     }
@@ -35,6 +35,23 @@ public class CraftSign<T extends SignBlockEntity> extends CraftBlockEntityState<
         this.front = new CraftSignSide(this.getSnapshot().getFrontText());
         this.back = new CraftSignSide(this.getSnapshot().getBackText());
     }
+
+    // Paper start
+    @Override
+    public java.util.@NotNull List<net.kyori.adventure.text.Component> lines() {
+        return this.front.lines();
+    }
+
+    @Override
+    public net.kyori.adventure.text.@NotNull Component line(int index) {
+        return this.front.line(index);
+    }
+
+    @Override
+    public void line(int index, net.kyori.adventure.text.@NotNull Component line) {
+        this.front.line(index, line);
+    }
+    // Paper end
 
     @Override
     public String[] getLines() {
@@ -112,8 +129,8 @@ public class CraftSign<T extends SignBlockEntity> extends CraftBlockEntityState<
     public Player getAllowedEditor() {
         this.ensureNoWorldGeneration();
 
-        // getPlayerWhoMayEdit is always null for the snapshot, so we use the wrapped TileEntity
-        UUID id = this.getTileEntity().getPlayerWhoMayEdit();
+        // getPlayerWhoMayEdit is always null for the snapshot, so we use the wrapped BlockEntity
+        UUID id = this.getBlockEntity().getPlayerWhoMayEdit();
         return (id == null) ? null : Bukkit.getPlayer(id);
     }
 
@@ -128,11 +145,11 @@ public class CraftSign<T extends SignBlockEntity> extends CraftBlockEntityState<
     }
 
     @Override
-    public void applyTo(T sign) {
+    public void applyTo(T blockEntity) {
         this.getSnapshot().setText(this.front.applyLegacyStringToSignSide(), true);
         this.getSnapshot().setText(this.back.applyLegacyStringToSignSide(), false);
 
-        super.applyTo(sign);
+        super.applyTo(blockEntity);
     }
 
     @Override
@@ -151,15 +168,55 @@ public class CraftSign<T extends SignBlockEntity> extends CraftBlockEntityState<
         Preconditions.checkArgument(sign.isPlaced(), "Sign must be placed");
         Preconditions.checkArgument(sign.getWorld() == player.getWorld(), "Sign must be in same world as Player");
 
+        // Paper start - Add PlayerOpenSignEvent
+        io.papermc.paper.event.player.PlayerOpenSignEvent event = new io.papermc.paper.event.player.PlayerOpenSignEvent((Player) player, sign, side, io.papermc.paper.event.player.PlayerOpenSignEvent.Cause.PLUGIN);
+        if (!event.callEvent()) return;
+        if (PlayerSignOpenEvent.getHandlerList().getRegisteredListeners().length > 0) {
+            // Paper end - Add PlayerOpenSignEvent
         if (!CraftEventFactory.callPlayerSignOpenEvent(player, sign, side, PlayerSignOpenEvent.Cause.PLUGIN)) {
             return;
         }
+        } // Paper - Add PlayerOpenSignEvent
 
-        SignBlockEntity handle = ((CraftSign<?>) sign).getTileEntity();
-        handle.setAllowedPlayerEditor(player.getUniqueId());
+        SignBlockEntity blockEntity = ((CraftSign<?>) sign).getBlockEntity();
+        blockEntity.setAllowedPlayerEditor(player.getUniqueId());
 
-        ((CraftPlayer) player).getHandle().openTextEdit(handle, Side.FRONT == side);
+        ((CraftPlayer) player).getHandle().openTextEdit(blockEntity, Side.FRONT == side);
     }
+
+    // Paper start
+    public static Component[] sanitizeLines(java.util.List<? extends net.kyori.adventure.text.Component> lines) {
+        Component[] components = new Component[4];
+        for (int i = 0; i < 4; i++) {
+            if (i < lines.size() && lines.get(i) != null) {
+                components[i] = io.papermc.paper.adventure.PaperAdventure.asVanilla(lines.get(i));
+            } else {
+                components[i] = net.minecraft.network.chat.Component.literal("");
+            }
+        }
+        return components;
+    }
+    // Paper end
+
+    // Paper start - More Sign Block API
+    @Override
+    public java.util.UUID getAllowedEditorUniqueId() {
+        this.ensureNoWorldGeneration();
+        return this.getBlockEntity().getPlayerWhoMayEdit();
+    }
+
+    @Override
+    public void setAllowedEditorUniqueId(java.util.UUID uuid) {
+        this.ensureNoWorldGeneration();
+        this.getBlockEntity().setAllowedPlayerEditor(uuid);
+    }
+
+    @Override
+    public Side getInteractableSideFor(final double x, final double z) {
+        this.requirePlaced();
+        return this.getSnapshot().isFacingFrontText(x, z) ? Side.FRONT : Side.BACK;
+    }
+    // Paper end - More Sign Block API
 
     public static Component[] sanitizeLines(String[] lines) {
         Component[] components = new Component[4];

@@ -17,9 +17,11 @@ import org.bukkit.entity.Raider;
 public final class CraftRaid implements Raid {
 
     private final net.minecraft.world.entity.raid.Raid handle;
+    private final Level level;
 
-    public CraftRaid(net.minecraft.world.entity.raid.Raid handle) {
+    public CraftRaid(net.minecraft.world.entity.raid.Raid handle, Level level) {
         this.handle = handle;
+        this.level = level;
     }
 
     @Override
@@ -47,8 +49,7 @@ public final class CraftRaid implements Raid {
     @Override
     public Location getLocation() {
         BlockPos pos = this.handle.getCenter();
-        Level world = this.handle.getLevel();
-        return CraftLocation.toBukkit(pos, world.getWorld());
+        return CraftLocation.toBukkit(pos, this.level.getWorld());
     }
 
     @Override
@@ -101,5 +102,33 @@ public final class CraftRaid implements Raid {
 
     public net.minecraft.world.entity.raid.Raid getHandle() {
         return this.handle;
+    }
+
+    @Override
+    public int getId() {
+        return this.handle.idOrNegativeOne;
+    }
+
+    @Override
+    public org.bukkit.boss.BossBar getBossBar() {
+        return new org.bukkit.craftbukkit.boss.CraftBossBar(this.handle.raidEvent);
+    }
+
+    @Override
+    public org.bukkit.persistence.PersistentDataContainer getPersistentDataContainer() {
+        return this.handle.persistentDataContainer;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || this.getClass() != o.getClass()) return false;
+        final org.bukkit.craftbukkit.CraftRaid craftRaid = (org.bukkit.craftbukkit.CraftRaid) o;
+        return this.handle.equals(craftRaid.handle);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.handle.hashCode();
     }
 }

@@ -1,29 +1,27 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftTNT extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.TNT {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.TntBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.data.type.TNT;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftTNT() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftTnt extends CraftBlockData implements TNT {
+    private static final BooleanProperty UNSTABLE = TntBlock.UNSTABLE;
 
-    public CraftTNT(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftTnt(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftTNT
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty UNSTABLE = getBoolean(net.minecraft.world.level.block.TntBlock.class, "unstable");
-
     @Override
     public boolean isUnstable() {
-        return this.get(CraftTNT.UNSTABLE);
+        return this.get(UNSTABLE);
     }
 
     @Override
-    public void setUnstable(boolean unstable) {
-        this.set(CraftTNT.UNSTABLE, unstable);
+    public void setUnstable(final boolean unstable) {
+        this.set(UNSTABLE, unstable);
     }
 }

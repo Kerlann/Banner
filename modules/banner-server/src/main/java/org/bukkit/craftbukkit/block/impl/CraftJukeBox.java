@@ -1,24 +1,27 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftJukeBox extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Jukebox {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.JukeboxBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.data.type.Jukebox;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftJukeBox() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftJukebox extends CraftBlockData implements Jukebox {
+    private static final BooleanProperty HAS_RECORD = JukeboxBlock.HAS_RECORD;
 
-    public CraftJukeBox(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftJukebox(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftJukebox
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty HAS_RECORD = getBoolean(net.minecraft.world.level.block.JukeboxBlock.class, "has_record");
-
     @Override
     public boolean hasRecord() {
-        return this.get(CraftJukeBox.HAS_RECORD);
+        return this.get(HAS_RECORD);
+    }
+
+    @Override
+    public void setHasRecord(final boolean hasRecord) {
+        this.set(HAS_RECORD, hasRecord);
     }
 }

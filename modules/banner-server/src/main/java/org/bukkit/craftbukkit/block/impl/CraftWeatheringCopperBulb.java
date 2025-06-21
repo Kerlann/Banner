@@ -1,43 +1,39 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftWeatheringCopperBulb extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.CopperBulb, org.bukkit.block.data.Lightable, org.bukkit.block.data.Powerable {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.WeatheringCopperBulbBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.data.type.CopperBulb;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftWeatheringCopperBulb() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftWeatheringCopperBulb extends CraftBlockData implements CopperBulb {
+    private static final BooleanProperty LIT = WeatheringCopperBulbBlock.LIT;
 
-    public CraftWeatheringCopperBulb(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty POWERED = WeatheringCopperBulbBlock.POWERED;
+
+    public CraftWeatheringCopperBulb(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftLightable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty LIT = getBoolean(net.minecraft.world.level.block.WeatheringCopperBulbBlock.class, "lit");
-
     @Override
     public boolean isLit() {
-        return this.get(CraftWeatheringCopperBulb.LIT);
+        return this.get(LIT);
     }
 
     @Override
-    public void setLit(boolean lit) {
-        this.set(CraftWeatheringCopperBulb.LIT, lit);
+    public void setLit(final boolean lit) {
+        this.set(LIT, lit);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftPowerable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty POWERED = getBoolean(net.minecraft.world.level.block.WeatheringCopperBulbBlock.class, "powered");
 
     @Override
     public boolean isPowered() {
-        return this.get(CraftWeatheringCopperBulb.POWERED);
+        return this.get(POWERED);
     }
 
     @Override
-    public void setPowered(boolean powered) {
-        this.set(CraftWeatheringCopperBulb.POWERED, powered);
+    public void setPowered(final boolean powered) {
+        this.set(POWERED, powered);
     }
 }

@@ -1,62 +1,66 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftSmallDripleaf extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.SmallDripleaf, org.bukkit.block.data.type.Dripleaf, org.bukkit.block.data.Bisected, org.bukkit.block.data.Directional, org.bukkit.block.data.Waterlogged {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.SmallDripleafBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.SmallDripleaf;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftSmallDripleaf() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftSmallDripleaf extends CraftBlockData implements SmallDripleaf {
+    private static final EnumProperty<Direction> FACING = SmallDripleafBlock.FACING;
 
-    public CraftSmallDripleaf(net.minecraft.world.level.block.state.BlockState state) {
+    private static final EnumProperty<DoubleBlockHalf> HALF = SmallDripleafBlock.HALF;
+
+    private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
+    public CraftSmallDripleaf(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftBisected
+    @Override
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
+    }
 
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> HALF = getEnum(net.minecraft.world.level.block.SmallDripleafBlock.class, "half");
+    @Override
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian() && blockFace.getModY() == 0, "Invalid face, only cartesian horizontal face are allowed for this property!");
+        this.set(FACING, blockFace);
+    }
+
+    @Override
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
+    }
 
     @Override
     public org.bukkit.block.data.Bisected.Half getHalf() {
-        return this.get(CraftSmallDripleaf.HALF, org.bukkit.block.data.Bisected.Half.class);
+        return this.get(HALF, org.bukkit.block.data.Bisected.Half.class);
     }
 
     @Override
-    public void setHalf(org.bukkit.block.data.Bisected.Half half) {
-        this.set(CraftSmallDripleaf.HALF, half);
+    public void setHalf(final org.bukkit.block.data.Bisected.Half half) {
+        Preconditions.checkArgument(half != null, "half cannot be null!");
+        this.set(HALF, half);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.SmallDripleafBlock.class, "facing");
-
-    @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftSmallDripleaf.FACING, org.bukkit.block.BlockFace.class);
-    }
-
-    @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftSmallDripleaf.FACING, facing);
-    }
-
-    @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftSmallDripleaf.FACING, org.bukkit.block.BlockFace.class);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.SmallDripleafBlock.class, "waterlogged");
 
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftSmallDripleaf.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftSmallDripleaf.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }

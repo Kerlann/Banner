@@ -5,12 +5,16 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.CreeperPowerEvent;
-import org.jetbrains.annotations.Nullable;
 
 public class CraftCreeper extends CraftMonster implements Creeper {
 
     public CraftCreeper(CraftServer server, net.minecraft.world.entity.monster.Creeper entity) {
         super(server, entity);
+    }
+
+    @Override
+    public net.minecraft.world.entity.monster.Creeper getHandle() {
+        return (net.minecraft.world.entity.monster.Creeper) this.entity;
     }
 
     @Override
@@ -23,7 +27,7 @@ public class CraftCreeper extends CraftMonster implements Creeper {
         CreeperPowerEvent.PowerCause cause = powered ? CreeperPowerEvent.PowerCause.SET_ON : CreeperPowerEvent.PowerCause.SET_OFF;
 
         // only call event when we are not in world generation
-        if (this.getHandle().bridge$generation() || !this.callPowerEvent(cause)) {
+        if (this.getHandle().generation || !this.callPowerEvent(cause)) {
             this.getHandle().setPowered(powered);
         }
     }
@@ -78,10 +82,9 @@ public class CraftCreeper extends CraftMonster implements Creeper {
 
     @Override
     public void ignite(Entity entity) {
-        // Banner TODO fixme
         Preconditions.checkNotNull(entity, "entity cannot be null");
-       // getHandle().entityIgniter = ((CraftEntity) entity).getHandle();
-        getHandle().ignite();
+        this.getHandle().entityIgniter = ((CraftEntity) entity).getHandle();
+        this.getHandle().ignite();
     }
 
     @Override
@@ -90,19 +93,19 @@ public class CraftCreeper extends CraftMonster implements Creeper {
     }
 
     @Override
-    public @Nullable Entity getIgniter() {
-        // Banner TODO fixme
-       // return (getHandle().entityIgniter != null) ? getHandle().entityIgniter.getBukkitEntity() : null;
-        return null;
+    public Entity getIgniter() {
+        return (this.getHandle().entityIgniter != null) ? this.getHandle().entityIgniter.getBukkitEntity() : null;
+    }
+
+    // Paper start
+    @Override
+    public void setIgnited(boolean ignited) {
+        getHandle().setIgnited(ignited);
     }
 
     @Override
-    public net.minecraft.world.entity.monster.Creeper getHandle() {
-        return (net.minecraft.world.entity.monster.Creeper) this.entity;
+    public boolean isIgnited() {
+        return getHandle().isIgnited();
     }
-
-    @Override
-    public String toString() {
-        return "CraftCreeper";
-    }
+    // Paper end
 }

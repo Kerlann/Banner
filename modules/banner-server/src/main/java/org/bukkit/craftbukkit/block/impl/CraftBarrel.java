@@ -1,48 +1,51 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftBarrel extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Barrel, org.bukkit.block.data.Directional, org.bukkit.block.data.Openable {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.BarrelBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Barrel;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftBarrel() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftBarrel extends CraftBlockData implements Barrel {
+    private static final EnumProperty<Direction> FACING = BarrelBlock.FACING;
 
-    public CraftBarrel(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty OPEN = BarrelBlock.OPEN;
+
+    public CraftBarrel(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.BarrelBlock.class, "facing");
-
     @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftBarrel.FACING, org.bukkit.block.BlockFace.class);
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
     }
 
     @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftBarrel.FACING, facing);
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian(), "Invalid face, only cartesian face are allowed for this property!");
+        this.set(FACING, blockFace);
     }
 
     @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftBarrel.FACING, org.bukkit.block.BlockFace.class);
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftOpenable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty OPEN = getBoolean(net.minecraft.world.level.block.BarrelBlock.class, "open");
 
     @Override
     public boolean isOpen() {
-        return this.get(CraftBarrel.OPEN);
+        return this.get(OPEN);
     }
 
     @Override
-    public void setOpen(boolean open) {
-        this.set(CraftBarrel.OPEN, open);
+    public void setOpen(final boolean open) {
+        this.set(OPEN, open);
     }
 }

@@ -15,6 +15,11 @@ public class CraftPainting extends CraftHanging implements Painting {
     }
 
     @Override
+    public net.minecraft.world.entity.decoration.Painting getHandle() {
+        return (net.minecraft.world.entity.decoration.Painting) this.entity;
+    }
+
+    @Override
     public Art getArt() {
         return CraftArt.minecraftHolderToBukkit(this.getHandle().getVariant());
     }
@@ -30,13 +35,13 @@ public class CraftPainting extends CraftHanging implements Painting {
         Holder<PaintingVariant> oldArt = painting.getVariant();
         painting.setVariant(CraftArt.bukkitToMinecraftHolder(art));
         painting.setDirection(painting.getDirection());
-        if (!force && !this.getHandle().bridge$generation() && !painting.survives()) {
+        if (!force && !this.getHandle().generation && !painting.survives()) {
             // Revert painting since it doesn't fit
             painting.setVariant(oldArt);
             painting.setDirection(painting.getDirection());
             return false;
         }
-        this.update();
+        //this.update(); Paper - Don't resent entity on art update
         return true;
     }
 
@@ -48,15 +53,5 @@ public class CraftPainting extends CraftHanging implements Painting {
         }
 
         return false;
-    }
-
-    @Override
-    public net.minecraft.world.entity.decoration.Painting getHandle() {
-        return (net.minecraft.world.entity.decoration.Painting) this.entity;
-    }
-
-    @Override
-    public String toString() {
-        return "CraftPainting{art=" + this.getArt() + "}";
     }
 }

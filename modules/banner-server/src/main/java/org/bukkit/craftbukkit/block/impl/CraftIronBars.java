@@ -1,79 +1,70 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftIronBars extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Fence, org.bukkit.block.data.MultipleFacing, org.bukkit.block.data.Waterlogged {
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Fence;
+import org.bukkit.craftbukkit.block.CraftBlock;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftIronBars() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftIronBars extends CraftBlockData implements Fence {
+    private static final BooleanProperty WATERLOGGED = IronBarsBlock.WATERLOGGED;
 
-    public CraftIronBars(net.minecraft.world.level.block.state.BlockState state) {
+    private static final Map<BlockFace, BooleanProperty> PROPERTY_BY_DIRECTION = IronBarsBlock.PROPERTY_BY_DIRECTION.entrySet().stream()
+            .collect(Collectors.toMap(entry -> CraftBlock.notchToBlockFace(entry.getKey()), entry -> entry.getValue()));
+
+    public CraftIronBars(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftMultipleFacing
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty[] FACES = new net.minecraft.world.level.block.state.properties.BooleanProperty[]{
-        getBoolean(net.minecraft.world.level.block.IronBarsBlock.class, "north", true), getBoolean(net.minecraft.world.level.block.IronBarsBlock.class, "east", true), getBoolean(net.minecraft.world.level.block.IronBarsBlock.class, "south", true), getBoolean(net.minecraft.world.level.block.IronBarsBlock.class, "west", true), getBoolean(net.minecraft.world.level.block.IronBarsBlock.class, "up", true), getBoolean(net.minecraft.world.level.block.IronBarsBlock.class, "down", true)
-    };
-
-    @Override
-    public boolean hasFace(org.bukkit.block.BlockFace face) {
-        net.minecraft.world.level.block.state.properties.BooleanProperty state = CraftIronBars.FACES[face.ordinal()];
-        if (state == null) {
-            throw new IllegalArgumentException("Non-allowed face " + face + ". Check MultipleFacing.getAllowedFaces.");
-        }
-        return this.get(state);
-    }
-
-    @Override
-    public void setFace(org.bukkit.block.BlockFace face, boolean has) {
-        net.minecraft.world.level.block.state.properties.BooleanProperty state = CraftIronBars.FACES[face.ordinal()];
-        if (state == null) {
-            throw new IllegalArgumentException("Non-allowed face " + face + ". Check MultipleFacing.getAllowedFaces.");
-        }
-        this.set(state, has);
-    }
-
-    @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        com.google.common.collect.ImmutableSet.Builder<org.bukkit.block.BlockFace> faces = com.google.common.collect.ImmutableSet.builder();
-
-        for (int i = 0; i < CraftIronBars.FACES.length; i++) {
-            if (CraftIronBars.FACES[i] != null && this.get(CraftIronBars.FACES[i])) {
-                faces.add(org.bukkit.block.BlockFace.values()[i]);
-            }
-        }
-
-        return faces.build();
-    }
-
-    @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getAllowedFaces() {
-        com.google.common.collect.ImmutableSet.Builder<org.bukkit.block.BlockFace> faces = com.google.common.collect.ImmutableSet.builder();
-
-        for (int i = 0; i < CraftIronBars.FACES.length; i++) {
-            if (CraftIronBars.FACES[i] != null) {
-                faces.add(org.bukkit.block.BlockFace.values()[i]);
-            }
-        }
-
-        return faces.build();
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.IronBarsBlock.class, "waterlogged");
-
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftIronBars.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftIronBars.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
+    }
+
+    @Override
+    public boolean hasFace(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        BooleanProperty property = PROPERTY_BY_DIRECTION.get(blockFace);
+        Preconditions.checkArgument(property != null, "Invalid blockFace, only %s are allowed!", PROPERTY_BY_DIRECTION.keySet().stream().map(Enum::name).collect(Collectors.joining(", ")));
+        return this.get(property);
+    }
+
+    @Override
+    public void setFace(final BlockFace blockFace, final boolean face) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        BooleanProperty property = PROPERTY_BY_DIRECTION.get(blockFace);
+        Preconditions.checkArgument(property != null, "Invalid blockFace, only %s are allowed!", PROPERTY_BY_DIRECTION.keySet().stream().map(Enum::name).collect(Collectors.joining(", ")));
+        this.set(property, face);
+    }
+
+    @Override
+    public Set<BlockFace> getFaces() {
+        ImmutableSet.Builder<BlockFace> faces = ImmutableSet.builder();
+        for (Map.Entry<BlockFace, BooleanProperty> entry : PROPERTY_BY_DIRECTION.entrySet()) {
+            if (this.get(entry.getValue())) {
+                faces.add(entry.getKey());
+            }
+        }
+        return faces.build();
+    }
+
+    @Override
+    public Set<BlockFace> getAllowedFaces() {
+        return Collections.unmodifiableSet(PROPERTY_BY_DIRECTION.keySet());
     }
 }

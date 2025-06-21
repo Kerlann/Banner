@@ -1,76 +1,75 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftFenceGate extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Gate, org.bukkit.block.data.Directional, org.bukkit.block.data.Openable, org.bukkit.block.data.Powerable {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Gate;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftFenceGate() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftFenceGate extends CraftBlockData implements Gate {
+    private static final EnumProperty<Direction> FACING = FenceGateBlock.FACING;
 
-    public CraftFenceGate(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty IN_WALL = FenceGateBlock.IN_WALL;
+
+    private static final BooleanProperty OPEN = FenceGateBlock.OPEN;
+
+    private static final BooleanProperty POWERED = FenceGateBlock.POWERED;
+
+    public CraftFenceGate(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftGate
+    @Override
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
+    }
 
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty IN_WALL = getBoolean(net.minecraft.world.level.block.FenceGateBlock.class, "in_wall");
+    @Override
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian() && blockFace.getModY() == 0, "Invalid face, only cartesian horizontal face are allowed for this property!");
+        this.set(FACING, blockFace);
+    }
+
+    @Override
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
+    }
 
     @Override
     public boolean isInWall() {
-        return this.get(CraftFenceGate.IN_WALL);
+        return this.get(IN_WALL);
     }
 
     @Override
-    public void setInWall(boolean inWall) {
-        this.set(CraftFenceGate.IN_WALL, inWall);
+    public void setInWall(final boolean inWall) {
+        this.set(IN_WALL, inWall);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.FenceGateBlock.class, "facing");
-
-    @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftFenceGate.FACING, org.bukkit.block.BlockFace.class);
-    }
-
-    @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftFenceGate.FACING, facing);
-    }
-
-    @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftFenceGate.FACING, org.bukkit.block.BlockFace.class);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftOpenable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty OPEN = getBoolean(net.minecraft.world.level.block.FenceGateBlock.class, "open");
 
     @Override
     public boolean isOpen() {
-        return this.get(CraftFenceGate.OPEN);
+        return this.get(OPEN);
     }
 
     @Override
-    public void setOpen(boolean open) {
-        this.set(CraftFenceGate.OPEN, open);
+    public void setOpen(final boolean open) {
+        this.set(OPEN, open);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftPowerable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty POWERED = getBoolean(net.minecraft.world.level.block.FenceGateBlock.class, "powered");
 
     @Override
     public boolean isPowered() {
-        return this.get(CraftFenceGate.POWERED);
+        return this.get(POWERED);
     }
 
     @Override
-    public void setPowered(boolean powered) {
-        this.set(CraftFenceGate.POWERED, powered);
+    public void setPowered(final boolean powered) {
+        this.set(POWERED, powered);
     }
 }

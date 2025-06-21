@@ -1,8 +1,6 @@
 package org.bukkit.craftbukkit.command;
 
 import java.util.UUID;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.conversations.Conversation;
@@ -16,7 +14,6 @@ import org.bukkit.craftbukkit.conversations.ConversationTracker;
 public class CraftConsoleCommandSender extends ServerCommandSender implements ConsoleCommandSender {
 
     protected final ConversationTracker conversationTracker = new ConversationTracker();
-    private static final Logger LOGGER = LogManager.getLogger("Console");
 
     protected CraftConsoleCommandSender() {
         super();
@@ -29,7 +26,7 @@ public class CraftConsoleCommandSender extends ServerCommandSender implements Co
 
     @Override
     public void sendRawMessage(String message) {
-        LOGGER.info(ChatColor.stripColor(message));
+        System.out.println(ChatColor.stripColor(message));
     }
 
     @Override
@@ -47,6 +44,11 @@ public class CraftConsoleCommandSender extends ServerCommandSender implements Co
     @Override
     public String getName() {
         return "CONSOLE";
+    }
+
+    @Override
+    public net.kyori.adventure.text.Component name() {
+        return net.kyori.adventure.text.Component.text(this.getName());
     }
 
     @Override
@@ -82,5 +84,20 @@ public class CraftConsoleCommandSender extends ServerCommandSender implements Co
     @Override
     public boolean isConversing() {
         return this.conversationTracker.isConversing();
+    }
+
+    @Override
+    public void sendMessage(final net.kyori.adventure.identity.Identity identity, final net.kyori.adventure.text.Component message, final net.kyori.adventure.audience.MessageType type) {
+        this.sendRawMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(message));
+    }
+
+    @Override
+    public boolean hasPermission(String name) {
+        return io.papermc.paper.configuration.GlobalConfiguration.get().console.hasAllPermissions || super.hasPermission(name);
+    }
+
+    @Override
+    public boolean hasPermission(org.bukkit.permissions.Permission perm) {
+        return io.papermc.paper.configuration.GlobalConfiguration.get().console.hasAllPermissions || super.hasPermission(perm);
     }
 }

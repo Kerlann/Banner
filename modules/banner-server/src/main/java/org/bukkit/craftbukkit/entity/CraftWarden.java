@@ -21,11 +21,6 @@ public class CraftWarden extends CraftMonster implements org.bukkit.entity.Warde
     }
 
     @Override
-    public String toString() {
-        return "CraftWarden";
-    }
-
-    @Override
     public int getAnger() {
         return this.getHandle().getAngerManagement().getActiveAnger(this.getHandle().getTarget());
     }
@@ -35,6 +30,11 @@ public class CraftWarden extends CraftMonster implements org.bukkit.entity.Warde
         Preconditions.checkArgument(entity != null, "Entity cannot be null");
 
         return this.getHandle().getAngerManagement().getActiveAnger(((CraftEntity) entity).getHandle());
+    }
+
+    @Override
+    public int getHighestAnger() {
+        return this.getHandle().getAngerManagement().getActiveAnger(null);
     }
 
     @Override

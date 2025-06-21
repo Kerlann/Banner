@@ -1,48 +1,50 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftLight extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Light, org.bukkit.block.data.Levelled, org.bukkit.block.data.Waterlogged {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.LightBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.data.type.Light;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftLight() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftLight extends CraftBlockData implements Light {
+    private static final IntegerProperty LEVEL = LightBlock.LEVEL;
 
-    public CraftLight(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty WATERLOGGED = LightBlock.WATERLOGGED;
+
+    public CraftLight(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftLevelled
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty LEVEL = getInteger(net.minecraft.world.level.block.LightBlock.class, "level");
-
     @Override
     public int getLevel() {
-        return this.get(CraftLight.LEVEL);
+        return this.get(LEVEL);
     }
 
     @Override
-    public void setLevel(int level) {
-        this.set(CraftLight.LEVEL, level);
+    public void setLevel(final int level) {
+        this.set(LEVEL, level);
+    }
+
+    @Override
+    public int getMinimumLevel() {
+        return LEVEL.min;
     }
 
     @Override
     public int getMaximumLevel() {
-        return getMax(CraftLight.LEVEL);
+        return LEVEL.max;
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.LightBlock.class, "waterlogged");
 
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftLight.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftLight.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }

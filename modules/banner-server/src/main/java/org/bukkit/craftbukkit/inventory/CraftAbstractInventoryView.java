@@ -1,6 +1,9 @@
 package org.bukkit.craftbukkit.inventory;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.world.Containers;
+import net.minecraft.world.entity.player.Player;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -11,12 +14,13 @@ import org.jetbrains.annotations.Nullable;
 public abstract class CraftAbstractInventoryView implements InventoryView {
 
     @Override
-    public void setItem(final int slot, @Nullable final ItemStack item) {
+    public void setItem(final int slot, final @Nullable ItemStack item) {
         Inventory inventory = this.getInventory(slot);
         if (inventory != null) {
             inventory.setItem(this.convertSlot(slot), item);
         } else if (item != null) {
-            this.getPlayer().getWorld().dropItemNaturally(this.getPlayer().getLocation(), item);
+            Player handle = ((CraftHumanEntity) this.getPlayer()).getHandle();
+            Containers.dropItemStack(handle.level(), handle.getX(), handle.getY(), handle.getZ(), CraftItemStack.asNMSCopy(item));
         }
     }
 
@@ -160,7 +164,6 @@ public abstract class CraftAbstractInventoryView implements InventoryView {
                     type = InventoryType.SlotType.CRAFTING;
                     break;
                 case ANVIL:
-                case SMITHING:
                 case CARTOGRAPHY:
                 case GRINDSTONE:
                 case MERCHANT:
@@ -178,6 +181,7 @@ public abstract class CraftAbstractInventoryView implements InventoryView {
                     }
                     break;
                 case LOOM:
+                case SMITHING: // Paper - properly remove experimental smithing inventory
                 case SMITHING_NEW:
                     if (slot == 3) {
                         type = InventoryType.SlotType.RESULT;
@@ -202,6 +206,11 @@ public abstract class CraftAbstractInventoryView implements InventoryView {
             }
         }
         return type;
+    }
+
+    @Override
+    public void open() {
+        getPlayer().openInventory(this);
     }
 
     @Override

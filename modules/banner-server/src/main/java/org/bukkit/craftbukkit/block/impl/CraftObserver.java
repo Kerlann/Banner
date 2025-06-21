@@ -1,48 +1,51 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftObserver extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Observer, org.bukkit.block.data.Directional, org.bukkit.block.data.Powerable {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.ObserverBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Observer;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftObserver() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftObserver extends CraftBlockData implements Observer {
+    private static final EnumProperty<Direction> FACING = ObserverBlock.FACING;
 
-    public CraftObserver(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty POWERED = ObserverBlock.POWERED;
+
+    public CraftObserver(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.ObserverBlock.class, "facing");
-
     @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftObserver.FACING, org.bukkit.block.BlockFace.class);
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
     }
 
     @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftObserver.FACING, facing);
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian(), "Invalid face, only cartesian face are allowed for this property!");
+        this.set(FACING, blockFace);
     }
 
     @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftObserver.FACING, org.bukkit.block.BlockFace.class);
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftPowerable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty POWERED = getBoolean(net.minecraft.world.level.block.ObserverBlock.class, "powered");
 
     @Override
     public boolean isPowered() {
-        return this.get(CraftObserver.POWERED);
+        return this.get(POWERED);
     }
 
     @Override
-    public void setPowered(boolean powered) {
-        this.set(CraftObserver.POWERED, powered);
+    public void setPowered(final boolean powered) {
+        this.set(POWERED, powered);
     }
 }

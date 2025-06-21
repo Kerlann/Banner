@@ -1,48 +1,45 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftCaveVines extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.CaveVines, org.bukkit.block.data.Ageable, org.bukkit.block.data.type.CaveVinesPlant {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.CaveVinesBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.data.type.CaveVines;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftCaveVines() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftCaveVines extends CraftBlockData implements CaveVines {
+    private static final IntegerProperty AGE = CaveVinesBlock.AGE;
 
-    public CraftCaveVines(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty BERRIES = CaveVinesBlock.BERRIES;
+
+    public CraftCaveVines(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftAgeable
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty AGE = getInteger(net.minecraft.world.level.block.CaveVinesBlock.class, "age");
-
     @Override
     public int getAge() {
-        return this.get(CraftCaveVines.AGE);
+        return this.get(AGE);
     }
 
     @Override
-    public void setAge(int age) {
-        this.set(CraftCaveVines.AGE, age);
+    public void setAge(final int age) {
+        this.set(AGE, age);
     }
 
     @Override
     public int getMaximumAge() {
-        return getMax(CraftCaveVines.AGE);
-    }
-
-    // org.bukkit.craftbukkit.block.data.type.CraftCaveVinesPlant
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty BERRIES = getBoolean(net.minecraft.world.level.block.CaveVinesBlock.class, "berries");
-
-    @Override
-    public boolean isBerries() {
-        return this.get(CraftCaveVines.BERRIES);
+        return AGE.max;
     }
 
     @Override
-    public void setBerries(boolean berries) {
-        this.set(CraftCaveVines.BERRIES, berries);
+    public boolean hasBerries() {
+        return this.get(BERRIES);
+    }
+
+    @Override
+    public void setBerries(final boolean berries) {
+        this.set(BERRIES, berries);
     }
 }

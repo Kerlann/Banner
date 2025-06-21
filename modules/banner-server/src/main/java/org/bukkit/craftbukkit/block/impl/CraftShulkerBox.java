@@ -1,34 +1,38 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftShulkerBox extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.Directional {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftShulkerBox() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftShulkerBox extends CraftBlockData implements Directional {
+    private static final EnumProperty<Direction> FACING = ShulkerBoxBlock.FACING;
 
-    public CraftShulkerBox(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftShulkerBox(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.ShulkerBoxBlock.class, "facing");
-
     @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftShulkerBox.FACING, org.bukkit.block.BlockFace.class);
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
     }
 
     @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftShulkerBox.FACING, facing);
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian(), "Invalid face, only cartesian face are allowed for this property!");
+        this.set(FACING, blockFace);
     }
 
     @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftShulkerBox.FACING, org.bukkit.block.BlockFace.class);
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
     }
 }

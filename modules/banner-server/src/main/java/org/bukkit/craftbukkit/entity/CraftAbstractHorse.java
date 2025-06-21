@@ -2,9 +2,12 @@ package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
 import java.util.UUID;
+import net.minecraft.Optionull;
+import net.minecraft.world.entity.EntityReference;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.inventory.CraftInventoryAbstractHorse;
+import org.bukkit.craftbukkit.inventory.CraftSaddledInventory;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Horse;
@@ -45,7 +48,7 @@ public abstract class CraftAbstractHorse extends CraftAnimals implements Abstrac
     @Override
     public void setMaxDomestication(int value) {
         Preconditions.checkArgument(value > 0, "Max domestication (%s) cannot be zero or less", value);
-        this.getHandle().banner$setMaxDomestication(value);
+        this.getHandle().maxDomestication = value;
     }
 
     @Override
@@ -79,7 +82,7 @@ public abstract class CraftAbstractHorse extends CraftAnimals implements Abstrac
     public void setOwner(AnimalTamer owner) {
         if (owner != null) {
             this.setTamed(true);
-            this.getHandle().setTarget(null, null, false);
+            this.getHandle().setTarget(null, null);
             this.setOwnerUUID(owner.getUniqueId());
         } else {
             this.setTamed(false);
@@ -87,12 +90,17 @@ public abstract class CraftAbstractHorse extends CraftAnimals implements Abstrac
         }
     }
 
+    @Override
+    public UUID getOwnerUniqueId() {
+        return this.getOwnerUUID();
+    }
+
     public UUID getOwnerUUID() {
-        return this.getHandle().getOwnerUUID();
+        return Optionull.map(this.getHandle().getOwnerReference(), EntityReference::getUUID);
     }
 
     public void setOwnerUUID(UUID uuid) {
-        this.getHandle().setOwnerUUID(uuid);
+        this.getHandle().owner = uuid == null ? null : new EntityReference<>(uuid);
     }
 
     @Override
@@ -107,6 +115,44 @@ public abstract class CraftAbstractHorse extends CraftAnimals implements Abstrac
 
     @Override
     public AbstractHorseInventory getInventory() {
-        return new CraftInventoryAbstractHorse(this.getHandle().inventory);
+        return new CraftSaddledInventory(
+            this.getHandle().inventory,
+            this.getHandle().createEquipmentSlotContainer(EquipmentSlot.BODY),
+            this.getHandle().createEquipmentSlotContainer(EquipmentSlot.SADDLE)
+        );
+    }
+
+    @Override
+    public boolean isEatingGrass() {
+        return this.getHandle().isEating();
+    }
+
+    @Override
+    public void setEatingGrass(boolean eating) {
+        this.getHandle().setEating(eating);
+    }
+
+    @Override
+    public boolean isRearing() {
+        return this.getHandle().isStanding();
+    }
+
+    @Override
+    public void setRearing(boolean rearing) {
+        if (rearing) {
+            this.getHandle().setStanding(Integer.MAX_VALUE);
+        } else {
+            this.getHandle().clearStanding();
+        }
+    }
+
+    @Override
+    public boolean isEating() {
+        return this.getHandle().isMouthOpen();
+    }
+
+    @Override
+    public void setEating(boolean eating) {
+       this.getHandle().setMouthOpen(eating);
     }
 }

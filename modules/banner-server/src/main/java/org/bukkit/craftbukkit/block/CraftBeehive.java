@@ -16,8 +16,8 @@ import org.bukkit.entity.Bee;
 
 public class CraftBeehive extends CraftBlockEntityState<BeehiveBlockEntity> implements Beehive {
 
-    public CraftBeehive(World world, BeehiveBlockEntity tileEntity) {
-        super(world, tileEntity);
+    public CraftBeehive(World world, BeehiveBlockEntity blockEntity) {
+        super(world, blockEntity);
     }
 
     protected CraftBeehive(CraftBeehive state, Location location) {
@@ -43,7 +43,7 @@ public class CraftBeehive extends CraftBlockEntityState<BeehiveBlockEntity> impl
 
     @Override
     public boolean isSedated() {
-        return this.isPlaced() && this.getTileEntity().isSedated();
+        return this.isPlaced() && this.getBlockEntity().isSedated();
     }
 
     @Override
@@ -53,14 +53,14 @@ public class CraftBeehive extends CraftBlockEntityState<BeehiveBlockEntity> impl
 
     @Override
     public int getMaxEntities() {
-        return this.getSnapshot().bridge$maxBees();
+        return this.getSnapshot().maxBees;
     }
 
     @Override
     public void setMaxEntities(int max) {
         Preconditions.checkArgument(max > 0, "Max bees must be more than 0");
 
-        this.getSnapshot().banner$setMaxBees(max);
+        this.getSnapshot().maxBees = max;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class CraftBeehive extends CraftBlockEntityState<BeehiveBlockEntity> impl
         List<Bee> bees = new ArrayList<>();
 
         if (this.isPlaced()) {
-            BeehiveBlockEntity beehive = ((BeehiveBlockEntity) this.getTileEntityFromWorld());
+            BeehiveBlockEntity beehive = ((BeehiveBlockEntity) this.getBlockEntityFromWorld());
             for (Entity bee : beehive.releaseBees(this.getHandle(), BeeReleaseStatus.BEE_RELEASED, true)) {
                 bees.add((Bee) bee.getBukkitEntity());
             }
@@ -95,4 +95,11 @@ public class CraftBeehive extends CraftBlockEntityState<BeehiveBlockEntity> impl
     public CraftBeehive copy(Location location) {
         return new CraftBeehive(this, location);
     }
+
+    // Paper start - Add EntityBlockStorage clearEntities
+    @Override
+    public void clearEntities() {
+        getSnapshot().clearBees();
+    }
+    // Paper end
 }

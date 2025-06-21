@@ -5,24 +5,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
-import net.minecraft.world.phys.Vec3;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.entity.AbstractArrow;
-import org.bukkit.entity.AbstractWindCharge;
-import org.bukkit.entity.BreezeWindCharge;
-import org.bukkit.entity.DragonFireball;
 import org.bukkit.entity.Egg;
-import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Firework;
-import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.LingeringPotion;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -30,9 +24,9 @@ import org.bukkit.entity.SpectralArrow;
 import org.bukkit.entity.ThrownExpBottle;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.TippedArrow;
-import org.bukkit.entity.WitherSkull;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.util.Vector;
+import java.util.function.Consumer;
 
 public class CraftBlockProjectileSource implements BlockProjectileSource {
     private final DispenserBlockEntity dispenserBlock;
@@ -43,7 +37,7 @@ public class CraftBlockProjectileSource implements BlockProjectileSource {
 
     @Override
     public Block getBlock() {
-        return this.dispenserBlock.getLevel().getWorld().getBlockAt(this.dispenserBlock.getBlockPos().getX(), this.dispenserBlock.getBlockPos().getY(), this.dispenserBlock.getBlockPos().getZ());
+        return CraftBlock.at(this.dispenserBlock.getLevel(), this.dispenserBlock.getBlockPos());
     }
 
     @Override
@@ -53,11 +47,17 @@ public class CraftBlockProjectileSource implements BlockProjectileSource {
 
     @Override
     public <T extends Projectile> T launchProjectile(Class<? extends T> projectile, Vector velocity) {
+        return this.launchProjectile(projectile, velocity, null);
+    }
+
+    @Override
+    public <T extends Projectile> T launchProjectile(Class<? extends T> projectile, Vector velocity, Consumer<? super T> function) {
         Preconditions.checkArgument(this.getBlock().getType() == Material.DISPENSER, "Block is no longer dispenser");
-        // Copied from BlockDispenser.dispense()
-        BlockSource sourceblock = new BlockSource((ServerLevel) this.dispenserBlock.getLevel(), this.dispenserBlock.getBlockPos(), this.dispenserBlock.getBlockState(), this.dispenserBlock);
-        // Copied from DispenseBehaviorProjectile
-        Direction enumdirection = (Direction) sourceblock.state().getValue(DispenserBlock.FACING);
+
+        // Copied from DispenserBlock#dispenseFrom
+        BlockSource blockSource = new BlockSource((ServerLevel) this.dispenserBlock.getLevel(), this.dispenserBlock.getBlockPos(), this.dispenserBlock.getBlockState(), this.dispenserBlock);
+        // Copied from ProjectileDispenseBehavior
+        Direction direction = blockSource.state().getValue(DispenserBlock.FACING);
         net.minecraft.world.level.Level world = this.dispenserBlock.getLevel();
         net.minecraft.world.item.Item item = null;
 
@@ -65,8 +65,6 @@ public class CraftBlockProjectileSource implements BlockProjectileSource {
             item = Items.SNOWBALL;
         } else if (Egg.class.isAssignableFrom(projectile)) {
             item = Items.EGG;
-        } else if (EnderPearl.class.isAssignableFrom(projectile)) {
-            item = Items.ENDER_PEARL;
         } else if (ThrownExpBottle.class.isAssignableFrom(projectile)) {
             item = Items.EXPERIENCE_BOTTLE;
         } else if (ThrownPotion.class.isAssignableFrom(projectile)) {
@@ -80,61 +78,35 @@ public class CraftBlockProjectileSource implements BlockProjectileSource {
                 item = Items.TIPPED_ARROW;
             } else if (SpectralArrow.class.isAssignableFrom(projectile)) {
                 item = Items.SPECTRAL_ARROW;
-            } else {
+            } else if (org.bukkit.entity.Arrow.class.isAssignableFrom(projectile)) { // disallow trident
                 item = Items.ARROW;
             }
         } else if (Fireball.class.isAssignableFrom(projectile)) {
-            if (AbstractWindCharge.class.isAssignableFrom(projectile)) {
+            if (org.bukkit.entity.WindCharge.class.isAssignableFrom(projectile)) {
                 item = Items.WIND_CHARGE;
-            } else {
+            } else if (org.bukkit.entity.SmallFireball.class.isAssignableFrom(projectile)) { // only allow firing fire charges
                 item = Items.FIRE_CHARGE;
             }
-
         } else if (Firework.class.isAssignableFrom(projectile)) {
             item = Items.FIREWORK_ROCKET;
         }
 
-        Preconditions.checkArgument(item instanceof ProjectileItem, "Projectile not supported");
+        Preconditions.checkArgument(item instanceof ProjectileItem, "Projectile '%s' not supported", projectile.getSimpleName());
 
-        net.minecraft.world.item.ItemStack itemstack = new net.minecraft.world.item.ItemStack(item);
+        ItemStack itemstack = new ItemStack(item);
         ProjectileItem projectileItem = (ProjectileItem) item;
         ProjectileItem.DispenseConfig dispenseConfig = projectileItem.createDispenseConfig();
 
-        Position iposition = dispenseConfig.positionFunction().getDispensePosition(sourceblock, enumdirection);
-        net.minecraft.world.entity.projectile.Projectile launch = projectileItem.asProjectile(world, iposition, itemstack, enumdirection);
-
-        if (Fireball.class.isAssignableFrom(projectile)) {
-            net.minecraft.world.entity.projectile.AbstractHurtingProjectile customFireball = null;
-            if (WitherSkull.class.isAssignableFrom(projectile)) {
-                launch = customFireball = EntityType.WITHER_SKULL.create(world);
-            } else if (DragonFireball.class.isAssignableFrom(projectile)) {
-                launch = EntityType.DRAGON_FIREBALL.create(world);
-            } else if (BreezeWindCharge.class.isAssignableFrom(projectile)) {
-                launch = customFireball = EntityType.BREEZE_WIND_CHARGE.create(world);
-            } else if (LargeFireball.class.isAssignableFrom(projectile)) {
-                launch = customFireball = EntityType.FIREBALL.create(world);
-            }
-            if (customFireball != null) {
-                customFireball.setPos(iposition.x(), iposition.y(), iposition.z());
-
-                // Values from ItemFireball
-                RandomSource randomsource = world.getRandom();
-                double d0 = randomsource.triangle((double) enumdirection.getStepX(), 0.11485000000000001D);
-                double d1 = randomsource.triangle((double) enumdirection.getStepY(), 0.11485000000000001D);
-                double d2 = randomsource.triangle((double) enumdirection.getStepZ(), 0.11485000000000001D);
-                Vec3 vec3d = new Vec3(d0, d1, d2);
-                customFireball.assignDirectionalMovement(vec3d, 0.1D);
-            }
-        }
-
-        if (launch instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow) {
-            arrow.pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.ALLOWED;
-        }
-        launch.banner$setProjectileSource(this);
-        projectileItem.shoot(launch, (double) enumdirection.getStepX(), (double) enumdirection.getStepY(), (double) enumdirection.getStepZ(), dispenseConfig.power(), dispenseConfig.uncertainty());
+        Position position = dispenseConfig.positionFunction().getDispensePosition(blockSource, direction);
+        net.minecraft.world.entity.projectile.Projectile launch = projectileItem.asProjectile(world, position, itemstack, direction);
+        launch.projectileSource = this;
+        projectileItem.shoot(launch, direction.getStepX(), direction.getStepY(), direction.getStepZ(), dispenseConfig.power(), dispenseConfig.uncertainty());
 
         if (velocity != null) {
-            ((T) launch.getBukkitEntity()).setVelocity(velocity);
+            launch.getBukkitEntity().setVelocity(velocity);
+        }
+        if (function != null) {
+            function.accept((T) launch.getBukkitEntity());
         }
 
         world.addFreshEntity(launch);

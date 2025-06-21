@@ -1,29 +1,27 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftCaveVinesPlant extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.CaveVinesPlant {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.CaveVinesPlantBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.data.type.CaveVinesPlant;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftCaveVinesPlant() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftCaveVinesPlant extends CraftBlockData implements CaveVinesPlant {
+    private static final BooleanProperty BERRIES = CaveVinesPlantBlock.BERRIES;
 
-    public CraftCaveVinesPlant(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftCaveVinesPlant(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftCaveVinesPlant
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty BERRIES = getBoolean(net.minecraft.world.level.block.CaveVinesPlantBlock.class, "berries");
-
     @Override
-    public boolean isBerries() {
-        return this.get(CraftCaveVinesPlant.BERRIES);
+    public boolean hasBerries() {
+        return this.get(BERRIES);
     }
 
     @Override
-    public void setBerries(boolean berries) {
-        this.set(CraftCaveVinesPlant.BERRIES, berries);
+    public void setBerries(final boolean berries) {
+        this.set(BERRIES, berries);
     }
 }

@@ -1,34 +1,32 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftKelp extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.Ageable {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.KelpBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftKelp() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftKelp extends CraftBlockData implements Ageable {
+    private static final IntegerProperty AGE = KelpBlock.AGE;
 
-    public CraftKelp(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftKelp(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftAgeable
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty AGE = getInteger(net.minecraft.world.level.block.KelpBlock.class, "age");
-
     @Override
     public int getAge() {
-        return this.get(CraftKelp.AGE);
+        return this.get(AGE);
     }
 
     @Override
-    public void setAge(int age) {
-        this.set(CraftKelp.AGE, age);
+    public void setAge(final int age) {
+        this.set(AGE, age);
     }
 
     @Override
     public int getMaximumAge() {
-        return getMax(CraftKelp.AGE);
+        return AGE.max;
     }
 }

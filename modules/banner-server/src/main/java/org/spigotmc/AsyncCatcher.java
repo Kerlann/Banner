@@ -1,17 +1,13 @@
 package org.spigotmc;
 
-import com.mohistmc.banner.bukkit.BukkitMethodHooks;
+import net.minecraft.server.MinecraftServer;
 
-public class AsyncCatcher
-{
+public class AsyncCatcher {
 
-    public static boolean enabled = true;
-
-    public static void catchOp(String reason)
-    {
-        if ( AsyncCatcher.enabled && Thread.currentThread() != BukkitMethodHooks.getServer().serverThread )
-        {
-            throw new IllegalStateException( "Asynchronous " + reason + "!" );
+    public static void catchOp(String reason) {
+        if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThread()) { // Paper - chunk system
+            MinecraftServer.LOGGER.error("Thread {} failed main thread check: {}", Thread.currentThread().getName(), reason, new Throwable()); // Paper
+            throw new IllegalStateException("Asynchronous " + reason + "!");
         }
     }
 }

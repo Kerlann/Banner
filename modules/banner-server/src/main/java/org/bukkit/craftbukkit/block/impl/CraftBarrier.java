@@ -1,29 +1,27 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftBarrier extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.Waterlogged {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.BarrierBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.data.Waterlogged;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftBarrier() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftBarrier extends CraftBlockData implements Waterlogged {
+    private static final BooleanProperty WATERLOGGED = BarrierBlock.WATERLOGGED;
 
-    public CraftBarrier(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftBarrier(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.BarrierBlock.class, "waterlogged");
-
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftBarrier.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftBarrier.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }

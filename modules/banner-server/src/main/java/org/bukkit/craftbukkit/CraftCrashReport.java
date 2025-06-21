@@ -1,12 +1,12 @@
 package org.bukkit.craftbukkit;
 
-import com.mohistmc.banner.bukkit.BukkitMethodHooks;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -18,9 +18,11 @@ public class CraftCrashReport implements Supplier<String> {
 
     @Override
     public String get() {
+        final io.papermc.paper.ServerBuildInfo build = io.papermc.paper.ServerBuildInfo.buildInfo();
         StringWriter value = new StringWriter();
         try {
-            value.append("\n   Running: ").append(Bukkit.getName()).append(" version ").append(Bukkit.getVersion()).append(" (Implementing API version ").append(Bukkit.getBukkitVersion()).append(") ").append(String.valueOf(BukkitMethodHooks.getServer().usesAuthentication()));
+            value.append("\n   BrandInfo: ").append(String.format("%s (%s) version %s", build.brandName(), build.brandId(), build.asString(io.papermc.paper.ServerBuildInfo.StringRepresentation.VERSION_FULL)));
+            value.append("\n   Running: ").append(Bukkit.getName()).append(" version ").append(Bukkit.getVersion()).append(" (Implementing API version ").append(Bukkit.getBukkitVersion()).append(") ").append(String.valueOf(MinecraftServer.getServer().usesAuthentication()));
             value.append("\n   Plugins: {");
             for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
                 PluginDescriptionFile description = plugin.getDescription();
@@ -28,7 +30,7 @@ public class CraftCrashReport implements Supplier<String> {
                 value.append(' ').append(description.getFullName()).append(legacy ? "*" : "").append(' ').append(description.getMain()).append(' ').append(Arrays.toString(description.getAuthors().toArray())).append(',');
             }
             value.append("}\n   Warnings: ").append(Bukkit.getWarningState().name());
-            value.append("\n   Reload Count: ").append(String.valueOf(BukkitMethodHooks.getServer().bridge$server().reloadCount));
+            value.append("\n   Reload Count: ").append(String.valueOf(MinecraftServer.getServer().server.reloadCount));
             value.append("\n   Threads: {");
             for (Map.Entry<Thread, ? extends Object[]> entry : Thread.getAllStackTraces().entrySet()) {
                 value.append(' ').append(entry.getKey().getState().name()).append(' ').append(entry.getKey().getName()).append(": ").append(Arrays.toString(entry.getValue())).append(',');

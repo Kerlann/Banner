@@ -70,7 +70,7 @@ public class DummyGeneratorAccess implements WorldGenLevel {
 
     @Override
     public void scheduleTick(BlockPos pos, Block block, int delay) {
-        // Used by BlockComposter
+        // Used by ComposterBlock
     }
 
     @Override
@@ -104,7 +104,7 @@ public class DummyGeneratorAccess implements WorldGenLevel {
     }
 
     @Override
-    public void playSound(Player source, BlockPos pos, SoundEvent sound, SoundSource category, float volume, float pitch) {
+    public void playSound(Entity source, BlockPos pos, SoundEvent sound, SoundSource category, float volume, float pitch) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -114,13 +114,13 @@ public class DummyGeneratorAccess implements WorldGenLevel {
     }
 
     @Override
-    public void levelEvent(Player player, int eventId, BlockPos pos, int data) {
-        // Used by PowderSnowBlock.removeFluid
+    public void levelEvent(Entity entity, int eventId, BlockPos pos, int data) {
+        // Used by PowderSnowBlock.pickupBlock
     }
 
     @Override
     public void gameEvent(Holder<GameEvent> event, Vec3 emitterPos, GameEvent.Context emitter) {
-        // Used by BlockComposter
+        // Used by ComposterBlock
     }
 
     @Override
@@ -214,6 +214,21 @@ public class DummyGeneratorAccess implements WorldGenLevel {
     }
 
     @Override
+    public ChunkAccess getChunkIfLoadedImmediately(int x, int z) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public BlockState getBlockStateIfLoaded(BlockPos pos) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public FluidState getFluidIfLoaded(BlockPos pos) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public WorldBorder getWorldBorder() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -229,7 +244,7 @@ public class DummyGeneratorAccess implements WorldGenLevel {
     }
 
     @Override
-    public boolean setBlock(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
+    public boolean setBlock(BlockPos pos, BlockState state, int flags, int recursionLeft) {
         return false;
     }
 
@@ -239,7 +254,16 @@ public class DummyGeneratorAccess implements WorldGenLevel {
     }
 
     @Override
-    public boolean destroyBlock(BlockPos pos, boolean drop, Entity breakingEntity, int maxUpdateDepth) {
+    public boolean destroyBlock(BlockPos pos, boolean drop, Entity breakingEntity, int recursionLeft) {
         return false; // SPIGOT-6515
     }
+
+    @Override
+    public void scheduleTick(BlockPos pos, Fluid fluid, int delay) {}
+
+    @Override
+    public void scheduleTick(BlockPos pos, Block block, int delay, net.minecraft.world.ticks.TickPriority priority) {}
+
+    @Override
+    public void scheduleTick(BlockPos pos, Fluid fluid, int delay, net.minecraft.world.ticks.TickPriority priority) {}
 }

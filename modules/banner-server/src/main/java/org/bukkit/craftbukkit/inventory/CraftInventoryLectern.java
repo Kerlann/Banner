@@ -2,20 +2,19 @@ package org.bukkit.craftbukkit.inventory;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import org.bukkit.block.Lectern;
 import org.bukkit.inventory.LecternInventory;
 
 public class CraftInventoryLectern extends CraftInventory implements LecternInventory {
 
-    public MenuProvider tile;
+    public MenuProvider provider;
 
     public CraftInventoryLectern(Container inventory) {
         super(inventory);
-        // Banner TODO fixme
-        /*
-        if (inventory instanceof BannerLecternInventory) {
-            this.tile = ((BannerLecternInventory) inventory).getLectern();
-        }*/
+        if (inventory instanceof LecternBlockEntity.LecternInventory) {
+            this.provider = ((LecternBlockEntity.LecternInventory) inventory).getLectern();
+        }
     }
 
     @Override

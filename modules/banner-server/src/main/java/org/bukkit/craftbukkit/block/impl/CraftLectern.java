@@ -1,57 +1,63 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftLectern extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Lectern, org.bukkit.block.data.Directional, org.bukkit.block.data.Powerable {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Lectern;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftLectern() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftLectern extends CraftBlockData implements Lectern {
+    private static final EnumProperty<Direction> FACING = LecternBlock.FACING;
 
-    public CraftLectern(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty HAS_BOOK = LecternBlock.HAS_BOOK;
+
+    private static final BooleanProperty POWERED = LecternBlock.POWERED;
+
+    public CraftLectern(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftLectern
+    @Override
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
+    }
 
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty HAS_BOOK = getBoolean(net.minecraft.world.level.block.LecternBlock.class, "has_book");
+    @Override
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian() && blockFace.getModY() == 0, "Invalid face, only cartesian horizontal face are allowed for this property!");
+        this.set(FACING, blockFace);
+    }
+
+    @Override
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
+    }
 
     @Override
     public boolean hasBook() {
-        return this.get(CraftLectern.HAS_BOOK);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.LecternBlock.class, "facing");
-
-    @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftLectern.FACING, org.bukkit.block.BlockFace.class);
+        return this.get(HAS_BOOK);
     }
 
     @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftLectern.FACING, facing);
+    public void setHasBook(final boolean hasBook) {
+        this.set(HAS_BOOK, hasBook);
     }
-
-    @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftLectern.FACING, org.bukkit.block.BlockFace.class);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftPowerable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty POWERED = getBoolean(net.minecraft.world.level.block.LecternBlock.class, "powered");
 
     @Override
     public boolean isPowered() {
-        return this.get(CraftLectern.POWERED);
+        return this.get(POWERED);
     }
 
     @Override
-    public void setPowered(boolean powered) {
-        this.set(CraftLectern.POWERED, powered);
+    public void setPowered(final boolean powered) {
+        this.set(POWERED, powered);
     }
 }

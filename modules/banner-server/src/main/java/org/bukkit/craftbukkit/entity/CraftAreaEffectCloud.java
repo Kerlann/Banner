@@ -3,9 +3,11 @@ package org.bukkit.craftbukkit.entity;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.Optionull;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.item.alchemy.PotionContents;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -30,12 +32,7 @@ public class CraftAreaEffectCloud extends CraftEntity implements AreaEffectCloud
 
     @Override
     public net.minecraft.world.entity.AreaEffectCloud getHandle() {
-        return (net.minecraft.world.entity.AreaEffectCloud) super.getHandle();
-    }
-
-    @Override
-    public String toString() {
-        return "CraftAreaEffectCloud";
+        return (net.minecraft.world.entity.AreaEffectCloud) this.entity;
     }
 
     @Override
@@ -120,18 +117,18 @@ public class CraftAreaEffectCloud extends CraftEntity implements AreaEffectCloud
 
     @Override
     public <T> void setParticle(Particle particle, T data) {
-        this.getHandle().setParticle(CraftParticle.createParticleParam(particle, data));
+        this.getHandle().setCustomParticle(CraftParticle.createParticleParam(particle, data));
     }
 
     @Override
     public Color getColor() {
-        return Color.fromRGB(this.getHandle().potionContents.getColor());
+        return Color.fromRGB(this.getHandle().potionContents.getColor() & 0x00FFFFFF); // Paper - skip alpha channel
     }
 
     @Override
     public void setColor(Color color) {
         PotionContents old = this.getHandle().potionContents;
-        this.getHandle().setPotionContents(new PotionContents(old.potion(), Optional.of(color.asRGB()), old.customEffects()));
+        this.getHandle().setPotionContents(new PotionContents(old.potion(), Optional.of(color.asRGB()), old.customEffects(), old.customName()));
     }
 
     @Override
@@ -143,15 +140,13 @@ public class CraftAreaEffectCloud extends CraftEntity implements AreaEffectCloud
             this.removeCustomEffect(effect.getType());
         }
         this.getHandle().addEffect(CraftPotionUtil.fromBukkit(effect));
-        this.getHandle().updateColor();
         return true;
     }
 
     @Override
     public void clearCustomEffects() {
         PotionContents old = this.getHandle().potionContents;
-        this.getHandle().setPotionContents(new PotionContents(old.potion(), old.customColor(), List.of()));
-        this.getHandle().updateColor();
+        this.getHandle().setPotionContents(new PotionContents(old.potion(), old.customColor(), List.of(), old.customName()));
     }
 
     @Override
@@ -186,7 +181,7 @@ public class CraftAreaEffectCloud extends CraftEntity implements AreaEffectCloud
         Holder<MobEffect> minecraft = CraftPotionEffectType.bukkitToMinecraftHolder(effect);
 
         PotionContents old = this.getHandle().potionContents;
-        this.getHandle().setPotionContents(new PotionContents(old.potion(), old.customColor(), old.customEffects().stream().filter((mobEffect) -> !mobEffect.getEffect().equals(minecraft)).toList()));
+        this.getHandle().setPotionContents(new PotionContents(old.potion(), old.customColor(), old.customEffects().stream().filter((mobEffect) -> !mobEffect.getEffect().equals(minecraft)).toList(), old.customName()));
         return true;
     }
 
@@ -206,7 +201,7 @@ public class CraftAreaEffectCloud extends CraftEntity implements AreaEffectCloud
             this.getHandle().setPotionContents(this.getHandle().potionContents.withPotion(CraftPotionType.bukkitToMinecraftHolder(potionType)));
         } else {
             PotionContents old = this.getHandle().potionContents;
-            this.getHandle().setPotionContents(new PotionContents(Optional.empty(), old.customColor(), old.customEffects()));
+            this.getHandle().setPotionContents(new PotionContents(Optional.empty(), old.customColor(), old.customEffects(), old.customName()));
         }
     }
 
@@ -229,4 +224,16 @@ public class CraftAreaEffectCloud extends CraftEntity implements AreaEffectCloud
             this.getHandle().setOwner(null);
         }
     }
+
+    // Paper start - owner API
+    @Override
+    public java.util.UUID getOwnerUniqueId() {
+        return Optionull.map(this.getHandle().owner, EntityReference::getUUID);
+    }
+
+    @Override
+    public void setOwnerUniqueId(final java.util.UUID ownerUuid) {
+        this.getHandle().owner = ownerUuid == null ? null : new EntityReference<>(ownerUuid);
+    }
+    // Paper end
 }

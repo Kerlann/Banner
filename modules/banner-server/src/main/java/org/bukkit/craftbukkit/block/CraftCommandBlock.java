@@ -6,10 +6,10 @@ import org.bukkit.World;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.craftbukkit.util.CraftChatMessage;
 
-public class CraftCommandBlock extends CraftBlockEntityState<CommandBlockEntity> implements CommandBlock {
+public class CraftCommandBlock extends CraftBlockEntityState<CommandBlockEntity> implements CommandBlock, io.papermc.paper.commands.PaperCommandBlockHolder {
 
-    public CraftCommandBlock(World world, CommandBlockEntity tileEntity) {
-        super(world, tileEntity);
+    public CraftCommandBlock(World world, CommandBlockEntity blockEntity) {
+        super(world, blockEntity);
     }
 
     protected CraftCommandBlock(CraftCommandBlock state, Location location) {
@@ -44,5 +44,20 @@ public class CraftCommandBlock extends CraftBlockEntityState<CommandBlockEntity>
     @Override
     public CraftCommandBlock copy(Location location) {
         return new CraftCommandBlock(this, location);
+    }
+
+    @Override
+    public net.kyori.adventure.text.Component name() {
+        return io.papermc.paper.adventure.PaperAdventure.asAdventure(this.getSnapshot().getCommandBlock().getName());
+    }
+
+    @Override
+    public void name(net.kyori.adventure.text.Component name) {
+        this.getSnapshot().getCommandBlock().setCustomName(name == null ? net.minecraft.network.chat.Component.literal("@") : io.papermc.paper.adventure.PaperAdventure.asVanilla(name));
+    }
+
+    @Override
+    public net.minecraft.world.level.BaseCommandBlock getCommandBlockHandle() {
+        return this.getSnapshot().getCommandBlock();
     }
 }

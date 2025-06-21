@@ -1,29 +1,27 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftRedstoneLamp extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.Lightable {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.RedstoneLampBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.data.Lightable;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftRedstoneLamp() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftRedstoneLamp extends CraftBlockData implements Lightable {
+    private static final BooleanProperty LIT = RedstoneLampBlock.LIT;
 
-    public CraftRedstoneLamp(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftRedstoneLamp(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftLightable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty LIT = getBoolean(net.minecraft.world.level.block.RedstoneLampBlock.class, "lit");
-
     @Override
     public boolean isLit() {
-        return this.get(CraftRedstoneLamp.LIT);
+        return this.get(LIT);
     }
 
     @Override
-    public void setLit(boolean lit) {
-        this.set(CraftRedstoneLamp.LIT, lit);
+    public void setLit(final boolean lit) {
+        this.set(LIT, lit);
     }
 }

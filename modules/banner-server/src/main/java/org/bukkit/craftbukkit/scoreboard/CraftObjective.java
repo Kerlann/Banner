@@ -9,6 +9,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Score;
+import java.util.Objects;
 
 final class CraftObjective extends CraftScoreboardComponent implements Objective {
     private final net.minecraft.world.scores.Objective objective;
@@ -32,6 +33,21 @@ final class CraftObjective extends CraftScoreboardComponent implements Objective
     }
 
     @Override
+    public net.kyori.adventure.text.Component displayName() throws IllegalStateException {
+        this.checkState();
+        return io.papermc.paper.adventure.PaperAdventure.asAdventure(this.objective.getDisplayName());
+    }
+
+    @Override
+    public void displayName(net.kyori.adventure.text.Component displayName) throws IllegalStateException, IllegalArgumentException {
+        this.checkState();
+        if (displayName == null) {
+            displayName = net.kyori.adventure.text.Component.empty();
+        }
+        this.objective.setDisplayName(io.papermc.paper.adventure.PaperAdventure.asVanilla(displayName));
+    }
+
+    @Override
     public String getDisplayName() {
         this.checkState();
 
@@ -50,7 +66,7 @@ final class CraftObjective extends CraftScoreboardComponent implements Objective
     public String getCriteria() {
         this.checkState();
 
-        return this.criteria.bukkitName;
+        return this.criteria.name;
     }
 
     @Override
@@ -69,25 +85,26 @@ final class CraftObjective extends CraftScoreboardComponent implements Objective
 
     @Override
     public void setDisplaySlot(DisplaySlot slot) {
-        CraftScoreboard scoreboard = this.checkState();
-        Scoreboard board = scoreboard.board;
-        net.minecraft.world.scores.Objective objective = this.objective;
+        this.checkState();
 
-        for (net.minecraft.world.scores.DisplaySlot i : net.minecraft.world.scores.DisplaySlot.values()) {
-            if (board.getDisplayObjective(i) == objective) {
-                board.setDisplayObjective(i, null);
+        Scoreboard board = this.getScoreboard().getHandle();
+
+        for (net.minecraft.world.scores.DisplaySlot displaySlot : net.minecraft.world.scores.DisplaySlot.values()) {
+            if (board.getDisplayObjective(displaySlot) == this.objective) {
+                board.setDisplayObjective(displaySlot, null);
             }
         }
         if (slot != null) {
-            net.minecraft.world.scores.DisplaySlot slotNumber = CraftScoreboardTranslations.fromBukkitSlot(slot);
-            board.setDisplayObjective(slotNumber, this.getHandle());
+            net.minecraft.world.scores.DisplaySlot displaySlot = CraftScoreboardTranslations.fromBukkitSlot(slot);
+            board.setDisplayObjective(displaySlot, this.getHandle());
         }
     }
 
     @Override
     public DisplaySlot getDisplaySlot() {
-        CraftScoreboard scoreboard = this.checkState();
-        Scoreboard board = scoreboard.board;
+        this.checkState();
+
+        Scoreboard board = this.getScoreboard().getHandle();
         net.minecraft.world.scores.Objective objective = this.objective;
 
         for (net.minecraft.world.scores.DisplaySlot i : net.minecraft.world.scores.DisplaySlot.values()) {
@@ -130,17 +147,59 @@ final class CraftObjective extends CraftScoreboardComponent implements Objective
     }
 
     @Override
-    public void unregister() {
-        CraftScoreboard scoreboard = this.checkState();
+    public Score getScoreFor(org.bukkit.entity.Entity entity) throws IllegalArgumentException, IllegalStateException {
+        Preconditions.checkArgument(entity != null, "Entity cannot be null");
+        this.checkState();
 
-        scoreboard.board.removeObjective(this.objective);
+        return new CraftScore(this, ((org.bukkit.craftbukkit.entity.CraftEntity) entity).getHandle());
     }
 
     @Override
-    CraftScoreboard checkState() {
-        Preconditions.checkState(this.getScoreboard().board.getObjective(this.objective.getName()) != null, "Unregistered scoreboard component");
+    public io.papermc.paper.scoreboard.numbers.NumberFormat numberFormat() {
+        this.checkState();
 
-        return this.getScoreboard();
+        net.minecraft.network.chat.numbers.NumberFormat vanilla = this.objective.numberFormat();
+        
+        if (vanilla == null) {
+            return null;
+        }
+
+        return io.papermc.paper.util.PaperScoreboardFormat.asPaper(vanilla);
+    }
+
+    @Override
+    public void numberFormat(io.papermc.paper.scoreboard.numbers.NumberFormat format) {
+        this.checkState();
+
+        if (format == null) {
+            this.objective.setNumberFormat(null);
+            return;
+        }
+
+        this.objective.setNumberFormat(io.papermc.paper.util.PaperScoreboardFormat.asVanilla(format));
+    }
+
+    @Override
+    public void unregister() {
+        this.checkState();
+        this.getScoreboard().getHandle().removeObjective(this.objective);
+    }
+
+    @Override
+    public boolean willAutoUpdateDisplay() {
+        this.checkState();
+        return this.objective.displayAutoUpdate();
+    }
+
+    @Override
+    public void setAutoUpdateDisplay(final boolean autoUpdateDisplay) {
+        this.checkState();
+        this.objective.setDisplayAutoUpdate(autoUpdateDisplay);
+    }
+
+    @Override
+    void checkState() {
+        Preconditions.checkState(this.getScoreboard().getHandle().getObjective(this.objective.getName()) != null, "Unregistered scoreboard component");
     }
 
     @Override
@@ -159,8 +218,6 @@ final class CraftObjective extends CraftScoreboardComponent implements Objective
             return false;
         }
         final CraftObjective other = (CraftObjective) obj;
-        return !(this.objective != other.objective && (this.objective == null || !this.objective.equals(other.objective)));
+        return Objects.equals(this.objective, other.objective);
     }
-
-
 }

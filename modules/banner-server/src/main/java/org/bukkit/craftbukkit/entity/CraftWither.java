@@ -9,7 +9,7 @@ import org.bukkit.craftbukkit.boss.CraftBossBar;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Wither;
 
-public class CraftWither extends CraftMonster implements Wither {
+public class CraftWither extends CraftMonster implements Wither, com.destroystokyo.paper.entity.CraftRangedEntity<WitherBoss> { // Paper
 
     private BossBar bossBar;
 
@@ -24,11 +24,6 @@ public class CraftWither extends CraftMonster implements Wither {
     @Override
     public WitherBoss getHandle() {
         return (WitherBoss) this.entity;
-    }
-
-    @Override
-    public String toString() {
-        return "CraftWither";
     }
 
     @Override
@@ -66,5 +61,35 @@ public class CraftWither extends CraftMonster implements Wither {
         Preconditions.checkArgument(ticks >= 0, "ticks must be >=0");
 
         this.getHandle().setInvulnerableTicks(ticks);
+    }
+
+    @Override
+    public boolean isCharged() {
+        return getHandle().isPowered();
+    }
+
+    @Override
+    public int getInvulnerableTicks() {
+        return getHandle().getInvulnerableTicks();
+    }
+
+    @Override
+    public void setInvulnerableTicks(int ticks) {
+        getHandle().setInvulnerableTicks(ticks);
+    }
+
+    @Override
+    public boolean canTravelThroughPortals() {
+        return getHandle().canUsePortal(false);
+    }
+
+    @Override
+    public void setCanTravelThroughPortals(boolean value) {
+        getHandle().setCanTravelThroughPortals(value);
+    }
+
+    @Override
+    public void enterInvulnerabilityPhase() {
+        this.getHandle().makeInvulnerable();
     }
 }

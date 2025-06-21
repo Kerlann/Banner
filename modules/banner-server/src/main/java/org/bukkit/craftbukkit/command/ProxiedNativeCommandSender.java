@@ -68,6 +68,11 @@ public class ProxiedNativeCommandSender implements ProxiedCommandSender {
     }
 
     @Override
+    public net.kyori.adventure.text.Component name() {
+        return this.getCallee().name();
+    }
+
+    @Override
     public boolean isPermissionSet(String name) {
         return this.getCaller().isPermissionSet(name);
     }
@@ -132,11 +137,8 @@ public class ProxiedNativeCommandSender implements ProxiedCommandSender {
         this.getCaller().setOp(value);
     }
 
-    // Spigot start
     @Override
-    public org.bukkit.command.CommandSender.Spigot spigot()
-    {
-       return this.getCaller().spigot();
+    public org.bukkit.command.CommandSender.Spigot spigot() {
+        return this.getCaller().spigot();
     }
-    // Spigot end
 }

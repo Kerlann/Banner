@@ -1,29 +1,27 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftCoralPlant extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.Waterlogged {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.CoralPlantBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.data.Waterlogged;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftCoralPlant() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftCoralPlant extends CraftBlockData implements Waterlogged {
+    private static final BooleanProperty WATERLOGGED = CoralPlantBlock.WATERLOGGED;
 
-    public CraftCoralPlant(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftCoralPlant(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.CoralPlantBlock.class, "waterlogged");
-
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftCoralPlant.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftCoralPlant.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }

@@ -1,48 +1,51 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftHopper extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Hopper, org.bukkit.block.data.Directional {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.HopperBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Hopper;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftHopper() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftHopper extends CraftBlockData implements Hopper {
+    private static final BooleanProperty ENABLED = HopperBlock.ENABLED;
 
-    public CraftHopper(net.minecraft.world.level.block.state.BlockState state) {
+    private static final EnumProperty<Direction> FACING = HopperBlock.FACING;
+
+    public CraftHopper(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftHopper
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty ENABLED = getBoolean(net.minecraft.world.level.block.HopperBlock.class, "enabled");
-
     @Override
     public boolean isEnabled() {
-        return this.get(CraftHopper.ENABLED);
+        return this.get(ENABLED);
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        this.set(CraftHopper.ENABLED, enabled);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.HopperBlock.class, "facing");
-
-    @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftHopper.FACING, org.bukkit.block.BlockFace.class);
+    public void setEnabled(final boolean enabled) {
+        this.set(ENABLED, enabled);
     }
 
     @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftHopper.FACING, facing);
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
     }
 
     @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftHopper.FACING, org.bukkit.block.BlockFace.class);
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian() && blockFace != BlockFace.UP, "Invalid face, only cartesian face (excluding UP) are allowed for this property!");
+        this.set(FACING, blockFace);
+    }
+
+    @Override
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
     }
 }

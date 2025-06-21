@@ -1,29 +1,27 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftSculkCatalyst extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.SculkCatalyst {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.SculkCatalystBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.data.type.SculkCatalyst;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftSculkCatalyst() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftSculkCatalyst extends CraftBlockData implements SculkCatalyst {
+    private static final BooleanProperty PULSE = SculkCatalystBlock.PULSE;
 
-    public CraftSculkCatalyst(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftSculkCatalyst(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftSculkCatalyst
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty BLOOM = getBoolean(net.minecraft.world.level.block.SculkCatalystBlock.class, "bloom");
-
     @Override
     public boolean isBloom() {
-        return this.get(CraftSculkCatalyst.BLOOM);
+        return this.get(PULSE);
     }
 
     @Override
-    public void setBloom(boolean bloom) {
-        this.set(CraftSculkCatalyst.BLOOM, bloom);
+    public void setBloom(final boolean bloom) {
+        this.set(PULSE, bloom);
     }
 }

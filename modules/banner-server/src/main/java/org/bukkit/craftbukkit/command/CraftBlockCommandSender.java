@@ -29,17 +29,17 @@ public class CraftBlockCommandSender extends ServerCommandSender implements Bloc
         }
     });
     private final CommandSourceStack block;
-    private final BlockEntity tile;
+    private final BlockEntity blockEntity;
 
-    public CraftBlockCommandSender(CommandSourceStack commandBlockListenerAbstract, BlockEntity tile) {
+    public CraftBlockCommandSender(CommandSourceStack commandBlockListenerAbstract, BlockEntity blockEntity) {
         super(CraftBlockCommandSender.SHARED_PERM);
         this.block = commandBlockListenerAbstract;
-        this.tile = tile;
+        this.blockEntity = blockEntity;
     }
 
     @Override
     public Block getBlock() {
-        return CraftBlock.at(this.tile.getLevel(), this.tile.getBlockPos());
+        return CraftBlock.at(this.blockEntity.getLevel(), this.blockEntity.getBlockPos());
     }
 
     @Override
@@ -59,6 +59,16 @@ public class CraftBlockCommandSender extends ServerCommandSender implements Bloc
     @Override
     public String getName() {
         return this.block.getTextName();
+    }
+
+    @Override
+    public void sendMessage(net.kyori.adventure.identity.Identity identity, net.kyori.adventure.text.Component message, net.kyori.adventure.audience.MessageType type) {
+        this.block.source.sendSystemMessage(io.papermc.paper.adventure.PaperAdventure.asVanilla(message));
+    }
+
+    @Override
+    public net.kyori.adventure.text.Component name() {
+        return io.papermc.paper.adventure.PaperAdventure.asAdventure(this.block.getDisplayName());
     }
 
     @Override

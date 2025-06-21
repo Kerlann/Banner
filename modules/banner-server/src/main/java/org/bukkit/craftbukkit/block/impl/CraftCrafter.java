@@ -1,51 +1,56 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftCrafter extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Crafter {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.core.FrontAndTop;
+import net.minecraft.world.level.block.CrafterBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.data.type.Crafter;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftCrafter() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftCrafter extends CraftBlockData implements Crafter {
+    private static final BooleanProperty CRAFTING = CrafterBlock.CRAFTING;
 
-    public CraftCrafter(net.minecraft.world.level.block.state.BlockState state) {
+    private static final EnumProperty<FrontAndTop> ORIENTATION = BlockStateProperties.ORIENTATION;
+
+    private static final BooleanProperty TRIGGERED = CrafterBlock.TRIGGERED;
+
+    public CraftCrafter(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftCrafter
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty CRAFTING = getBoolean(net.minecraft.world.level.block.CrafterBlock.class, "crafting");
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty TRIGGERED = getBoolean(net.minecraft.world.level.block.CrafterBlock.class, "triggered");
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> ORIENTATION = getEnum(net.minecraft.world.level.block.CrafterBlock.class, "orientation");
-
     @Override
     public boolean isCrafting() {
-        return this.get(CraftCrafter.CRAFTING);
+        return this.get(CRAFTING);
     }
 
     @Override
-    public void setCrafting(boolean crafting) {
-        this.set(CraftCrafter.CRAFTING, crafting);
+    public void setCrafting(final boolean crafting) {
+        this.set(CRAFTING, crafting);
+    }
+
+    @Override
+    public org.bukkit.block.Orientation getOrientation() {
+        return this.get(ORIENTATION, org.bukkit.block.Orientation.class);
+    }
+
+    @Override
+    public void setOrientation(final org.bukkit.block.Orientation orientation) {
+        Preconditions.checkArgument(orientation != null, "orientation cannot be null!");
+        this.set(ORIENTATION, orientation);
     }
 
     @Override
     public boolean isTriggered() {
-        return this.get(CraftCrafter.TRIGGERED);
+        return this.get(TRIGGERED);
     }
 
     @Override
-    public void setTriggered(boolean triggered) {
-        this.set(CraftCrafter.TRIGGERED, triggered);
-    }
-
-    @Override
-    public org.bukkit.block.data.type.Crafter.Orientation getOrientation() {
-        return this.get(CraftCrafter.ORIENTATION, org.bukkit.block.data.type.Crafter.Orientation.class);
-    }
-
-    @Override
-    public void setOrientation(org.bukkit.block.data.type.Crafter.Orientation orientation) {
-        this.set(CraftCrafter.ORIENTATION, orientation);
+    public void setTriggered(final boolean triggered) {
+        this.set(TRIGGERED, triggered);
     }
 }

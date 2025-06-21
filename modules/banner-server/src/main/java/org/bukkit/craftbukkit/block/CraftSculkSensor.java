@@ -8,8 +8,8 @@ import org.bukkit.block.SculkSensor;
 
 public class CraftSculkSensor<T extends SculkSensorBlockEntity> extends CraftBlockEntityState<T> implements SculkSensor {
 
-    public CraftSculkSensor(World world, T tileEntity) {
-        super(world, tileEntity);
+    public CraftSculkSensor(World world, T blockEntity) {
+        super(world, blockEntity);
     }
 
     protected CraftSculkSensor(CraftSculkSensor<T> state, Location location) {
@@ -36,4 +36,17 @@ public class CraftSculkSensor<T extends SculkSensorBlockEntity> extends CraftBlo
     public CraftSculkSensor<T> copy(Location location) {
         return new CraftSculkSensor<>(this, location);
     }
+
+    // Paper start
+    @Override
+    public int getListenerRange() {
+        return this.getSnapshot().getListener().getListenerRadius();
+    }
+
+    @Override
+    public void setListenerRange(int range) {
+        Preconditions.checkArgument(range > 0, "Vibration listener range must be greater than 0");
+        this.getSnapshot().rangeOverride = range;
+    }
+    // Paper end
 }

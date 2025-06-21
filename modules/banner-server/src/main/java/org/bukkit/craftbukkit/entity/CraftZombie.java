@@ -18,11 +18,6 @@ public class CraftZombie extends CraftMonster implements Zombie {
     }
 
     @Override
-    public String toString() {
-        return "CraftZombie";
-    }
-
-    @Override
     public boolean isBaby() {
         return this.getHandle().isBaby();
     }
@@ -86,6 +81,46 @@ public class CraftZombie extends CraftMonster implements Zombie {
 
     @Override
     public void setAgeLock(boolean b) {
+    }
+
+    @Override
+    public boolean isDrowning() {
+        return getHandle().isUnderWaterConverting();
+    }
+
+    @Override
+    public void startDrowning(int drownedConversionTime) {
+        getHandle().startUnderWaterConversion(drownedConversionTime);
+    }
+
+    @Override
+    public void stopDrowning() {
+        getHandle().stopDrowning();
+    }
+
+    @Override
+    public boolean shouldBurnInDay() {
+        return getHandle().isSunSensitive();
+    }
+
+    @Override
+    public boolean isArmsRaised() {
+        return getHandle().isAggressive();
+    }
+
+    @Override
+    public void setArmsRaised(final boolean raised) {
+        getHandle().setAggressive(raised);
+    }
+
+    @Override
+    public void setShouldBurnInDay(boolean shouldBurnInDay) {
+        getHandle().setShouldBurnInDay(shouldBurnInDay);
+    }
+
+    @Override
+    public boolean supportsBreakingDoors() {
+        return true; // All zombies are now capable of breaking doors, see https://bugs.mojang.com/browse/MC-137053
     }
 
     @Override

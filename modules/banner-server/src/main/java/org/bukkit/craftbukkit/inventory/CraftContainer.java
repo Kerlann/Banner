@@ -18,7 +18,6 @@ import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.inventory.HopperMenu;
 import net.minecraft.world.inventory.LecternMenu;
 import net.minecraft.world.inventory.LoomMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.inventory.ShulkerBoxMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
@@ -29,6 +28,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.MenuType;
 
 public class CraftContainer extends AbstractContainerMenu {
 
@@ -49,7 +49,7 @@ public class CraftContainer extends AbstractContainerMenu {
     public CraftContainer(final Inventory inventory, final Player player, int id) {
         this(new CraftAbstractInventoryView() {
 
-            private final String originalTitle = (inventory instanceof CraftInventoryCustom) ? ((CraftInventoryCustom.MinecraftInventory) ((CraftInventory) inventory).getInventory()).getTitle() : inventory.getType().getDefaultTitle();
+            private final String originalTitle = inventory instanceof CraftInventoryCustom ? ((CraftInventoryCustom) inventory).getTitle() : inventory.getType().getDefaultTitle(); // Paper
             private String title = this.originalTitle;
 
             @Override
@@ -72,6 +72,13 @@ public class CraftContainer extends AbstractContainerMenu {
                 return inventory.getType();
             }
 
+            // Paper start
+            @Override
+            public net.kyori.adventure.text.Component title() {
+                return inventory instanceof CraftInventoryCustom custom ? custom.title() : inventory.getType().defaultTitle(); // Paper
+            }
+            // Paper end
+
             @Override
             public String getTitle() {
                 return this.title;
@@ -88,6 +95,11 @@ public class CraftContainer extends AbstractContainerMenu {
                 this.title = title;
             }
 
+            @Override
+            public MenuType getMenuType() {
+                return CraftMenuType.minecraftToBukkit(getNotchInventoryType(inventory));
+            }
+
         }, player, id);
     }
 
@@ -96,7 +108,7 @@ public class CraftContainer extends AbstractContainerMenu {
         return this.view;
     }
 
-    public static MenuType getNotchInventoryType(Inventory inventory) {
+    public static net.minecraft.world.inventory.MenuType getNotchInventoryType(Inventory inventory) {
         final InventoryType type = inventory.getType();
         switch (type) {
             case PLAYER:
@@ -105,27 +117,27 @@ public class CraftContainer extends AbstractContainerMenu {
             case BARREL:
                 switch (inventory.getSize()) {
                     case 9:
-                        return MenuType.GENERIC_9x1;
+                        return net.minecraft.world.inventory.MenuType.GENERIC_9x1;
                     case 18:
-                        return MenuType.GENERIC_9x2;
+                        return net.minecraft.world.inventory.MenuType.GENERIC_9x2;
                     case 27:
-                        return MenuType.GENERIC_9x3;
+                        return net.minecraft.world.inventory.MenuType.GENERIC_9x3;
                     case 36:
                     case 41: // PLAYER
-                        return MenuType.GENERIC_9x4;
+                        return net.minecraft.world.inventory.MenuType.GENERIC_9x4;
                     case 45:
-                        return MenuType.GENERIC_9x5;
+                        return net.minecraft.world.inventory.MenuType.GENERIC_9x5;
                     case 54:
-                        return MenuType.GENERIC_9x6;
+                        return net.minecraft.world.inventory.MenuType.GENERIC_9x6;
                     default:
                         throw new IllegalArgumentException("Unsupported custom inventory size " + inventory.getSize());
                 }
             default:
-                final org.bukkit.inventory.MenuType menu = type.getMenuType();
+                final MenuType menu = type.getMenuType();
                 if (menu == null) {
-                    return MenuType.GENERIC_9x3;
+                    return net.minecraft.world.inventory.MenuType.GENERIC_9x3;
                 } else {
-                    return ((CraftMenuType<?>) menu).getHandle();
+                    return ((CraftMenuType<?, ?>) menu).getHandle();
                 }
         }
     }
@@ -139,7 +151,7 @@ public class CraftContainer extends AbstractContainerMenu {
             case CHEST:
             case ENDER_CHEST:
             case BARREL:
-                this.delegate = new ChestMenu(MenuType.GENERIC_9x3, windowId, bottom, top, top.getContainerSize() / 9);
+                this.delegate = new ChestMenu(net.minecraft.world.inventory.MenuType.GENERIC_9x3, windowId, bottom, top, top.getContainerSize() / 9);
                 break;
             case DISPENSER:
             case DROPPER:
@@ -156,7 +168,7 @@ public class CraftContainer extends AbstractContainerMenu {
                 this.delegate = new EnchantmentMenu(windowId, bottom);
                 break;
             case BREWING:
-                this.delegate = new BrewingStandMenu(windowId, bottom, top, new SimpleContainerData(2));
+                this.delegate = new BrewingStandMenu(windowId, bottom, top, new io.papermc.paper.inventory.BrewingSimpleContainerData()); // Paper - Add recipeBrewTime
                 break;
             case HOPPER:
                 this.delegate = new HopperMenu(windowId, bottom, top);
@@ -174,7 +186,7 @@ public class CraftContainer extends AbstractContainerMenu {
                 this.delegate = new BlastFurnaceMenu(windowId, bottom, top, new SimpleContainerData(4));
                 break;
             case LECTERN:
-                this.delegate = new LecternMenu(windowId/*, top, new SimpleContainerData(1), bottom*/);
+                this.delegate = new LecternMenu(windowId, top, new SimpleContainerData(1), bottom);
                 break;
             case SMOKER:
                 this.delegate = new SmokerMenu(windowId, bottom, top, new SimpleContainerData(4));
@@ -207,6 +219,10 @@ public class CraftContainer extends AbstractContainerMenu {
             this.lastSlots = this.delegate.lastSlots;
             this.slots = this.delegate.slots;
             this.remoteSlots = this.delegate.remoteSlots;
+            // Paper start - copy data slots for InventoryView#set/getProperty
+            this.dataSlots = this.delegate.dataSlots;
+            this.remoteDataSlots = this.delegate.remoteDataSlots;
+            // Paper end
         }
 
         // SPIGOT-4598 - we should still delegate the shift click handler
@@ -319,7 +335,7 @@ public class CraftContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public MenuType<?> getType() {
+    public net.minecraft.world.inventory.MenuType<?> getType() {
         return CraftContainer.getNotchInventoryType(this.view.getTopInventory());
     }
 }

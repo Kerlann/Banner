@@ -1,83 +1,86 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftRepeater extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Repeater, org.bukkit.block.data.Directional, org.bukkit.block.data.Powerable {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.RepeaterBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Repeater;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftRepeater() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftRepeater extends CraftBlockData implements Repeater {
+    private static final IntegerProperty DELAY = RepeaterBlock.DELAY;
 
-    public CraftRepeater(net.minecraft.world.level.block.state.BlockState state) {
+    private static final EnumProperty<Direction> FACING = RepeaterBlock.FACING;
+
+    private static final BooleanProperty LOCKED = RepeaterBlock.LOCKED;
+
+    private static final BooleanProperty POWERED = RepeaterBlock.POWERED;
+
+    public CraftRepeater(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftRepeater
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty DELAY = getInteger(net.minecraft.world.level.block.RepeaterBlock.class, "delay");
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty LOCKED = getBoolean(net.minecraft.world.level.block.RepeaterBlock.class, "locked");
-
     @Override
     public int getDelay() {
-        return this.get(CraftRepeater.DELAY);
+        return this.get(DELAY);
     }
 
     @Override
-    public void setDelay(int delay) {
-        this.set(CraftRepeater.DELAY, delay);
+    public void setDelay(final int delay) {
+        this.set(DELAY, delay);
     }
 
     @Override
     public int getMinimumDelay() {
-        return getMin(CraftRepeater.DELAY);
+        return DELAY.min;
     }
 
     @Override
     public int getMaximumDelay() {
-        return getMax(CraftRepeater.DELAY);
+        return DELAY.max;
+    }
+
+    @Override
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
+    }
+
+    @Override
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian() && blockFace.getModY() == 0, "Invalid face, only cartesian horizontal face are allowed for this property!");
+        this.set(FACING, blockFace);
+    }
+
+    @Override
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
     }
 
     @Override
     public boolean isLocked() {
-        return this.get(CraftRepeater.LOCKED);
+        return this.get(LOCKED);
     }
 
     @Override
-    public void setLocked(boolean locked) {
-        this.set(CraftRepeater.LOCKED, locked);
+    public void setLocked(final boolean locked) {
+        this.set(LOCKED, locked);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.RepeaterBlock.class, "facing");
-
-    @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftRepeater.FACING, org.bukkit.block.BlockFace.class);
-    }
-
-    @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftRepeater.FACING, facing);
-    }
-
-    @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftRepeater.FACING, org.bukkit.block.BlockFace.class);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftPowerable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty POWERED = getBoolean(net.minecraft.world.level.block.RepeaterBlock.class, "powered");
 
     @Override
     public boolean isPowered() {
-        return this.get(CraftRepeater.POWERED);
+        return this.get(POWERED);
     }
 
     @Override
-    public void setPowered(boolean powered) {
-        this.set(CraftRepeater.POWERED, powered);
+    public void setPowered(final boolean powered) {
+        this.set(POWERED, powered);
     }
 }

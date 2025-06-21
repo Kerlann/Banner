@@ -1,53 +1,56 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftCocoa extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Cocoa, org.bukkit.block.data.Ageable, org.bukkit.block.data.Directional {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.CocoaBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Cocoa;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftCocoa() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftCocoa extends CraftBlockData implements Cocoa {
+    private static final IntegerProperty AGE = CocoaBlock.AGE;
 
-    public CraftCocoa(net.minecraft.world.level.block.state.BlockState state) {
+    private static final EnumProperty<Direction> FACING = CocoaBlock.FACING;
+
+    public CraftCocoa(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftAgeable
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty AGE = getInteger(net.minecraft.world.level.block.CocoaBlock.class, "age");
-
     @Override
     public int getAge() {
-        return this.get(CraftCocoa.AGE);
+        return this.get(AGE);
     }
 
     @Override
-    public void setAge(int age) {
-        this.set(CraftCocoa.AGE, age);
+    public void setAge(final int age) {
+        this.set(AGE, age);
     }
 
     @Override
     public int getMaximumAge() {
-        return getMax(CraftCocoa.AGE);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.CocoaBlock.class, "facing");
-
-    @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftCocoa.FACING, org.bukkit.block.BlockFace.class);
+        return AGE.max;
     }
 
     @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftCocoa.FACING, facing);
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
     }
 
     @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftCocoa.FACING, org.bukkit.block.BlockFace.class);
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian() && blockFace.getModY() == 0, "Invalid face, only cartesian horizontal face are allowed for this property!");
+        this.set(FACING, blockFace);
+    }
+
+    @Override
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
     }
 }

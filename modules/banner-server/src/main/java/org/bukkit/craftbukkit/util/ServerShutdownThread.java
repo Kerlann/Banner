@@ -12,13 +12,24 @@ public class ServerShutdownThread extends Thread {
     @Override
     public void run() {
         try {
-            org.spigotmc.AsyncCatcher.enabled = false; // Spigot
-            this.server.close();
-        } finally {
-            try {
-                this.server.bridge$reader().getTerminal().restore();
-            } catch (Exception e) {
+            // Paper start - try to shutdown on main
+            server.safeShutdown(false, false);
+            for (int i = 1000; i > 0 && !server.hasStopped(); i -= 100) {
+                Thread.sleep(100);
             }
+            if (server.hasStopped()) {
+                while (!server.hasFullyShutdown) Thread.sleep(1000);
+                return;
+            }
+            // Looks stalled, close async
+            server.forceTicks = true;
+            this.server.close();
+            while (!server.hasFullyShutdown) Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            // Paper end
+        } finally {
+            org.apache.logging.log4j.LogManager.shutdown(); // Paper
         }
     }
 }

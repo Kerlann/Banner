@@ -11,12 +11,7 @@ public class CraftGoat extends CraftAnimals implements Goat {
 
     @Override
     public net.minecraft.world.entity.animal.goat.Goat getHandle() {
-        return (net.minecraft.world.entity.animal.goat.Goat) super.getHandle();
-    }
-
-    @Override
-    public String toString() {
-        return "CraftGoat";
+        return (net.minecraft.world.entity.animal.goat.Goat) this.entity;
     }
 
     @Override
@@ -47,5 +42,10 @@ public class CraftGoat extends CraftAnimals implements Goat {
     @Override
     public void setScreaming(boolean screaming) {
         this.getHandle().setScreamingGoat(screaming);
+    }
+
+    @Override
+    public void ram(@org.jetbrains.annotations.NotNull org.bukkit.entity.LivingEntity entity) {
+        this.getHandle().ram(((CraftLivingEntity) entity).getHandle());
     }
 }

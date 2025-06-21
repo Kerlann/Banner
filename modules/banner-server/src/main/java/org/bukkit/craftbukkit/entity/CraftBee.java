@@ -19,11 +19,6 @@ public class CraftBee extends CraftAnimals implements Bee {
     }
 
     @Override
-    public String toString() {
-        return "CraftBee";
-    }
-
-    @Override
     public Location getHive() {
         BlockPos hive = this.getHandle().getHivePos();
         return (hive == null) ? null : CraftLocation.toBukkit(hive, this.getWorld());
@@ -85,5 +80,42 @@ public class CraftBee extends CraftAnimals implements Bee {
     @Override
     public void setCannotEnterHiveTicks(int ticks) {
         this.getHandle().setStayOutOfHiveCountdown(ticks);
+    }
+
+    @Override
+    public void setRollingOverride(net.kyori.adventure.util.TriState rolling) {
+        this.getHandle().rollingOverride = rolling;
+
+        this.getHandle().setRolling(this.getHandle().isRolling()); // Refresh rolling state
+    }
+
+    @Override
+    public boolean isRolling() {
+        return this.getRollingOverride().toBooleanOrElse(this.getHandle().isRolling());
+    }
+
+    @Override
+    public net.kyori.adventure.util.TriState getRollingOverride() {
+        return this.getHandle().rollingOverride;
+    }
+
+    @Override
+    public void setCropsGrownSincePollination(int crops) {
+        this.getHandle().numCropsGrownSincePollination = crops;
+    }
+
+    @Override
+    public int getCropsGrownSincePollination() {
+        return this.getHandle().numCropsGrownSincePollination;
+    }
+
+    @Override
+    public void setTicksSincePollination(int ticks) {
+        this.getHandle().ticksWithoutNectarSinceExitingHive = ticks;
+    }
+
+    @Override
+    public int getTicksSincePollination() {
+        return this.getHandle().ticksWithoutNectarSinceExitingHive;
     }
 }

@@ -1,34 +1,32 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftSapling extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Sapling {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.data.type.Sapling;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftSapling() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftSapling extends CraftBlockData implements Sapling {
+    private static final IntegerProperty STAGE = SaplingBlock.STAGE;
 
-    public CraftSapling(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftSapling(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftSapling
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty STAGE = getInteger(net.minecraft.world.level.block.SaplingBlock.class, "stage");
-
     @Override
     public int getStage() {
-        return this.get(CraftSapling.STAGE);
+        return this.get(STAGE);
     }
 
     @Override
-    public void setStage(int stage) {
-        this.set(CraftSapling.STAGE, stage);
+    public void setStage(final int stage) {
+        this.set(STAGE, stage);
     }
 
     @Override
     public int getMaximumStage() {
-        return getMax(CraftSapling.STAGE);
+        return STAGE.max;
     }
 }

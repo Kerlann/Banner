@@ -1,43 +1,43 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftWeatheringCopperSlab extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Slab, org.bukkit.block.data.Waterlogged {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.WeatheringCopperSlabBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.SlabType;
+import org.bukkit.block.data.type.Slab;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftWeatheringCopperSlab() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftWeatheringCopperSlab extends CraftBlockData implements Slab {
+    private static final EnumProperty<SlabType> TYPE = WeatheringCopperSlabBlock.TYPE;
 
-    public CraftWeatheringCopperSlab(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty WATERLOGGED = WeatheringCopperSlabBlock.WATERLOGGED;
+
+    public CraftWeatheringCopperSlab(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftSlab
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> TYPE = getEnum(net.minecraft.world.level.block.WeatheringCopperSlabBlock.class, "type");
-
     @Override
-    public org.bukkit.block.data.type.Slab.Type getType() {
-        return this.get(CraftWeatheringCopperSlab.TYPE, org.bukkit.block.data.type.Slab.Type.class);
+    public Slab.Type getType() {
+        return this.get(TYPE, Slab.Type.class);
     }
 
     @Override
-    public void setType(org.bukkit.block.data.type.Slab.Type type) {
-        this.set(CraftWeatheringCopperSlab.TYPE, type);
+    public void setType(final Slab.Type type) {
+        Preconditions.checkArgument(type != null, "type cannot be null!");
+        this.set(TYPE, type);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.WeatheringCopperSlabBlock.class, "waterlogged");
 
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftWeatheringCopperSlab.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftWeatheringCopperSlab.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }

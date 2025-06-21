@@ -21,7 +21,7 @@ import org.bukkit.craftbukkit.inventory.CraftMetaItem.ItemMetaKey.Specific;
 import org.bukkit.craftbukkit.inventory.CraftMetaItem.ItemMetaKey.Specific.To;
 import org.bukkit.inventory.meta.FireworkMeta;
 
-@DelegateDeserialization(SerializableMeta.class)
+public @DelegateDeserialization(SerializableMeta.class)
 class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
     /*
        "Fireworks", "Explosion", "Explosions", "Flight", "Type", "Trail", "Flicker", "Colors", "FadeColors";
@@ -44,7 +44,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
     static final ItemMetaKey EXPLOSIONS = new ItemMetaKey("firework-effects");
 
     private List<FireworkEffect> effects;
-    private Integer power;
+    public Integer power;
 
     CraftMetaFirework(CraftMetaItem meta) {
         super(meta);
@@ -55,13 +55,13 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
 
         this.power = that.power;
 
-        if (that.hasEffects()) {
+        if (that.effects != null) {
             this.effects = new ArrayList<>(that.effects);
         }
     }
 
-    CraftMetaFirework(DataComponentPatch tag) {
-        super(tag);
+    CraftMetaFirework(DataComponentPatch tag, java.util.Set<net.minecraft.core.component.DataComponentType<?>> extraHandledDcts) {
+        super(tag, extraHandledDcts);
 
         getOrEmpty(tag, CraftMetaFirework.FIREWORKS).ifPresent((fireworks) -> {
             this.power = fireworks.flightDuration();
@@ -88,42 +88,35 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
         }
 
         Iterable<?> effects = SerializableMeta.getObject(Iterable.class, map, CraftMetaFirework.EXPLOSIONS.BUKKIT, true);
-        this.safelyAddEffects(effects);
+        this.safelyAddEffects(effects, false); // Paper - limit firework effects
     }
 
-    static FireworkEffect getEffect(FireworkExplosion explosion) {
+    public static FireworkEffect getEffect(FireworkExplosion explosion) {
         FireworkEffect.Builder effect = FireworkEffect.builder()
                 .flicker(explosion.hasTwinkle())
                 .trail(explosion.hasTrail())
                 .with(CraftMetaFirework.getEffectType(explosion.shape()));
 
         IntList colors = explosion.colors();
-        // People using buggy command generators specify a list rather than an int here, so recover with dummy data.
-        // Wrong: Colors: [1234]
-        // Right: Colors: [I;1234]
-        if (colors.isEmpty()) {
-            effect.withColor(Color.WHITE);
-        }
-
         for (int color : colors) {
-            effect.withColor(Color.fromRGB(color));
+            effect.withColor(Color.fromRGB(color & 0x00FFFFFF)); // Paper - try to keep color component consistent with vanilla (top byte is ignored), this will however change the color component for out of bound color
         }
 
         for (int color : explosion.fadeColors()) {
-            effect.withFade(Color.fromRGB(color));
+            effect.withFade(Color.fromRGB(color & 0x00FFFFFF));
         }
 
         return effect.build();
     }
 
-    static FireworkExplosion getExplosion(FireworkEffect effect) {
+    public static FireworkExplosion getExplosion(FireworkEffect effect) {
         IntList colors = CraftMetaFirework.addColors(effect.getColors());
         IntList fadeColors = CraftMetaFirework.addColors(effect.getFadeColors());
 
         return new FireworkExplosion(CraftMetaFirework.getNBT(effect.getType()), colors, fadeColors, effect.hasTrail(), effect.hasFlicker());
     }
 
-    static FireworkExplosion.Shape getNBT(Type type) {
+    public static FireworkExplosion.Shape getNBT(Type type) {
         switch (type) {
             case BALL:
                 return FireworkExplosion.Shape.SMALL_BALL;
@@ -162,7 +155,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
         return !(this.effects == null || this.effects.isEmpty());
     }
 
-    void safelyAddEffects(Iterable<?> collection) {
+    void safelyAddEffects(Iterable<?> collection, final boolean throwOnOversize) {
         if (collection == null || (collection instanceof Collection && ((Collection<?>) collection).isEmpty())) {
             return;
         }
@@ -174,13 +167,21 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
 
         for (Object obj : collection) {
             Preconditions.checkArgument(obj instanceof FireworkEffect, "%s in %s is not a FireworkEffect", obj, collection);
+            if (effects.size() + 1 > Fireworks.MAX_EXPLOSIONS) {
+                if (throwOnOversize) {
+                    throw new IllegalArgumentException("Cannot have more than " + Fireworks.MAX_EXPLOSIONS + " firework effects");
+                } else {
+                    continue;
+                }
+            }
+
             effects.add((FireworkEffect) obj);
         }
     }
 
     @Override
-    void applyToItem(CraftMetaItem.Applicator itemTag) {
-        super.applyToItem(itemTag);
+    void applyToItem(CraftMetaItem.Applicator tag) {
+        super.applyToItem(tag);
         if (this.isFireworkEmpty()) {
             return;
         }
@@ -192,7 +193,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
             }
         }
 
-        itemTag.put(CraftMetaFirework.FIREWORKS, new Fireworks(this.getPower(), effects));
+        tag.put(CraftMetaFirework.FIREWORKS, new Fireworks(this.getPower(), effects));
     }
 
     static IntList addColors(List<Color> colors) {
@@ -215,7 +216,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
     }
 
     boolean isFireworkEmpty() {
-        return !(this.hasEffects() || this.hasPower());
+        return !(this.effects != null || this.hasPower()); // Paper - empty effects list should stay on the item
     }
 
     @Override
@@ -229,10 +230,8 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
             return false;
         }
 
-        if (meta instanceof CraftMetaFirework that) {
-
-            return (Objects.equals(this.power, that.power))
-                    && (this.hasEffects() ? that.hasEffects() && this.effects.equals(that.effects) : !that.hasEffects());
+        if (meta instanceof CraftMetaFirework other) {
+            return Objects.equals(this.power, other.power) && Objects.equals(this.effects, other.effects);
         }
 
         return true;
@@ -250,7 +249,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
         if (this.hasPower()) {
             hash = 61 * hash + this.power;
         }
-        if (this.hasEffects()) {
+        if (this.effects != null) { // Paper
             hash = 61 * hash + 13 * this.effects.hashCode();
         }
         return hash != original ? CraftMetaFirework.class.hashCode() ^ hash : hash;
@@ -260,7 +259,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
     Builder<String, Object> serialize(Builder<String, Object> builder) {
         super.serialize(builder);
 
-        if (this.hasEffects()) {
+        if (this.effects != null) { // Paper
             builder.put(CraftMetaFirework.EXPLOSIONS.BUKKIT, ImmutableList.copyOf(this.effects));
         }
 
@@ -285,8 +284,9 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
     @Override
     public void addEffect(FireworkEffect effect) {
         Preconditions.checkArgument(effect != null, "FireworkEffect cannot be null");
+        Preconditions.checkArgument(this.effects == null || this.effects.size() + 1 <= Fireworks.MAX_EXPLOSIONS, "cannot have more than %s firework effects", Fireworks.MAX_EXPLOSIONS); // Paper - limit firework effects
         if (this.effects == null) {
-            this.effects = new ArrayList<FireworkEffect>();
+            this.effects = new ArrayList<>();
         }
         this.effects.add(effect);
     }
@@ -294,13 +294,17 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
     @Override
     public void addEffects(FireworkEffect... effects) {
         Preconditions.checkArgument(effects != null, "effects cannot be null");
+        // Paper start - limit firework effects
+        final int initialSize = this.effects == null ? 0 : this.effects.size();
+        Preconditions.checkArgument(initialSize + effects.length <= Fireworks.MAX_EXPLOSIONS, "Cannot have more than %s firework effects", Fireworks.MAX_EXPLOSIONS);
+        // Paper end - limit firework effects
         if (effects.length == 0) {
             return;
         }
 
         List<FireworkEffect> list = this.effects;
         if (list == null) {
-            list = this.effects = new ArrayList<FireworkEffect>();
+            list = this.effects = new ArrayList<>();
         }
 
         for (FireworkEffect effect : effects) {
@@ -312,12 +316,12 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
     @Override
     public void addEffects(Iterable<FireworkEffect> effects) {
         Preconditions.checkArgument(effects != null, "effects cannot be null");
-        this.safelyAddEffects(effects);
+        this.safelyAddEffects(effects, true); // Paper - limit firework effects
     }
 
     @Override
     public List<FireworkEffect> getEffects() {
-        return this.effects == null ? ImmutableList.<FireworkEffect>of() : ImmutableList.copyOf(this.effects);
+        return this.effects == null ? ImmutableList.of() : ImmutableList.copyOf(this.effects);
     }
 
     @Override

@@ -12,7 +12,8 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
 public abstract class ServerCommandSender implements CommandSender {
-    private final PermissibleBase perm;
+    public final PermissibleBase perm;
+    private net.kyori.adventure.pointer.Pointers adventure$pointers;
 
     protected ServerCommandSender() {
         this.perm = new PermissibleBase(this);
@@ -96,38 +97,42 @@ public abstract class ServerCommandSender implements CommandSender {
         this.sendMessage(messages); // ServerCommandSenders have no use for senders
     }
 
-    // Spigot start
-    private final org.bukkit.command.CommandSender.Spigot spigot = new org.bukkit.command.CommandSender.Spigot()
-    {
+    private final org.bukkit.command.CommandSender.Spigot spigot = new org.bukkit.command.CommandSender.Spigot() {
         @Override
-        public void sendMessage(net.md_5.bungee.api.chat.BaseComponent component)
-        {
+        public void sendMessage(net.md_5.bungee.api.chat.BaseComponent component) {
             ServerCommandSender.this.sendMessage(net.md_5.bungee.api.chat.TextComponent.toLegacyText(component));
         }
 
         @Override
-        public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components)
-        {
+        public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components) {
             ServerCommandSender.this.sendMessage(net.md_5.bungee.api.chat.TextComponent.toLegacyText(components));
         }
 
         @Override
-        public void sendMessage(UUID sender, net.md_5.bungee.api.chat.BaseComponent... components)
-        {
+        public void sendMessage(UUID sender, net.md_5.bungee.api.chat.BaseComponent... components) {
             this.sendMessage(components);
         }
 
         @Override
-        public void sendMessage(UUID sender, net.md_5.bungee.api.chat.BaseComponent component)
-        {
+        public void sendMessage(UUID sender, net.md_5.bungee.api.chat.BaseComponent component) {
             this.sendMessage(component);
         }
     };
 
     @Override
-    public org.bukkit.command.CommandSender.Spigot spigot()
-    {
+    public org.bukkit.command.CommandSender.Spigot spigot() {
         return this.spigot;
     }
-    // Spigot end
+
+    @Override
+    public net.kyori.adventure.pointer.Pointers pointers() {
+        if (this.adventure$pointers == null) {
+            this.adventure$pointers = net.kyori.adventure.pointer.Pointers.builder()
+                .withDynamic(net.kyori.adventure.identity.Identity.DISPLAY_NAME, this::name)
+                .withStatic(net.kyori.adventure.permission.PermissionChecker.POINTER, this::permissionValue)
+                .build();
+        }
+
+        return this.adventure$pointers;
+    }
 }

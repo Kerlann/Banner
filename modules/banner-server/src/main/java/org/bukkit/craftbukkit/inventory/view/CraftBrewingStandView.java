@@ -8,7 +8,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.view.BrewingStandView;
 
-public class CraftBrewingStandView extends CraftInventoryView<BrewingStandMenu, BrewerInventory > implements BrewingStandView {
+public class CraftBrewingStandView extends CraftInventoryView<BrewingStandMenu, BrewerInventory> implements BrewingStandView {
 
     public CraftBrewingStandView(final HumanEntity player, final BrewerInventory viewing, final BrewingStandMenu container) {
         super(player, viewing, container);
@@ -34,5 +34,16 @@ public class CraftBrewingStandView extends CraftInventoryView<BrewingStandMenu, 
     public void setBrewingTicks(final int brewingTicks) {
         Preconditions.checkArgument(brewingTicks > 0, "The given brewing ticks must be greater than 0");
         this.container.setData(BrewingStandBlockEntity.DATA_BREW_TIME, brewingTicks);
+    }
+
+    @Override
+    public void setRecipeBrewTime(int recipeBrewTime) {
+        com.google.common.base.Preconditions.checkArgument(recipeBrewTime > 0, "recipeBrewTime must be positive");
+        this.container.brewingStandData.set(2, recipeBrewTime);
+    }
+
+    @Override
+    public int getRecipeBrewTime() {
+        return this.container.brewingStandData.get(2);
     }
 }

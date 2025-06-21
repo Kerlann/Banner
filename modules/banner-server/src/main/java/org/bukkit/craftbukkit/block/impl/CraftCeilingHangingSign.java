@@ -1,146 +1,60 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftCeilingHangingSign extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.HangingSign, org.bukkit.block.data.Attachable, org.bukkit.block.data.Rotatable, org.bukkit.block.data.Waterlogged {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.CeilingHangingSignBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.RotationSegment;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.HangingSign;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
+import org.bukkit.util.Vector;
 
-    public CraftCeilingHangingSign() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftCeilingHangingSign extends CraftBlockData implements HangingSign {
+    private static final BooleanProperty ATTACHED = CeilingHangingSignBlock.ATTACHED;
 
-    public CraftCeilingHangingSign(net.minecraft.world.level.block.state.BlockState state) {
+    private static final IntegerProperty ROTATION = CeilingHangingSignBlock.ROTATION;
+
+    private static final BooleanProperty WATERLOGGED = CeilingHangingSignBlock.WATERLOGGED;
+
+    public CraftCeilingHangingSign(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftAttachable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty ATTACHED = getBoolean(net.minecraft.world.level.block.CeilingHangingSignBlock.class, "attached");
-
     @Override
     public boolean isAttached() {
-        return this.get(CraftCeilingHangingSign.ATTACHED);
+        return this.get(ATTACHED);
     }
 
     @Override
-    public void setAttached(boolean attached) {
-        this.set(CraftCeilingHangingSign.ATTACHED, attached);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftRotatable
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty ROTATION = getInteger(net.minecraft.world.level.block.CeilingHangingSignBlock.class, "rotation");
-
-    @Override
-    public org.bukkit.block.BlockFace getRotation() {
-        int data = this.get(CraftCeilingHangingSign.ROTATION);
-        switch (data) {
-            case 0x0:
-                return org.bukkit.block.BlockFace.SOUTH;
-            case 0x1:
-                return org.bukkit.block.BlockFace.SOUTH_SOUTH_WEST;
-            case 0x2:
-                return org.bukkit.block.BlockFace.SOUTH_WEST;
-            case 0x3:
-                return org.bukkit.block.BlockFace.WEST_SOUTH_WEST;
-            case 0x4:
-                return org.bukkit.block.BlockFace.WEST;
-            case 0x5:
-                return org.bukkit.block.BlockFace.WEST_NORTH_WEST;
-            case 0x6:
-                return org.bukkit.block.BlockFace.NORTH_WEST;
-            case 0x7:
-                return org.bukkit.block.BlockFace.NORTH_NORTH_WEST;
-            case 0x8:
-                return org.bukkit.block.BlockFace.NORTH;
-            case 0x9:
-                return org.bukkit.block.BlockFace.NORTH_NORTH_EAST;
-            case 0xA:
-                return org.bukkit.block.BlockFace.NORTH_EAST;
-            case 0xB:
-                return org.bukkit.block.BlockFace.EAST_NORTH_EAST;
-            case 0xC:
-                return org.bukkit.block.BlockFace.EAST;
-            case 0xD:
-                return org.bukkit.block.BlockFace.EAST_SOUTH_EAST;
-            case 0xE:
-                return org.bukkit.block.BlockFace.SOUTH_EAST;
-            case 0xF:
-                return org.bukkit.block.BlockFace.SOUTH_SOUTH_EAST;
-            default:
-                throw new IllegalArgumentException("Unknown rotation " + data);
-        }
+    public void setAttached(final boolean attached) {
+        this.set(ATTACHED, attached);
     }
 
     @Override
-    public void setRotation(org.bukkit.block.BlockFace rotation) {
-        int val;
-        switch (rotation) {
-            case SOUTH:
-                val = 0x0;
-                break;
-            case SOUTH_SOUTH_WEST:
-                val = 0x1;
-                break;
-            case SOUTH_WEST:
-                val = 0x2;
-                break;
-            case WEST_SOUTH_WEST:
-                val = 0x3;
-                break;
-            case WEST:
-                val = 0x4;
-                break;
-            case WEST_NORTH_WEST:
-                val = 0x5;
-                break;
-            case NORTH_WEST:
-                val = 0x6;
-                break;
-            case NORTH_NORTH_WEST:
-                val = 0x7;
-                break;
-            case NORTH:
-                val = 0x8;
-                break;
-            case NORTH_NORTH_EAST:
-                val = 0x9;
-                break;
-            case NORTH_EAST:
-                val = 0xA;
-                break;
-            case EAST_NORTH_EAST:
-                val = 0xB;
-                break;
-            case EAST:
-                val = 0xC;
-                break;
-            case EAST_SOUTH_EAST:
-                val = 0xD;
-                break;
-            case SOUTH_EAST:
-                val = 0xE;
-                break;
-            case SOUTH_SOUTH_EAST:
-                val = 0xF;
-                break;
-            default:
-                throw new IllegalArgumentException("Illegal rotation " + rotation);
-        }
-        this.set(CraftCeilingHangingSign.ROTATION, val);
+    public BlockFace getRotation() {
+        return CraftBlockData.ROTATION_CYCLE[this.get(ROTATION)];
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.CeilingHangingSignBlock.class, "waterlogged");
+    @Override
+    public void setRotation(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace != BlockFace.SELF && blockFace.getModY() == 0, "Invalid face, only horizontal face are allowed for this property!");
+        Vector dir = blockFace.getDirection();
+        float angle = (float) -Math.toDegrees(Math.atan2(dir.getX(), dir.getZ()));
+        this.set(ROTATION, RotationSegment.convertToSegment(angle));
+    }
 
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftCeilingHangingSign.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftCeilingHangingSign.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }

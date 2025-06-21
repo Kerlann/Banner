@@ -1,34 +1,37 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftLayeredCauldron extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.Levelled {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.data.Levelled;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftLayeredCauldron() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftLayeredCauldron extends CraftBlockData implements Levelled {
+    private static final IntegerProperty LEVEL = LayeredCauldronBlock.LEVEL;
 
-    public CraftLayeredCauldron(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftLayeredCauldron(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftLevelled
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty LEVEL = getInteger(net.minecraft.world.level.block.LayeredCauldronBlock.class, "level");
-
     @Override
     public int getLevel() {
-        return this.get(CraftLayeredCauldron.LEVEL);
+        return this.get(LEVEL);
     }
 
     @Override
-    public void setLevel(int level) {
-        this.set(CraftLayeredCauldron.LEVEL, level);
+    public void setLevel(final int level) {
+        this.set(LEVEL, level);
+    }
+
+    @Override
+    public int getMinimumLevel() {
+        return LEVEL.min;
     }
 
     @Override
     public int getMaximumLevel() {
-        return getMax(CraftLayeredCauldron.LEVEL);
+        return LEVEL.max;
     }
 }

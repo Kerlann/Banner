@@ -1,34 +1,32 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftTwistingVines extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.Ageable {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.TwistingVinesBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftTwistingVines() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftTwistingVines extends CraftBlockData implements Ageable {
+    private static final IntegerProperty AGE = TwistingVinesBlock.AGE;
 
-    public CraftTwistingVines(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftTwistingVines(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftAgeable
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty AGE = getInteger(net.minecraft.world.level.block.TwistingVinesBlock.class, "age");
-
     @Override
     public int getAge() {
-        return this.get(CraftTwistingVines.AGE);
+        return this.get(AGE);
     }
 
     @Override
-    public void setAge(int age) {
-        this.set(CraftTwistingVines.AGE, age);
+    public void setAge(final int age) {
+        this.set(AGE, age);
     }
 
     @Override
     public int getMaximumAge() {
-        return getMax(CraftTwistingVines.AGE);
+        return AGE.max;
     }
 }

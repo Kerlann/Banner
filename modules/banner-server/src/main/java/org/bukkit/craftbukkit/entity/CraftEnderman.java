@@ -13,8 +13,19 @@ import org.bukkit.entity.Entity;
 import org.bukkit.material.MaterialData;
 
 public class CraftEnderman extends CraftMonster implements Enderman {
+
     public CraftEnderman(CraftServer server, EnderMan entity) {
         super(server, entity);
+    }
+
+    @Override
+    public EnderMan getHandle() {
+        return (EnderMan) this.entity;
+    }
+
+    @Override
+    public boolean teleportRandomly() {
+        return getHandle().teleport();
     }
 
     @Override
@@ -40,13 +51,23 @@ public class CraftEnderman extends CraftMonster implements Enderman {
     }
 
     @Override
-    public EnderMan getHandle() {
-        return (EnderMan) this.entity;
+    public boolean isScreaming() {
+        return this.getHandle().isCreepy();
     }
 
     @Override
-    public String toString() {
-        return "CraftEnderman";
+    public void setScreaming(boolean screaming) {
+        this.getHandle().setCreepy(screaming);
+    }
+
+    @Override
+    public boolean hasBeenStaredAt() {
+        return this.getHandle().hasBeenStaredAt();
+    }
+
+    @Override
+    public void setHasBeenStaredAt(boolean hasBeenStaredAt) {
+        this.getHandle().setHasBeenStaredAt(hasBeenStaredAt);
     }
 
     @Override

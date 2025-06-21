@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.inventory;
 
 import com.google.common.base.Preconditions;
-import com.mohistmc.banner.bukkit.BannerLecternInventory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -20,6 +19,7 @@ import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.DropperBlockEntity;
 import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.entity.SmokerBlockEntity;
 import org.bukkit.Location;
@@ -224,10 +224,16 @@ public class CraftInventory implements Inventory {
     }
 
     private int first(ItemStack item, boolean withAmount) {
+        // Paper start
+        return first(item, withAmount, getStorageContents());
+    }
+
+    private int first(ItemStack item, boolean withAmount, ItemStack[] inventory) {
+        // Paper end
         if (item == null) {
             return -1;
         }
-        ItemStack[] inventory = this.getStorageContents();
+        // ItemStack[] inventory = this.getStorageContents(); // Paper - let param deal
         for (int i = 0; i < inventory.length; i++) {
             if (inventory[i] == null) continue;
 
@@ -254,19 +260,6 @@ public class CraftInventory implements Inventory {
         return this.inventory.isEmpty();
     }
 
-    public int firstPartial(Material material) {
-        Preconditions.checkArgument(material != null, "Material cannot be null");
-        material = CraftLegacy.fromLegacy(material);
-        ItemStack[] inventory = this.getStorageContents();
-        for (int i = 0; i < inventory.length; i++) {
-            ItemStack item = inventory[i];
-            if (item != null && item.getType() == material && item.getAmount() < item.getMaxStackSize()) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     private int firstPartial(ItemStack item) {
         ItemStack[] inventory = this.getStorageContents();
         ItemStack filteredItem = CraftItemStack.asCraftCopy(item);
@@ -275,7 +268,7 @@ public class CraftInventory implements Inventory {
         }
         for (int i = 0; i < inventory.length; i++) {
             ItemStack cItem = inventory[i];
-            if (cItem != null && cItem.getAmount() < cItem.getMaxStackSize() && cItem.isSimilar(filteredItem)) {
+            if (cItem != null && cItem.getAmount() < this.getMaxItemStack(cItem) && cItem.isSimilar(filteredItem)) {
                 return i;
             }
         }
@@ -311,11 +304,12 @@ public class CraftInventory implements Inventory {
                         break;
                     } else {
                         // More than a single stack!
-                        if (item.getAmount() > this.getMaxItemStack()) {
+                        int maxAmount = this.getMaxItemStack(item);
+                        if (item.getAmount() > maxAmount) {
                             CraftItemStack stack = CraftItemStack.asCraftCopy(item);
-                            stack.setAmount(this.getMaxItemStack());
+                            stack.setAmount(maxAmount);
                             this.setItem(firstFree, stack);
-                            item.setAmount(item.getAmount() - this.getMaxItemStack());
+                            item.setAmount(item.getAmount() - maxAmount);
                         } else {
                             // Just store it
                             this.setItem(firstFree, item);
@@ -328,7 +322,7 @@ public class CraftInventory implements Inventory {
 
                     int amount = item.getAmount();
                     int partialAmount = partialItem.getAmount();
-                    int maxAmount = partialItem.getMaxStackSize();
+                    int maxAmount = this.getMaxItemStack(partialItem);
 
                     // Check if it fully fits
                     if (amount + partialAmount <= maxAmount) {
@@ -351,6 +345,17 @@ public class CraftInventory implements Inventory {
 
     @Override
     public HashMap<Integer, ItemStack> removeItem(ItemStack... items) {
+        // Paper start
+        return removeItem(false, items);
+    }
+
+    @Override
+    public HashMap<Integer, ItemStack> removeItemAnySlot(ItemStack... items) {
+        return removeItem(true, items);
+    }
+
+    private HashMap<Integer, ItemStack> removeItem(boolean searchEntire, ItemStack... items) {
+        // Paper end
         Preconditions.checkArgument(items != null, "items cannot be null");
         HashMap<Integer, ItemStack> leftover = new HashMap<Integer, ItemStack>();
 
@@ -362,7 +367,10 @@ public class CraftInventory implements Inventory {
             int toDelete = item.getAmount();
 
             while (true) {
-                int first = this.first(item, false);
+                // Paper start - Allow searching entire contents
+                ItemStack[] toSearch = searchEntire ? getContents() : getStorageContents();
+                int first = this.first(item, false, toSearch);
+                // Paper end
 
                 // Drat! we don't have this type in the inventory
                 if (first == -1) {
@@ -394,8 +402,8 @@ public class CraftInventory implements Inventory {
         return leftover;
     }
 
-    private int getMaxItemStack() {
-        return this.getInventory().getMaxStackSize();
+    private int getMaxItemStack(ItemStack itemstack) {
+        return Math.min(itemstack.getMaxStackSize(), this.getInventory().getMaxStackSize());
     }
 
     @Override
@@ -431,6 +439,14 @@ public class CraftInventory implements Inventory {
             this.clear(i);
         }
     }
+    // Paper start
+    @Override
+    public int close() {
+        int count = this.inventory.getViewers().size();
+        com.google.common.collect.Lists.newArrayList(this.inventory.getViewers()).forEach(HumanEntity::closeInventory);
+        return count;
+    }
+    // Paper end
 
     @Override
     public ListIterator<ItemStack> iterator() {
@@ -477,6 +493,10 @@ public class CraftInventory implements Inventory {
             return InventoryType.BREWING;
         } else if (this.inventory instanceof CraftInventoryCustom.MinecraftInventory) {
             return ((CraftInventoryCustom.MinecraftInventory) this.inventory).getType();
+            // Paper start
+        } else if (this.inventory instanceof io.papermc.paper.inventory.PaperInventoryCustomHolderContainer holderContainer) {
+            return holderContainer.getType();
+        // Paper end
         } else if (this.inventory instanceof PlayerEnderChestContainer) {
             return InventoryType.ENDER_CHEST;
         } else if (this.inventory instanceof MerchantContainer) {
@@ -493,7 +513,7 @@ public class CraftInventory implements Inventory {
             return InventoryType.SHULKER_BOX;
         } else if (this.inventory instanceof BarrelBlockEntity) {
             return InventoryType.BARREL;
-        } else if (this.inventory instanceof BannerLecternInventory) {
+        } else if (this.inventory instanceof LecternBlockEntity.LecternInventory) {
             return InventoryType.LECTERN;
         } else if (this.inventory instanceof ChiseledBookShelfBlockEntity) {
             return InventoryType.CHISELED_BOOKSHELF;
@@ -509,6 +529,10 @@ public class CraftInventory implements Inventory {
             return InventoryType.COMPOSTER;
         } else if (this.inventory instanceof JukeboxBlockEntity) {
             return InventoryType.JUKEBOX;
+            // Paper start
+        } else if (this.inventory instanceof net.minecraft.world.level.block.entity.DecoratedPotBlockEntity) {
+            return org.bukkit.event.inventory.InventoryType.DECORATED_POT;
+            // Paper end
         } else {
             return InventoryType.CHEST;
         }
@@ -518,6 +542,13 @@ public class CraftInventory implements Inventory {
     public InventoryHolder getHolder() {
         return this.inventory.getOwner();
     }
+
+    // Paper start - getHolder without snapshot
+    @Override
+    public InventoryHolder getHolder(boolean useSnapshot) {
+        return this.inventory instanceof net.minecraft.world.level.block.entity.BlockEntity blockEntity ? blockEntity.getOwner(useSnapshot) : getHolder();
+    }
+    // Paper end
 
     @Override
     public int getMaxStackSize() {

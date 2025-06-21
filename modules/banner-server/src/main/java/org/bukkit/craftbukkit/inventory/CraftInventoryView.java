@@ -74,6 +74,11 @@ public class CraftInventoryView<T extends AbstractContainerMenu, I extends Inven
     }
 
     @Override
+    public net.kyori.adventure.text.Component title() {
+        return io.papermc.paper.adventure.PaperAdventure.asAdventure(this.container.getTitle());
+    }
+
+    @Override
     public String getTitle() {
         return this.title;
     }
@@ -87,6 +92,12 @@ public class CraftInventoryView<T extends AbstractContainerMenu, I extends Inven
     public void setTitle(String title) {
         CraftInventoryView.sendInventoryTitleChange(this, title);
         this.title = title;
+    }
+
+    @Override
+    public org.bukkit.inventory.MenuType getMenuType() {
+        MenuType<?> menuType = container.menuType;
+        return menuType != null ? CraftMenuType.minecraftToBukkit(menuType) : null;
     }
 
     public boolean isInTop(int rawSlot) {
@@ -103,10 +114,10 @@ public class CraftInventoryView<T extends AbstractContainerMenu, I extends Inven
         Preconditions.checkArgument(view.getPlayer() instanceof Player, "NPCs are not currently supported for this function");
         Preconditions.checkArgument(view.getTopInventory().getType().isCreatable(), "Only creatable inventories can have their title changed");
 
-        final ServerPlayer entityPlayer = (ServerPlayer) ((CraftHumanEntity) view.getPlayer()).getHandle();
-        final int containerId = entityPlayer.containerMenu.containerId;
+        final ServerPlayer player = (ServerPlayer) ((CraftHumanEntity) view.getPlayer()).getHandle();
+        final int containerId = player.containerMenu.containerId;
         final MenuType<?> windowType = CraftContainer.getNotchInventoryType(view.getTopInventory());
-        entityPlayer.connection.send(new ClientboundOpenScreenPacket(containerId, windowType, CraftChatMessage.fromString(title)[0]));
-        ((Player) view.getPlayer()).updateInventory();
+        player.connection.send(new ClientboundOpenScreenPacket(containerId, windowType, CraftChatMessage.fromString(title)[0]));
+        player.containerMenu.sendAllDataToRemote();
     }
 }

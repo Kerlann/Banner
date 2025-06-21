@@ -19,7 +19,7 @@ public class CraftRemoteConsoleCommandSender extends ServerCommandSender impleme
 
     @Override
     public SocketAddress getAddress() {
-       return this.listener.bridge$socketAddress();
+       return this.listener.socketAddress;
     }
 
     @Override
@@ -40,6 +40,11 @@ public class CraftRemoteConsoleCommandSender extends ServerCommandSender impleme
     }
 
     @Override
+    public net.kyori.adventure.text.Component name() {
+        return net.kyori.adventure.text.Component.text(this.getName());
+    }
+
+    @Override
     public boolean isOp() {
         return true;
     }
@@ -47,5 +52,15 @@ public class CraftRemoteConsoleCommandSender extends ServerCommandSender impleme
     @Override
     public void setOp(boolean value) {
         throw new UnsupportedOperationException("Cannot change operator status of remote controller.");
+    }
+
+    @Override
+    public boolean hasPermission(String name) {
+        return io.papermc.paper.configuration.GlobalConfiguration.get().console.hasAllPermissions || super.hasPermission(name);
+    }
+
+    @Override
+    public boolean hasPermission(org.bukkit.permissions.Permission perm) {
+        return io.papermc.paper.configuration.GlobalConfiguration.get().console.hasAllPermissions || super.hasPermission(perm);
     }
 }

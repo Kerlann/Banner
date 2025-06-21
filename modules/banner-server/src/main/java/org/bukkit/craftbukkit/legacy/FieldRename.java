@@ -1,18 +1,14 @@
 package org.bukkit.craftbukkit.legacy;
 
 import java.util.function.BiFunction;
-import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
-import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Biome;
 import org.bukkit.block.banner.PatternType;
-import org.bukkit.craftbukkit.CraftRegistry;
 import org.bukkit.craftbukkit.legacy.fieldrename.FieldRenameData;
 import org.bukkit.craftbukkit.legacy.reroute.DoNotReroute;
 import org.bukkit.craftbukkit.legacy.reroute.InjectPluginVersion;
-import org.bukkit.craftbukkit.legacy.reroute.RequireCompatibility;
 import org.bukkit.craftbukkit.legacy.reroute.RerouteMethodName;
 import org.bukkit.craftbukkit.legacy.reroute.RerouteStatic;
 import org.bukkit.craftbukkit.util.ApiVersion;
@@ -35,6 +31,7 @@ public class FieldRename {
         }
 
         return switch (owner) {
+            case "org/bukkit/scoreboard/DisplaySlot" -> FieldRename.convertDisplaySlot(from); // Paper - DisplaySlot
             case "org/bukkit/block/banner/PatternType" -> FieldRename.convertPatternTypeName(apiVersion, from);
             case "org/bukkit/enchantments/Enchantment" -> FieldRename.convertEnchantmentName(apiVersion, from);
             case "org/bukkit/block/Biome" -> FieldRename.convertBiomeName(apiVersion, from);
@@ -51,10 +48,21 @@ public class FieldRename {
         };
     }
 
-    @RequireCompatibility("allow-old-keys-in-registry")
-    public static <T extends Keyed> T get(Registry<T> registry, NamespacedKey namespacedKey) {
-        // We don't have version-specific changes, so just use current, and don't inject a version
-        return CraftRegistry.get(registry, namespacedKey, ApiVersion.CURRENT);
+    // Paper start - absolutely not, having this as an expectation for plugin developers opens a huge
+    // can of worms in the future, especially if mojang comes back and reuses some old key
+    //@RequireCompatibility("allow-old-keys-in-registry")
+    //public static <T extends Keyed> T get(Registry<T> registry, NamespacedKey namespacedKey) {
+    //    // We don't have version-specific changes, so just use current, and don't inject a version
+    //    return CraftRegistry.get(registry, namespacedKey, ApiVersion.CURRENT);
+    //}
+    // Paper end
+
+    @DoNotReroute
+    public static String convertDisplaySlot(final String from) {
+        if (from.startsWith("SIDEBAR_") && !from.startsWith("SIDEBAR_TEAM_")) {
+            return from.replace("SIDEBAR_", "SIDEBAR_TEAM_");
+        }
+        return from;
     }
 
     // PatternType
@@ -161,7 +169,7 @@ public class FieldRename {
             .change("DROPPED_ITEM", "ITEM")
             .change("LEASH_HITCH", "LEASH_KNOT")
             .change("ENDER_SIGNAL", "EYE_OF_ENDER")
-            .change("SPLASH_POTION", "POTION")
+            .change("POTION", "SPLASH_POTION")
             .change("THROWN_EXP_BOTTLE", "EXPERIENCE_BOTTLE")
             .change("PRIMED_TNT", "TNT")
             .change("FIREWORK", "FIREWORK_ROCKET")
@@ -189,6 +197,8 @@ public class FieldRename {
             .change("VILLAGER_GOLEM", "IRON_GOLEM")
             .change("ENDER_CRYSTAL", "END_CRYSTAL")
             .change("ZOMBIE_PIGMAN", "ZOMBIFIED_PIGLIN")
+            .change("BOAT", "OAK_BOAT")
+            .change("CHEST_BOAT", "OAK_CHEST_BOAT")
             .build();
 
     public static final BiFunction<NamespacedKey, ApiVersion, NamespacedKey> ENTITY_TYPE_RENAME = ENTITY_TYPE_DATA::getReplacement;
@@ -266,6 +276,7 @@ public class FieldRename {
             .change("PONDER", "PONDER_GOAT_HORN")
             .change("SING", "SING_GOAT_HORN")
             .change("SEEK", "SEEK_GOAT_HORN")
+            .change("FEEL", "FEEL_GOAT_HORN")
             .change("ADMIRE", "ADMIRE_GOAT_HORN")
             .change("CALL", "CALL_GOAT_HORN")
             .change("YEARN", "YEARN_GOAT_HORN")
@@ -352,7 +363,39 @@ public class FieldRename {
     private static final FieldRenameData ATTRIBUTE_DATA = FieldRenameData.Builder.newBuilder()
             .forAllVersions()
             .withKeyRename()
-            .change("HORSE.JUMP_STRENGTH", "GENERIC.JUMP_STRENGTH")
+            .change("HORSE.JUMP_STRENGTH", "JUMP_STRENGTH")
+            .change("GENERIC.MAX_HEALTH", "MAX_HEALTH")
+            .change("GENERIC.FOLLOW_RANGE", "FOLLOW_RANGE")
+            .change("GENERIC.KNOCKBACK_RESISTANCE", "KNOCKBACK_RESISTANCE")
+            .change("GENERIC.MOVEMENT_SPEED", "MOVEMENT_SPEED")
+            .change("GENERIC.FLYING_SPEED", "FLYING_SPEED")
+            .change("GENERIC.ATTACK_DAMAGE", "ATTACK_DAMAGE")
+            .change("GENERIC.ATTACK_KNOCKBACK", "ATTACK_KNOCKBACK")
+            .change("GENERIC.ATTACK_SPEED", "ATTACK_SPEED")
+            .change("GENERIC.ARMOR", "ARMOR")
+            .change("GENERIC.ARMOR_TOUGHNESS", "ARMOR_TOUGHNESS")
+            .change("GENERIC.FALL_DAMAGE_MULTIPLIER", "FALL_DAMAGE_MULTIPLIER")
+            .change("GENERIC.LUCK", "LUCK")
+            .change("GENERIC.MAX_ABSORPTION", "MAX_ABSORPTION")
+            .change("GENERIC.SAFE_FALL_DISTANCE", "SAFE_FALL_DISTANCE")
+            .change("GENERIC.SCALE", "SCALE")
+            .change("GENERIC.STEP_HEIGHT", "STEP_HEIGHT")
+            .change("GENERIC.GRAVITY", "GRAVITY")
+            .change("GENERIC.JUMP_STRENGTH", "JUMP_STRENGTH")
+            .change("GENERIC.BURNING_TIME", "BURNING_TIME")
+            .change("GENERIC.EXPLOSION_KNOCKBACK_RESISTANCE", "EXPLOSION_KNOCKBACK_RESISTANCE")
+            .change("GENERIC.MOVEMENT_EFFICIENCY", "MOVEMENT_EFFICIENCY")
+            .change("GENERIC.OXYGEN_BONUS", "OXYGEN_BONUS")
+            .change("GENERIC.WATER_MOVEMENT_EFFICIENCY", "WATER_MOVEMENT_EFFICIENCY")
+            .change("GENERIC.TEMPT_RANGE", "TEMPT_RANGE")
+            .change("PLAYER.BLOCK_INTERACTION_RANGE", "BLOCK_INTERACTION_RANGE")
+            .change("PLAYER.ENTITY_INTERACTION_RANGE", "ENTITY_INTERACTION_RANGE")
+            .change("PLAYER.BLOCK_BREAK_SPEED", "BLOCK_BREAK_SPEED")
+            .change("PLAYER.MINING_EFFICIENCY", "MINING_EFFICIENCY")
+            .change("PLAYER.SNEAKING_SPEED", "SNEAKING_SPEED")
+            .change("PLAYER.SUBMERGED_MINING_SPEED", "SUBMERGED_MINING_SPEED")
+            .change("PLAYER.SWEEPING_DAMAGE_RATIO", "SWEEPING_DAMAGE_RATIO")
+            .change("ZOMBIE.SPAWN_REINFORCEMENTS", "SPAWN_REINFORCEMENTS")
             .build();
 
     public static final BiFunction<NamespacedKey, ApiVersion, NamespacedKey> ATTRIBUTE_RENAME = ATTRIBUTE_DATA::getReplacement;
@@ -404,6 +447,7 @@ public class FieldRename {
     private static final FieldRenameData ITEM_FLAG_DATA = FieldRenameData.Builder.newBuilder()
             .forAllVersions()
             .change("HIDE_POTION_EFFECTS", "HIDE_ADDITIONAL_TOOLTIP")
+            .change("HIDE_ITEM_SPECIFICS", "HIDE_ADDITIONAL_TOOLTIP")
             .build();
 
     @DoNotReroute

@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.entity.Hanging;
 
 public class CraftHanging extends CraftBlockAttachedEntity implements Hanging {
+
     public CraftHanging(CraftServer server, HangingEntity entity) {
         super(server, entity);
     }
@@ -42,7 +43,7 @@ public class CraftHanging extends CraftBlockAttachedEntity implements Hanging {
             default:
                 throw new IllegalArgumentException(String.format("%s is not a valid facing direction", face));
         }
-        if (!force && !this.getHandle().bridge$generation() && !hanging.survives()) {
+        if (!force && !this.getHandle().generation && !hanging.survives()) {
             // Revert since it doesn't fit
             hanging.setDirection(dir);
             return false;
@@ -60,10 +61,5 @@ public class CraftHanging extends CraftBlockAttachedEntity implements Hanging {
     @Override
     public HangingEntity getHandle() {
         return (HangingEntity) this.entity;
-    }
-
-    @Override
-    public String toString() {
-        return "CraftHanging";
     }
 }

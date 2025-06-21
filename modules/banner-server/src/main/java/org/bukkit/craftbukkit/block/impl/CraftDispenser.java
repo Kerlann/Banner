@@ -1,48 +1,51 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftDispenser extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Dispenser, org.bukkit.block.data.Directional {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Dispenser;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftDispenser() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftDispenser extends CraftBlockData implements Dispenser {
+    private static final EnumProperty<Direction> FACING = DispenserBlock.FACING;
 
-    public CraftDispenser(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty TRIGGERED = DispenserBlock.TRIGGERED;
+
+    public CraftDispenser(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftDispenser
+    @Override
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
+    }
 
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty TRIGGERED = getBoolean(net.minecraft.world.level.block.DispenserBlock.class, "triggered");
+    @Override
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian(), "Invalid face, only cartesian face are allowed for this property!");
+        this.set(FACING, blockFace);
+    }
+
+    @Override
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
+    }
 
     @Override
     public boolean isTriggered() {
-        return this.get(CraftDispenser.TRIGGERED);
+        return this.get(TRIGGERED);
     }
 
     @Override
-    public void setTriggered(boolean triggered) {
-        this.set(CraftDispenser.TRIGGERED, triggered);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.DispenserBlock.class, "facing");
-
-    @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftDispenser.FACING, org.bukkit.block.BlockFace.class);
-    }
-
-    @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftDispenser.FACING, facing);
-    }
-
-    @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftDispenser.FACING, org.bukkit.block.BlockFace.class);
+    public void setTriggered(final boolean triggered) {
+        this.set(TRIGGERED, triggered);
     }
 }

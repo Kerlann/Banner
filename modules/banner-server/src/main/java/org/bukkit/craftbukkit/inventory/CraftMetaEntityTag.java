@@ -3,6 +3,7 @@ package org.bukkit.craftbukkit.inventory;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Sets;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
@@ -19,6 +20,7 @@ public class CraftMetaEntityTag extends CraftMetaItem {
             Material.COD_BUCKET,
             Material.PUFFERFISH_BUCKET,
             Material.SALMON_BUCKET,
+            Material.TADPOLE_BUCKET,
             Material.ITEM_FRAME,
             Material.GLOW_ITEM_FRAME,
             Material.PAINTING
@@ -30,16 +32,15 @@ public class CraftMetaEntityTag extends CraftMetaItem {
     CraftMetaEntityTag(CraftMetaItem meta) {
         super(meta);
 
-        if (!(meta instanceof CraftMetaEntityTag)) {
+        if (!(meta instanceof final CraftMetaEntityTag entity)) {
             return;
         }
 
-        CraftMetaEntityTag entity = (CraftMetaEntityTag) meta;
         this.entityTag = entity.entityTag;
     }
 
-    CraftMetaEntityTag(DataComponentPatch tag) {
-        super(tag);
+    CraftMetaEntityTag(DataComponentPatch tag, final java.util.Set<net.minecraft.core.component.DataComponentType<?>> extraHandledDcts) {
+        super(tag, extraHandledDcts);
 
         getOrEmpty(tag, CraftMetaEntityTag.ENTITY_TAG).ifPresent((nbt) -> {
             this.entityTag = nbt.copyTag();
@@ -54,9 +55,7 @@ public class CraftMetaEntityTag extends CraftMetaItem {
     void deserializeInternal(CompoundTag tag, Object context) {
         super.deserializeInternal(tag, context);
 
-        if (tag.contains(CraftMetaEntityTag.ENTITY_TAG.NBT)) {
-            this.entityTag = tag.getCompound(CraftMetaEntityTag.ENTITY_TAG.NBT);
-        }
+        this.entityTag = tag.getCompound(CraftMetaEntityTag.ENTITY_TAG.NBT).orElse(this.entityTag);
     }
 
     @Override
@@ -86,7 +85,7 @@ public class CraftMetaEntityTag extends CraftMetaItem {
     }
 
     boolean isEntityTagEmpty() {
-        return !(this.entityTag != null);
+        return this.entityTag == null;
     }
 
     @Override
@@ -94,10 +93,8 @@ public class CraftMetaEntityTag extends CraftMetaItem {
         if (!super.equalsCommon(meta)) {
             return false;
         }
-        if (meta instanceof CraftMetaEntityTag) {
-            CraftMetaEntityTag that = (CraftMetaEntityTag) meta;
-
-            return this.entityTag != null ? that.entityTag != null && this.entityTag.equals(that.entityTag) : this.entityTag == null;
+        if (meta instanceof final CraftMetaEntityTag other) {
+            return Objects.equals(this.entityTag, other.entityTag);
         }
         return true;
     }

@@ -21,8 +21,8 @@ import org.bukkit.inventory.DecoratedPotInventory;
 
 public class CraftDecoratedPot extends CraftBlockEntityState<DecoratedPotBlockEntity> implements DecoratedPot {
 
-    public CraftDecoratedPot(World world, DecoratedPotBlockEntity tileEntity) {
-        super(world, tileEntity);
+    public CraftDecoratedPot(World world, DecoratedPotBlockEntity blockEntity) {
+        super(world, blockEntity);
     }
 
     protected CraftDecoratedPot(CraftDecoratedPot state, Location location) {
@@ -40,8 +40,35 @@ public class CraftDecoratedPot extends CraftBlockEntityState<DecoratedPotBlockEn
             return this.getSnapshotInventory();
         }
 
-        return new CraftInventoryDecoratedPot(this.getTileEntity());
+        return new CraftInventoryDecoratedPot(this.getBlockEntity());
     }
+
+    // Paper start - expose loot table
+    @Override
+    public void setLootTable(final org.bukkit.loot.LootTable table) {
+        this.setLootTable(table, this.getSeed());
+    }
+
+    @Override
+    public void setLootTable(org.bukkit.loot.LootTable table, long seed) {
+        this.getSnapshot().setLootTable(org.bukkit.craftbukkit.CraftLootTable.bukkitToMinecraft(table), seed);
+    }
+
+    @Override
+    public org.bukkit.loot.LootTable getLootTable() {
+        return org.bukkit.craftbukkit.CraftLootTable.minecraftToBukkit(this.getSnapshot().getLootTable());
+    }
+
+    @Override
+    public void setSeed(final long seed) {
+        this.getSnapshot().setLootTableSeed(seed);
+    }
+
+    @Override
+    public long getSeed() {
+        return this.getSnapshot().getLootTableSeed();
+    }
+    // Paper end - expose loot table
 
     @Override
     public void setSherd(Side face, Material sherd) {

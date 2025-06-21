@@ -7,13 +7,19 @@ import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
 
 public class CraftLightningStrike extends CraftEntity implements LightningStrike {
+
     public CraftLightningStrike(final CraftServer server, final LightningBolt entity) {
         super(server, entity);
     }
 
     @Override
+    public LightningBolt getHandle() {
+        return (LightningBolt) this.entity;
+    }
+
+    @Override
     public boolean isEffect() {
-        return this.getHandle().visualOnly;
+        return this.getHandle().isEffect; // Paper - Properly handle lightning effects api
     }
 
     public int getFlashes() {
@@ -41,22 +47,11 @@ public class CraftLightningStrike extends CraftEntity implements LightningStrike
         this.getHandle().setCause((player != null) ? ((CraftPlayer) player).getHandle() : null);
     }
 
-    @Override
-    public LightningBolt getHandle() {
-        return (LightningBolt) this.entity;
-    }
-
-    @Override
-    public String toString() {
-        return "CraftLightningStrike";
-    }
-
     // Spigot start
     private final LightningStrike.Spigot spigot = new LightningStrike.Spigot() {
 
         @Override
-        public boolean isSilent()
-        {
+        public boolean isSilent() {
             return false;
         }
     };
@@ -66,4 +61,21 @@ public class CraftLightningStrike extends CraftEntity implements LightningStrike
         return this.spigot;
     }
     // Spigot end
+
+    @Override
+    public int getFlashCount() {
+        return getHandle().flashes;
+    }
+
+    @Override
+    public void setFlashCount(int flashes) {
+        com.google.common.base.Preconditions.checkArgument(flashes >= 0, "Flashes has to be a positive number!");
+        getHandle().flashes = flashes;
+    }
+
+    @Override
+    public @org.jetbrains.annotations.Nullable org.bukkit.entity.Entity getCausingEntity() {
+        final var cause = this.getHandle().getCause();
+        return cause == null ? null : cause.getBukkitEntity();
+    }
 }

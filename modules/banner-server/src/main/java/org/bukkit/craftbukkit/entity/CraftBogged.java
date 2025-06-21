@@ -4,7 +4,7 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Bogged;
 import org.bukkit.entity.Skeleton;
 
-public class CraftBogged extends CraftAbstractSkeleton implements Bogged {
+public class CraftBogged extends CraftAbstractSkeleton implements Bogged, io.papermc.paper.entity.PaperShearable { // Paper - Shear API
 
     public CraftBogged(CraftServer server, net.minecraft.world.entity.monster.Bogged entity) {
         super(server, entity);
@@ -13,11 +13,6 @@ public class CraftBogged extends CraftAbstractSkeleton implements Bogged {
     @Override
     public net.minecraft.world.entity.monster.Bogged getHandle() {
         return (net.minecraft.world.entity.monster.Bogged) this.entity;
-    }
-
-    @Override
-    public String toString() {
-        return "CraftBogged";
     }
 
     @Override

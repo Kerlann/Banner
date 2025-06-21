@@ -20,11 +20,6 @@ public class CraftFallingBlock extends CraftEntity implements FallingBlock {
     }
 
     @Override
-    public String toString() {
-        return "CraftFallingBlock";
-    }
-
-    @Override
     public Material getMaterial() {
         return this.getBlockData().getMaterial();
     }
@@ -32,6 +27,30 @@ public class CraftFallingBlock extends CraftEntity implements FallingBlock {
     @Override
     public BlockData getBlockData() {
         return CraftBlockData.fromData(this.getHandle().getBlockState());
+    }
+
+    @Override
+    public void setBlockData(final BlockData blockData) {
+        Preconditions.checkArgument(blockData != null, "blockData");
+        final net.minecraft.world.level.block.state.BlockState oldState = this.getHandle().blockState, newState = ((CraftBlockData) blockData).getState();
+        this.getHandle().blockState = newState;
+        this.getHandle().blockData = null;
+
+        if (oldState != newState) this.update();
+    }
+
+    @Override
+    public org.bukkit.block.BlockState getBlockState() {
+        return org.bukkit.craftbukkit.block.CraftBlockStates.getBlockState(this.getHandle().blockState, this.getHandle().blockData);
+    }
+
+    @Override
+    public void setBlockState(final org.bukkit.block.BlockState blockState) {
+        Preconditions.checkArgument(blockState != null, "blockState");
+        // Calls #update if needed, the block data compound tag is not synced with the client and hence can be mutated after the sync with clients.
+        // The call also clears any potential old block data.
+        this.setBlockData(blockState.getBlockData());
+        if (blockState instanceof final org.bukkit.craftbukkit.block.CraftBlockEntityState<?> blockEntitySnapshot) this.getHandle().blockData = blockEntitySnapshot.getSnapshotNBT();
     }
 
     @Override
@@ -68,7 +87,7 @@ public class CraftFallingBlock extends CraftEntity implements FallingBlock {
     public void setTicksLived(int value) {
         super.setTicksLived(value);
 
-        // Second field for EntityFallingBlock
+        // Second field for FallingBlockEntity
         this.getHandle().time = value;
     }
 
@@ -100,5 +119,15 @@ public class CraftFallingBlock extends CraftEntity implements FallingBlock {
         if (damage > 0) {
             this.setHurtEntities(true);
         }
+    }
+
+    @Override
+    public boolean doesAutoExpire() {
+        return this.getHandle().autoExpire;
+    }
+
+    @Override
+    public void shouldAutoExpire(boolean autoExpires) {
+        this.getHandle().autoExpire = autoExpires;
     }
 }

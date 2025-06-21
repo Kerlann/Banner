@@ -1,29 +1,27 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftHangingRoots extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.Waterlogged {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.bukkit.block.data.Waterlogged;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftHangingRoots() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftHangingRoots extends CraftBlockData implements Waterlogged {
+    private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-    public CraftHangingRoots(net.minecraft.world.level.block.state.BlockState state) {
+    public CraftHangingRoots(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.HangingRootsBlock.class, "waterlogged");
-
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftHangingRoots.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftHangingRoots.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }

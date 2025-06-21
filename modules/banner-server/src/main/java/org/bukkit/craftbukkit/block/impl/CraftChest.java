@@ -1,62 +1,65 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftChest extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Chest, org.bukkit.block.data.Directional, org.bukkit.block.data.Waterlogged {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Chest;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftChest() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftChest extends CraftBlockData implements Chest {
+    private static final EnumProperty<Direction> FACING = ChestBlock.FACING;
 
-    public CraftChest(net.minecraft.world.level.block.state.BlockState state) {
+    private static final EnumProperty<ChestType> TYPE = ChestBlock.TYPE;
+
+    private static final BooleanProperty WATERLOGGED = ChestBlock.WATERLOGGED;
+
+    public CraftChest(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftChest
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> TYPE = getEnum(net.minecraft.world.level.block.ChestBlock.class, "type");
-
     @Override
-    public org.bukkit.block.data.type.Chest.Type getType() {
-        return this.get(CraftChest.TYPE, org.bukkit.block.data.type.Chest.Type.class);
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
     }
 
     @Override
-    public void setType(org.bukkit.block.data.type.Chest.Type type) {
-        this.set(CraftChest.TYPE, type);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.ChestBlock.class, "facing");
-
-    @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftChest.FACING, org.bukkit.block.BlockFace.class);
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian() && blockFace.getModY() == 0, "Invalid face, only cartesian horizontal face are allowed for this property!");
+        this.set(FACING, blockFace);
     }
 
     @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftChest.FACING, facing);
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
     }
 
     @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftChest.FACING, org.bukkit.block.BlockFace.class);
+    public Chest.Type getType() {
+        return this.get(TYPE, Chest.Type.class);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.ChestBlock.class, "waterlogged");
+    @Override
+    public void setType(final Chest.Type type) {
+        Preconditions.checkArgument(type != null, "type cannot be null!");
+        this.set(TYPE, type);
+    }
 
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftChest.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftChest.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }

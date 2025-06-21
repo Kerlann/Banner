@@ -1,48 +1,48 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftPitcherCrop extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.PitcherCrop, org.bukkit.block.data.Ageable, org.bukkit.block.data.Bisected {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.PitcherCropBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.data.type.PitcherCrop;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftPitcherCrop() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftPitcherCrop extends CraftBlockData implements PitcherCrop {
+    private static final IntegerProperty AGE = PitcherCropBlock.AGE;
 
-    public CraftPitcherCrop(net.minecraft.world.level.block.state.BlockState state) {
+    private static final EnumProperty<DoubleBlockHalf> HALF = PitcherCropBlock.HALF;
+
+    public CraftPitcherCrop(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftAgeable
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty AGE = getInteger(net.minecraft.world.level.block.PitcherCropBlock.class, "age");
-
     @Override
     public int getAge() {
-        return this.get(CraftPitcherCrop.AGE);
+        return this.get(AGE);
     }
 
     @Override
-    public void setAge(int age) {
-        this.set(CraftPitcherCrop.AGE, age);
+    public void setAge(final int age) {
+        this.set(AGE, age);
     }
 
     @Override
     public int getMaximumAge() {
-        return getMax(CraftPitcherCrop.AGE);
+        return AGE.max;
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftBisected
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> HALF = getEnum(net.minecraft.world.level.block.PitcherCropBlock.class, "half");
 
     @Override
     public org.bukkit.block.data.Bisected.Half getHalf() {
-        return this.get(CraftPitcherCrop.HALF, org.bukkit.block.data.Bisected.Half.class);
+        return this.get(HALF, org.bukkit.block.data.Bisected.Half.class);
     }
 
     @Override
-    public void setHalf(org.bukkit.block.data.Bisected.Half half) {
-        this.set(CraftPitcherCrop.HALF, half);
+    public void setHalf(final org.bukkit.block.data.Bisected.Half half) {
+        Preconditions.checkArgument(half != null, "half cannot be null!");
+        this.set(HALF, half);
     }
 }

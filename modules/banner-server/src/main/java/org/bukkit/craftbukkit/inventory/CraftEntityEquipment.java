@@ -2,6 +2,7 @@ package org.bukkit.craftbukkit.inventory;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.world.entity.Mob;
+import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.craftbukkit.CraftEquipmentSlot;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
@@ -138,21 +139,20 @@ public class CraftEntityEquipment implements EntityEquipment {
 
     @Override
     public ItemStack[] getArmorContents() {
-        ItemStack[] armor = new ItemStack[]{
-                this.getEquipment(net.minecraft.world.entity.EquipmentSlot.FEET),
-                this.getEquipment(net.minecraft.world.entity.EquipmentSlot.LEGS),
-                this.getEquipment(net.minecraft.world.entity.EquipmentSlot.CHEST),
-                this.getEquipment(net.minecraft.world.entity.EquipmentSlot.HEAD),
+        return new ItemStack[]{
+            this.getEquipment(net.minecraft.world.entity.EquipmentSlot.FEET),
+            this.getEquipment(net.minecraft.world.entity.EquipmentSlot.LEGS),
+            this.getEquipment(net.minecraft.world.entity.EquipmentSlot.CHEST),
+            this.getEquipment(net.minecraft.world.entity.EquipmentSlot.HEAD),
         };
-        return armor;
     }
 
     @Override
     public void setArmorContents(ItemStack[] items) {
-        this.setEquipment(net.minecraft.world.entity.EquipmentSlot.FEET, items.length >= 1 ? items[0] : null, false);
-        this.setEquipment(net.minecraft.world.entity.EquipmentSlot.LEGS, items.length >= 2 ? items[1] : null, false);
-        this.setEquipment(net.minecraft.world.entity.EquipmentSlot.CHEST, items.length >= 3 ? items[2] : null, false);
-        this.setEquipment(net.minecraft.world.entity.EquipmentSlot.HEAD, items.length >= 4 ? items[3] : null, false);
+        this.setEquipment(net.minecraft.world.entity.EquipmentSlot.FEET, ArrayUtils.get(items, 0), false);
+        this.setEquipment(net.minecraft.world.entity.EquipmentSlot.LEGS, ArrayUtils.get(items, 1), false);
+        this.setEquipment(net.minecraft.world.entity.EquipmentSlot.CHEST, ArrayUtils.get(items, 2), false);
+        this.setEquipment(net.minecraft.world.entity.EquipmentSlot.HEAD, ArrayUtils.get(items, 3), false);
     }
 
     private ItemStack getEquipment(net.minecraft.world.entity.EquipmentSlot slot) {
@@ -244,15 +244,22 @@ public class CraftEntityEquipment implements EntityEquipment {
     public void setBootsDropChance(float chance) {
         this.setDropChance(net.minecraft.world.entity.EquipmentSlot.FEET, chance);
     }
+    // Paper start
+    @Override
+    public float getDropChance(EquipmentSlot slot) {
+        return getDropChance(CraftEquipmentSlot.getNMS(slot));
+    }
+
+    @Override
+    public void setDropChance(EquipmentSlot slot, float chance) {
+        setDropChance(CraftEquipmentSlot.getNMS(slot), chance);
+    }
+    // Paper end
 
     private void setDropChance(net.minecraft.world.entity.EquipmentSlot slot, float chance) {
         Preconditions.checkArgument(this.entity.getHandle() instanceof Mob, "Cannot set drop chance for non-Mob entity");
 
-        if (slot == net.minecraft.world.entity.EquipmentSlot.MAINHAND || slot == net.minecraft.world.entity.EquipmentSlot.OFFHAND) {
-            ((Mob) this.entity.getHandle()).handDropChances[slot.getIndex()] = chance;
-        } else {
-            ((Mob) this.entity.getHandle()).armorDropChances[slot.getIndex()] = chance;
-        }
+        ((Mob) this.entity.getHandle()).setDropChance(slot, chance); // Paper - use setter on Mob
     }
 
     private float getDropChance(net.minecraft.world.entity.EquipmentSlot slot) {
@@ -260,10 +267,6 @@ public class CraftEntityEquipment implements EntityEquipment {
             return 1;
         }
 
-        if (slot == net.minecraft.world.entity.EquipmentSlot.MAINHAND || slot == net.minecraft.world.entity.EquipmentSlot.OFFHAND) {
-            return ((Mob) this.entity.getHandle()).handDropChances[slot.getIndex()];
-        } else {
-            return ((Mob) this.entity.getHandle()).armorDropChances[slot.getIndex()];
-        }
+        return ((Mob) this.entity.getHandle()).getDropChances().byEquipment(slot); // Paper - use getter on Mob
     }
 }

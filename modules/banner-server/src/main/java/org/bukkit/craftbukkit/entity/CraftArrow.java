@@ -30,11 +30,6 @@ public class CraftArrow extends CraftAbstractArrow implements Arrow {
     }
 
     @Override
-    public String toString() {
-        return "CraftTippedArrow";
-    }
-
-    @Override
     public boolean addCustomEffect(PotionEffect effect, boolean override) {
         if (this.hasCustomEffect(effect.getType())) {
             if (!override) {
@@ -43,15 +38,13 @@ public class CraftArrow extends CraftAbstractArrow implements Arrow {
             this.removeCustomEffect(effect.getType());
         }
         this.getHandle().addEffect(CraftPotionUtil.fromBukkit(effect));
-        this.getHandle().updateColor();
         return true;
     }
 
     @Override
     public void clearCustomEffects() {
         PotionContents old = this.getHandle().getPotionContents();
-        this.getHandle().setPotionContents(new PotionContents(old.potion(), old.customColor(), List.of()));
-        this.getHandle().updateColor();
+        this.getHandle().setPotionContents(new PotionContents(old.potion(), old.customColor(), List.of(), old.customName()));
     }
 
     @Override
@@ -86,7 +79,7 @@ public class CraftArrow extends CraftAbstractArrow implements Arrow {
         Holder<MobEffect> minecraft = CraftPotionEffectType.bukkitToMinecraftHolder(effect);
 
         PotionContents old = this.getHandle().getPotionContents();
-        this.getHandle().setPotionContents(new PotionContents(old.potion(), old.customColor(), old.customEffects().stream().filter((mobEffect) -> !mobEffect.getEffect().equals(minecraft)).toList()));
+        this.getHandle().setPotionContents(new PotionContents(old.potion(), old.customColor(), old.customEffects().stream().filter((mobEffect) -> !mobEffect.getEffect().equals(minecraft)).toList(), old.customName()));
         return true;
     }
 
@@ -106,7 +99,7 @@ public class CraftArrow extends CraftAbstractArrow implements Arrow {
             this.getHandle().setPotionContents(this.getHandle().getPotionContents().withPotion(CraftPotionType.bukkitToMinecraftHolder(potionType)));
         } else {
             PotionContents old = this.getHandle().getPotionContents();
-            this.getHandle().setPotionContents(new PotionContents(Optional.empty(), old.customColor(), old.customEffects()));
+            this.getHandle().setPotionContents(new PotionContents(Optional.empty(), old.customColor(), old.customEffects(), old.customName()));
         }
     }
 
@@ -117,16 +110,17 @@ public class CraftArrow extends CraftAbstractArrow implements Arrow {
 
     @Override
     public void setColor(Color color) {
-        int colorRGB = (color == null) ? -1 : color.asRGB();
+        int colorRGB = (color == null) ? net.minecraft.world.entity.projectile.Arrow.NO_EFFECT_COLOR : color.asARGB(); // Paper
         PotionContents old = this.getHandle().getPotionContents();
-        this.getHandle().setPotionContents(new PotionContents(old.potion(), Optional.of(colorRGB), old.customEffects()));
+        this.getHandle().setPotionContents(new PotionContents(old.potion(), Optional.of(colorRGB), old.customEffects(), old.customName()));
     }
 
     @Override
     public Color getColor() {
-        if (this.getHandle().getColor() <= -1) {
+        int color = this.getHandle().getColor(); // Paper
+        if (color == net.minecraft.world.entity.projectile.Arrow.NO_EFFECT_COLOR) { // Paper
             return null;
         }
-        return Color.fromRGB(this.getHandle().getColor());
+        return Color.fromARGB(color); // Paper
     }
 }

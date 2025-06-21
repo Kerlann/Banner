@@ -1,54 +1,62 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftMangroveLeaves extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Leaves, org.bukkit.block.data.Waterlogged {
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.MangroveLeavesBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.bukkit.block.data.type.Leaves;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftMangroveLeaves() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftMangroveLeaves extends CraftBlockData implements Leaves {
+    private static final IntegerProperty DISTANCE = MangroveLeavesBlock.DISTANCE;
 
-    public CraftMangroveLeaves(net.minecraft.world.level.block.state.BlockState state) {
+    private static final BooleanProperty PERSISTENT = MangroveLeavesBlock.PERSISTENT;
+
+    private static final BooleanProperty WATERLOGGED = MangroveLeavesBlock.WATERLOGGED;
+
+    public CraftMangroveLeaves(BlockState state) {
         super(state);
-    }
-
-    // org.bukkit.craftbukkit.block.data.type.CraftLeaves
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty DISTANCE = getInteger(net.minecraft.world.level.block.MangroveLeavesBlock.class, "distance");
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty PERSISTENT = getBoolean(net.minecraft.world.level.block.MangroveLeavesBlock.class, "persistent");
-
-    @Override
-    public boolean isPersistent() {
-        return this.get(CraftMangroveLeaves.PERSISTENT);
-    }
-
-    @Override
-    public void setPersistent(boolean persistent) {
-        this.set(CraftMangroveLeaves.PERSISTENT, persistent);
     }
 
     @Override
     public int getDistance() {
-        return this.get(CraftMangroveLeaves.DISTANCE);
+        return this.get(DISTANCE);
     }
 
     @Override
-    public void setDistance(int distance) {
-        this.set(CraftMangroveLeaves.DISTANCE, distance);
+    public void setDistance(final int distance) {
+        this.set(DISTANCE, distance);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
+    @Override
+    public int getMinimumDistance() {
+        return DISTANCE.min;
+    }
 
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.MangroveLeavesBlock.class, "waterlogged");
+    @Override
+    public int getMaximumDistance() {
+        return DISTANCE.max;
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return this.get(PERSISTENT);
+    }
+
+    @Override
+    public void setPersistent(final boolean persistent) {
+        this.set(PERSISTENT, persistent);
+    }
 
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftMangroveLeaves.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftMangroveLeaves.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }

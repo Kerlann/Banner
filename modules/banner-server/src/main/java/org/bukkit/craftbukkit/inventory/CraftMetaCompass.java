@@ -2,8 +2,8 @@ package org.bukkit.craftbukkit.inventory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.mohistmc.banner.bukkit.BukkitMethodHooks;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -12,12 +12,14 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.component.LodestoneTracker;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.util.CraftLocation;
 import org.bukkit.inventory.meta.CompassMeta;
 
 @DelegateDeserialization(SerializableMeta.class)
@@ -31,47 +33,32 @@ public class CraftMetaCompass extends CraftMetaItem implements CompassMeta {
     static final ItemMetaKey LODESTONE_POS_Z = new ItemMetaKey("LodestonePosZ");
     static final ItemMetaKey LODESTONE_TRACKED = new ItemMetaKey("LodestoneTracked");
 
-    private ResourceKey<net.minecraft.world.level.Level> lodestoneWorld;
-    private int lodestoneX;
-    private int lodestoneY;
-    private int lodestoneZ;
-    private boolean tracked = true;
+    private LodestoneTracker tracker;
 
     CraftMetaCompass(CraftMetaItem meta) {
         super(meta);
-        if (!(meta instanceof CraftMetaCompass)) {
+        if (!(meta instanceof final CraftMetaCompass compassMeta)) {
             return;
         }
-        CraftMetaCompass compassMeta = (CraftMetaCompass) meta;
-        this.lodestoneWorld = compassMeta.lodestoneWorld;
-        this.lodestoneX = compassMeta.lodestoneX;
-        this.lodestoneY = compassMeta.lodestoneY;
-        this.lodestoneZ = compassMeta.lodestoneZ;
-        this.tracked = compassMeta.tracked;
+        this.tracker = compassMeta.tracker;
     }
 
-    CraftMetaCompass(DataComponentPatch tag) {
-        super(tag);
+    CraftMetaCompass(DataComponentPatch tag, java.util.Set<net.minecraft.core.component.DataComponentType<?>> extraHandledDcts) {
+        super(tag, extraHandledDcts);
         getOrEmpty(tag, CraftMetaCompass.LODESTONE_TARGET).ifPresent((lodestoneTarget) -> {
-            lodestoneTarget.target().ifPresent((target) -> {
-                this.lodestoneWorld = target.dimension();
-                BlockPos pos = target.pos();
-                this.lodestoneX = pos.getX();
-                this.lodestoneY = pos.getY();
-                this.lodestoneZ = pos.getZ();
-            });
-            this.tracked = lodestoneTarget.tracked();
+            this.tracker = lodestoneTarget;
         });
     }
 
     CraftMetaCompass(Map<String, Object> map) {
         super(map);
-        String lodestoneWorldString = SerializableMeta.getString(map, CraftMetaCompass.LODESTONE_POS_WORLD.BUKKIT, true);
-        if (lodestoneWorldString != null) {
-            this.lodestoneWorld = ResourceKey.create(Registries.DIMENSION, ResourceLocation.tryParse(lodestoneWorldString));
-            this.lodestoneX = (Integer) map.get(CraftMetaCompass.LODESTONE_POS_X.BUKKIT);
-            this.lodestoneY = (Integer) map.get(CraftMetaCompass.LODESTONE_POS_Y.BUKKIT);
-            this.lodestoneZ = (Integer) map.get(CraftMetaCompass.LODESTONE_POS_Z.BUKKIT);
+        String lodestoneWorldKey = SerializableMeta.getString(map, CraftMetaCompass.LODESTONE_POS_WORLD.BUKKIT, true);
+        if (lodestoneWorldKey != null) {
+            ResourceKey<net.minecraft.world.level.Level> lodestoneWorld = ResourceKey.create(Registries.DIMENSION, ResourceLocation.tryParse(lodestoneWorldKey));
+            int lodestoneX = (Integer) map.get(CraftMetaCompass.LODESTONE_POS_X.BUKKIT);
+            int lodestoneY = (Integer) map.get(CraftMetaCompass.LODESTONE_POS_Y.BUKKIT);
+            int lodestoneZ = (Integer) map.get(CraftMetaCompass.LODESTONE_POS_Z.BUKKIT);
+            this.tracker = new LodestoneTracker(Optional.of(new GlobalPos(lodestoneWorld, new BlockPos(lodestoneX, lodestoneY, lodestoneZ))), true);
         } else {
             // legacy
             Location lodestone = SerializableMeta.getObject(Location.class, map, CraftMetaCompass.LODESTONE_POS.BUKKIT, true);
@@ -79,20 +66,18 @@ public class CraftMetaCompass extends CraftMetaItem implements CompassMeta {
                 this.setLodestone(lodestone);
             }
         }
-        this.tracked = SerializableMeta.getBoolean(map, CraftMetaCompass.LODESTONE_TRACKED.BUKKIT);
+
+        final Optional<Boolean> tracked = SerializableMeta.getObjectOptionally(Boolean.class, map, CraftMetaCompass.LODESTONE_TRACKED.BUKKIT, true);
+        final Optional<GlobalPos> trackedPos = this.tracker != null ? this.tracker.target() : Optional.empty();
+        tracked.ifPresent(isTracked -> this.tracker = new LodestoneTracker(trackedPos, isTracked));
     }
 
     @Override
     void applyToItem(CraftMetaItem.Applicator tag) {
         super.applyToItem(tag);
 
-        Optional<GlobalPos> target = Optional.empty();
-        if (this.lodestoneWorld != null) {
-            target = Optional.of(new GlobalPos(this.lodestoneWorld, new BlockPos(this.lodestoneX, this.lodestoneY, this.lodestoneZ)));
-        }
-
-        if (target.isPresent() || this.hasLodestoneTracked()) {
-            tag.put(CraftMetaCompass.LODESTONE_TARGET, new LodestoneTracker(target, this.tracked));
+        if (this.tracker != null) {
+            tag.put(CraftMetaCompass.LODESTONE_TARGET, this.tracker);
         }
     }
 
@@ -102,7 +87,7 @@ public class CraftMetaCompass extends CraftMetaItem implements CompassMeta {
     }
 
     boolean isCompassEmpty() {
-        return !(this.hasLodestone() || this.hasLodestoneTracked());
+        return this.tracker == null;
     }
 
     @Override
@@ -113,58 +98,63 @@ public class CraftMetaCompass extends CraftMetaItem implements CompassMeta {
 
     @Override
     public boolean hasLodestone() {
-        return this.lodestoneWorld != null;
+        return this.tracker != null && this.tracker.target().isPresent();
     }
 
     @Override
     public Location getLodestone() {
-        if (this.lodestoneWorld == null) {
+        if (this.tracker == null || this.tracker.target().isEmpty()) {
             return null;
         }
-        ServerLevel worldServer = BukkitMethodHooks.getServer().getLevel(this.lodestoneWorld);
-        World world = worldServer != null ? worldServer.getWorld() : null;
-        return new Location(world, this.lodestoneX, this.lodestoneY, this.lodestoneZ); // world may be null here, if the referenced world is not loaded
+        ServerLevel level = MinecraftServer.getServer().getLevel(this.tracker.target().get().dimension());
+        World world = level != null ? level.getWorld() : null;
+        return org.bukkit.craftbukkit.util.CraftLocation.toBukkit(this.tracker.target().get().pos(), world); // world may be null here, if the referenced world is not loaded
     }
 
     @Override
     public void setLodestone(Location lodestone) {
         Preconditions.checkArgument(lodestone == null || lodestone.getWorld() != null, "world is null");
         if (lodestone == null) {
-            this.lodestoneWorld = null;
+            if (this.tracker != null) {
+                this.tracker = new LodestoneTracker(java.util.Optional.empty(), this.tracker.tracked());
+            }
         } else {
-            this.lodestoneWorld = ((CraftWorld) lodestone.getWorld()).getHandle().dimension();
-            this.lodestoneX = lodestone.getBlockX();
-            this.lodestoneY = lodestone.getBlockY();
-            this.lodestoneZ = lodestone.getBlockZ();
+            GlobalPos pos = GlobalPos.of(
+                ((CraftWorld) lodestone.getWorld()).getHandle().dimension(),
+                CraftLocation.toBlockPosition(lodestone)
+            );
+            boolean tracked = this.tracker == null || this.tracker.tracked();
+            this.tracker = new LodestoneTracker(Optional.of(pos), tracked);
         }
-    }
-
-    boolean hasLodestoneTracked() {
-        return !this.tracked;
     }
 
     @Override
     public boolean isLodestoneTracked() {
-        return this.tracked;
+        return this.tracker != null && this.tracker.tracked();
     }
 
     @Override
     public void setLodestoneTracked(boolean tracked) {
-        this.tracked = tracked;
+        final Optional<GlobalPos> trackedPos = this.tracker != null ? this.tracker.target() : Optional.empty();
+        this.tracker = new LodestoneTracker(trackedPos, tracked);
+    }
+
+    @Override
+    public boolean isLodestoneCompass() {
+        return this.tracker != null;
+    }
+
+    @Override
+    public void clearLodestone() {
+        this.tracker = null;
     }
 
     @Override
     int applyHash() {
         final int original;
         int hash = original = super.applyHash();
-        if (this.hasLodestone()) {
-            hash = 73 * hash + this.lodestoneWorld.hashCode();
-            hash = 73 * hash + this.lodestoneX;
-            hash = 73 * hash + this.lodestoneY;
-            hash = 73 * hash + this.lodestoneZ;
-        }
-        if (this.hasLodestoneTracked()) {
-            hash = 73 * hash + (this.isLodestoneTracked() ? 1231 : 1237);
+        if (this.isLodestoneCompass()) {
+            hash = 73 * hash + this.tracker.hashCode();
         }
 
         return original != hash ? CraftMetaCompass.class.hashCode() ^ hash : hash;
@@ -175,13 +165,8 @@ public class CraftMetaCompass extends CraftMetaItem implements CompassMeta {
         if (!super.equalsCommon(meta)) {
             return false;
         }
-        if (meta instanceof CraftMetaCompass) {
-            CraftMetaCompass that = (CraftMetaCompass) meta;
-
-            return (this.hasLodestone() ? that.hasLodestone() && this.lodestoneWorld.equals(that.lodestoneWorld)
-                    && this.lodestoneX == that.lodestoneX && this.lodestoneY == that.lodestoneY
-                    && this.lodestoneZ == that.lodestoneZ : !that.hasLodestone())
-                    && this.tracked == that.tracked;
+        if (meta instanceof final CraftMetaCompass other) {
+            return Objects.equals(this.tracker, other.tracker);
         }
         return true;
     }
@@ -195,14 +180,14 @@ public class CraftMetaCompass extends CraftMetaItem implements CompassMeta {
     Builder<String, Object> serialize(Builder<String, Object> builder) {
         super.serialize(builder);
 
-        if (this.hasLodestone()) {
-            builder.put(CraftMetaCompass.LODESTONE_POS_WORLD.BUKKIT, this.lodestoneWorld.location().toString());
-            builder.put(CraftMetaCompass.LODESTONE_POS_X.BUKKIT, this.lodestoneX);
-            builder.put(CraftMetaCompass.LODESTONE_POS_Y.BUKKIT, this.lodestoneY);
-            builder.put(CraftMetaCompass.LODESTONE_POS_Z.BUKKIT, this.lodestoneZ);
-        }
-        if (this.hasLodestoneTracked()) {
-            builder.put(CraftMetaCompass.LODESTONE_TRACKED.BUKKIT, this.tracked);
+        if (this.isLodestoneCompass()) {
+            if (this.tracker.target().isPresent()) {
+                builder.put(CraftMetaCompass.LODESTONE_POS_WORLD.BUKKIT, this.tracker.target().get().dimension().location().toString());
+                builder.put(CraftMetaCompass.LODESTONE_POS_X.BUKKIT, this.tracker.target().get().pos().getX());
+                builder.put(CraftMetaCompass.LODESTONE_POS_Y.BUKKIT, this.tracker.target().get().pos().getY());
+                builder.put(CraftMetaCompass.LODESTONE_POS_Z.BUKKIT, this.tracker.target().get().pos().getZ());
+            }
+            builder.put(CraftMetaCompass.LODESTONE_TRACKED.BUKKIT, this.tracker.tracked());
         }
 
         return builder;

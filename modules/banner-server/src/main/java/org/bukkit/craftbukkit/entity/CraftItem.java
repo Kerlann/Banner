@@ -1,6 +1,9 @@
 package org.bukkit.craftbukkit.entity;
 
+import com.google.common.base.Preconditions;
 import java.util.UUID;
+import net.minecraft.Optionull;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.item.ItemEntity;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -8,6 +11,9 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 public class CraftItem extends CraftEntity implements Item {
+
+    private final static int NO_AGE_TIME = Short.MIN_VALUE; // ItemEntity#INFINITE_LIFETIME
+    private final static int NO_PICKUP_TIME = Short.MAX_VALUE; // ItemEntity#INFINITE_PICKUP_DELAY
 
     public CraftItem(CraftServer server, ItemEntity entity) {
         super(server, entity);
@@ -64,6 +70,63 @@ public class CraftItem extends CraftEntity implements Item {
     }
 
     @Override
+    public boolean canMobPickup() {
+        return this.getHandle().canMobPickup;
+    }
+
+    @Override
+    public void setCanMobPickup(boolean canMobPickup) {
+        this.getHandle().canMobPickup = canMobPickup;
+    }
+
+     @Override
+     public boolean canPlayerPickup() {
+        return this.getHandle().pickupDelay != NO_PICKUP_TIME;
+     }
+
+     @Override
+     public void setCanPlayerPickup(boolean canPlayerPickup) {
+        this.getHandle().pickupDelay = canPlayerPickup ? 0 : NO_PICKUP_TIME;
+     }
+
+     @Override
+     public boolean willAge() {
+        return this.getHandle().age != NO_AGE_TIME;
+     }
+
+     @Override
+     public void setWillAge(boolean willAge) {
+        this.getHandle().age = willAge ? 0 : NO_AGE_TIME;
+     }
+
+     @org.jetbrains.annotations.NotNull
+     @Override
+     public net.kyori.adventure.util.TriState getFrictionState() {
+        return this.getHandle().frictionState;
+     }
+
+     @Override
+     public void setFrictionState(@org.jetbrains.annotations.NotNull net.kyori.adventure.util.TriState state) {
+         Preconditions.checkArgument(state != null, "state may not be null");
+         this.getHandle().frictionState = state;
+     }
+
+    @Override
+    public int getHealth() {
+        return this.getHandle().health;
+    }
+
+    @Override
+    public void setHealth(int health) {
+        if (health <= 0) {
+            this.getHandle().getItem().onDestroyed(this.getHandle());
+            this.getHandle().discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.PLUGIN);
+        } else {
+            this.getHandle().health = health;
+        }
+    }
+
+    @Override
     public void setOwner(UUID uuid) {
         this.getHandle().setTarget(uuid);
     }
@@ -75,16 +138,11 @@ public class CraftItem extends CraftEntity implements Item {
 
     @Override
     public void setThrower(UUID uuid) {
-        this.getHandle().thrower = uuid;
+        this.getHandle().thrower = uuid == null ? null : new EntityReference<>(uuid);
     }
 
     @Override
     public UUID getThrower() {
-        return this.getHandle().thrower;
-    }
-
-    @Override
-    public String toString() {
-        return "CraftItem";
+        return Optionull.map(this.getHandle().thrower, EntityReference::getUUID);
     }
 }

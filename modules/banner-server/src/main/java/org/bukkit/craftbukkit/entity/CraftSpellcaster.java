@@ -13,12 +13,7 @@ public class CraftSpellcaster extends CraftIllager implements Spellcaster {
 
     @Override
     public SpellcasterIllager getHandle() {
-        return (SpellcasterIllager) super.getHandle();
-    }
-
-    @Override
-    public String toString() {
-        return "CraftSpellcaster";
+        return (SpellcasterIllager) this.entity;
     }
 
     @Override

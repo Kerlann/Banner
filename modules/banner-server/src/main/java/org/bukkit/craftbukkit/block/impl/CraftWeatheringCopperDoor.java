@@ -1,90 +1,91 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftWeatheringCopperDoor extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.Door, org.bukkit.block.data.Bisected, org.bukkit.block.data.Directional, org.bukkit.block.data.Openable, org.bukkit.block.data.Powerable {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import java.util.Set;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.WeatheringCopperDoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DoorHingeSide;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Door;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftWeatheringCopperDoor() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftWeatheringCopperDoor extends CraftBlockData implements Door {
+    private static final EnumProperty<Direction> FACING = WeatheringCopperDoorBlock.FACING;
 
-    public CraftWeatheringCopperDoor(net.minecraft.world.level.block.state.BlockState state) {
+    private static final EnumProperty<DoubleBlockHalf> HALF = WeatheringCopperDoorBlock.HALF;
+
+    private static final EnumProperty<DoorHingeSide> HINGE = WeatheringCopperDoorBlock.HINGE;
+
+    private static final BooleanProperty OPEN = WeatheringCopperDoorBlock.OPEN;
+
+    private static final BooleanProperty POWERED = WeatheringCopperDoorBlock.POWERED;
+
+    public CraftWeatheringCopperDoor(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftDoor
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> HINGE = getEnum(net.minecraft.world.level.block.WeatheringCopperDoorBlock.class, "hinge");
-
     @Override
-    public org.bukkit.block.data.type.Door.Hinge getHinge() {
-        return this.get(CraftWeatheringCopperDoor.HINGE, org.bukkit.block.data.type.Door.Hinge.class);
+    public BlockFace getFacing() {
+        return this.get(FACING, BlockFace.class);
     }
 
     @Override
-    public void setHinge(org.bukkit.block.data.type.Door.Hinge hinge) {
-        this.set(CraftWeatheringCopperDoor.HINGE, hinge);
+    public void setFacing(final BlockFace blockFace) {
+        Preconditions.checkArgument(blockFace != null, "blockFace cannot be null!");
+        Preconditions.checkArgument(blockFace.isCartesian() && blockFace.getModY() == 0, "Invalid face, only cartesian horizontal face are allowed for this property!");
+        this.set(FACING, blockFace);
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftBisected
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> HALF = getEnum(net.minecraft.world.level.block.WeatheringCopperDoorBlock.class, "half");
+    @Override
+    public Set<BlockFace> getFaces() {
+        return this.getValues(FACING, BlockFace.class);
+    }
 
     @Override
     public org.bukkit.block.data.Bisected.Half getHalf() {
-        return this.get(CraftWeatheringCopperDoor.HALF, org.bukkit.block.data.Bisected.Half.class);
+        return this.get(HALF, org.bukkit.block.data.Bisected.Half.class);
     }
 
     @Override
-    public void setHalf(org.bukkit.block.data.Bisected.Half half) {
-        this.set(CraftWeatheringCopperDoor.HALF, half);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftDirectional
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.WeatheringCopperDoorBlock.class, "facing");
-
-    @Override
-    public org.bukkit.block.BlockFace getFacing() {
-        return this.get(CraftWeatheringCopperDoor.FACING, org.bukkit.block.BlockFace.class);
+    public void setHalf(final org.bukkit.block.data.Bisected.Half half) {
+        Preconditions.checkArgument(half != null, "half cannot be null!");
+        this.set(HALF, half);
     }
 
     @Override
-    public void setFacing(org.bukkit.block.BlockFace facing) {
-        this.set(CraftWeatheringCopperDoor.FACING, facing);
+    public Door.Hinge getHinge() {
+        return this.get(HINGE, Door.Hinge.class);
     }
 
     @Override
-    public java.util.Set<org.bukkit.block.BlockFace> getFaces() {
-        return this.getValues(CraftWeatheringCopperDoor.FACING, org.bukkit.block.BlockFace.class);
+    public void setHinge(final Door.Hinge hinge) {
+        Preconditions.checkArgument(hinge != null, "hinge cannot be null!");
+        this.set(HINGE, hinge);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftOpenable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty OPEN = getBoolean(net.minecraft.world.level.block.WeatheringCopperDoorBlock.class, "open");
 
     @Override
     public boolean isOpen() {
-        return this.get(CraftWeatheringCopperDoor.OPEN);
+        return this.get(OPEN);
     }
 
     @Override
-    public void setOpen(boolean open) {
-        this.set(CraftWeatheringCopperDoor.OPEN, open);
+    public void setOpen(final boolean open) {
+        this.set(OPEN, open);
     }
-
-    // org.bukkit.craftbukkit.block.data.CraftPowerable
-
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty POWERED = getBoolean(net.minecraft.world.level.block.WeatheringCopperDoorBlock.class, "powered");
 
     @Override
     public boolean isPowered() {
-        return this.get(CraftWeatheringCopperDoor.POWERED);
+        return this.get(POWERED);
     }
 
     @Override
-    public void setPowered(boolean powered) {
-        this.set(CraftWeatheringCopperDoor.POWERED, powered);
+    public void setPowered(final boolean powered) {
+        this.set(POWERED, powered);
     }
 }

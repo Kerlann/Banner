@@ -15,12 +15,7 @@ public class CraftTextDisplay extends CraftDisplay implements TextDisplay {
 
     @Override
     public net.minecraft.world.entity.Display.TextDisplay getHandle() {
-        return (net.minecraft.world.entity.Display.TextDisplay) super.getHandle();
-    }
-
-    @Override
-    public String toString() {
-        return "CraftTextDisplay";
+        return (net.minecraft.world.entity.Display.TextDisplay) this.entity;
     }
 
     @Override
@@ -31,6 +26,16 @@ public class CraftTextDisplay extends CraftDisplay implements TextDisplay {
     @Override
     public void setText(String text) {
         this.getHandle().setText(CraftChatMessage.fromString(text, true)[0]);
+    }
+
+    @Override
+    public net.kyori.adventure.text.Component text() {
+        return io.papermc.paper.adventure.PaperAdventure.asAdventure(this.getHandle().getText());
+    }
+
+    @Override
+    public void text(net.kyori.adventure.text.Component text) {
+        this.getHandle().setText(text == null ? net.minecraft.network.chat.Component.empty() : io.papermc.paper.adventure.PaperAdventure.asVanilla(text));
     }
 
     @Override
@@ -47,13 +52,13 @@ public class CraftTextDisplay extends CraftDisplay implements TextDisplay {
     public Color getBackgroundColor() {
         int color = this.getHandle().getBackgroundColor();
 
-        return (color == -1) ? null : Color.fromARGB(color);
+        return color == Display.TextDisplay.INITIAL_BACKGROUND ? null : Color.fromARGB(color);
     }
 
     @Override
     public void setBackgroundColor(Color color) {
         if (color == null) {
-            this.getHandle().getEntityData().set(Display.TextDisplay.DATA_BACKGROUND_COLOR_ID, -1);
+            this.getHandle().getEntityData().set(Display.TextDisplay.DATA_BACKGROUND_COLOR_ID, Display.TextDisplay.INITIAL_BACKGROUND);
         } else {
             this.getHandle().getEntityData().set(Display.TextDisplay.DATA_BACKGROUND_COLOR_ID, color.asARGB());
         }

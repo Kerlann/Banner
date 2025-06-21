@@ -1,62 +1,61 @@
-/**
- * Automatically generated file, changes will be lost.
- */
 package org.bukkit.craftbukkit.block.impl;
 
-public final class CraftSculkSensor extends org.bukkit.craftbukkit.block.data.CraftBlockData implements org.bukkit.block.data.type.SculkSensor, org.bukkit.block.data.AnaloguePowerable, org.bukkit.block.data.Waterlogged {
+import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
+import net.minecraft.world.level.block.SculkSensorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.SculkSensorPhase;
+import org.bukkit.block.data.type.SculkSensor;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-    public CraftSculkSensor() {
-        super();
-    }
+@GeneratedFrom("1.21.6")
+public class CraftSculkSensor extends CraftBlockData implements SculkSensor {
+    private static final IntegerProperty POWER = SculkSensorBlock.POWER;
 
-    public CraftSculkSensor(net.minecraft.world.level.block.state.BlockState state) {
+    private static final EnumProperty<SculkSensorPhase> PHASE = SculkSensorBlock.PHASE;
+
+    private static final BooleanProperty WATERLOGGED = SculkSensorBlock.WATERLOGGED;
+
+    public CraftSculkSensor(BlockState state) {
         super(state);
     }
 
-    // org.bukkit.craftbukkit.block.data.type.CraftSculkSensor
-
-    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> PHASE = getEnum(net.minecraft.world.level.block.SculkSensorBlock.class, "sculk_sensor_phase");
-
-    @Override
-    public org.bukkit.block.data.type.SculkSensor.Phase getPhase() {
-        return this.get(CraftSculkSensor.PHASE, org.bukkit.block.data.type.SculkSensor.Phase.class);
-    }
-
-    @Override
-    public void setPhase(org.bukkit.block.data.type.SculkSensor.Phase phase) {
-        this.set(CraftSculkSensor.PHASE, phase);
-    }
-
-    // org.bukkit.craftbukkit.block.data.CraftAnaloguePowerable
-
-    private static final net.minecraft.world.level.block.state.properties.IntegerProperty POWER = getInteger(net.minecraft.world.level.block.SculkSensorBlock.class, "power");
-
     @Override
     public int getPower() {
-        return this.get(CraftSculkSensor.POWER);
+        return this.get(POWER);
     }
 
     @Override
-    public void setPower(int power) {
-        this.set(CraftSculkSensor.POWER, power);
+    public void setPower(final int power) {
+        this.set(POWER, power);
     }
 
     @Override
     public int getMaximumPower() {
-        return getMax(CraftSculkSensor.POWER);
+        return POWER.max;
     }
 
-    // org.bukkit.craftbukkit.block.data.CraftWaterlogged
+    @Override
+    public SculkSensor.Phase getSculkSensorPhase() {
+        return this.get(PHASE, SculkSensor.Phase.class);
+    }
 
-    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.SculkSensorBlock.class, "waterlogged");
+    @Override
+    public void setSculkSensorPhase(final SculkSensor.Phase phase) {
+        Preconditions.checkArgument(phase != null, "phase cannot be null!");
+        this.set(PHASE, phase);
+    }
 
     @Override
     public boolean isWaterlogged() {
-        return this.get(CraftSculkSensor.WATERLOGGED);
+        return this.get(WATERLOGGED);
     }
 
     @Override
-    public void setWaterlogged(boolean waterlogged) {
-        this.set(CraftSculkSensor.WATERLOGGED, waterlogged);
+    public void setWaterlogged(final boolean waterlogged) {
+        this.set(WATERLOGGED, waterlogged);
     }
 }
