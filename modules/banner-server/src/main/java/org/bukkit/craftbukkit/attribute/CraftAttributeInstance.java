@@ -45,40 +45,9 @@ public class CraftAttributeInstance implements AttributeInstance {
     }
 
     @Override
-    public AttributeModifier getModifier(final net.kyori.adventure.key.Key key) {
-        Preconditions.checkArgument(key != null, "Key cannot be null");
-        net.minecraft.world.entity.ai.attributes.AttributeModifier modifier = this.handle.getModifier(io.papermc.paper.adventure.PaperAdventure.asVanilla(key));
-        return modifier == null ? null : CraftAttributeInstance.convert(modifier);
-    }
-
-    @Override
-    public void removeModifier(final net.kyori.adventure.key.Key key) {
-        Preconditions.checkArgument(key != null, "Key cannot be null");
-        this.handle.removeModifier(io.papermc.paper.adventure.PaperAdventure.asVanilla(key));
-    }
-
-    @Override
-    public AttributeModifier getModifier(java.util.UUID uuid) {
-        Preconditions.checkArgument(uuid != null, "UUID cannot be null");
-        return this.getModifier(AttributeMappings.uuidToKey(uuid));
-    }
-
-    @Override
-    public void removeModifier(java.util.UUID uuid) {
-        Preconditions.checkArgument(uuid != null, "UUID cannot be null");
-        this.removeModifier(AttributeMappings.uuidToKey(uuid));
-    }
-
-    @Override
     public void addModifier(AttributeModifier modifier) {
         Preconditions.checkArgument(modifier != null, "modifier");
         this.handle.addPermanentModifier(CraftAttributeInstance.convert(modifier));
-    }
-
-    @Override
-    public void addTransientModifier(AttributeModifier modifier) {
-        Preconditions.checkArgument(modifier != null, "modifier");
-        this.handle.addTransientModifier(CraftAttributeInstance.convert(modifier));
     }
 
     @Override

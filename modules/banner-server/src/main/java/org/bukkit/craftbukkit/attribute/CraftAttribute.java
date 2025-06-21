@@ -1,18 +1,19 @@
 package org.bukkit.craftbukkit.attribute;
 
 import com.google.common.base.Preconditions;
-import io.papermc.paper.registry.RegistryKey;
-import io.papermc.paper.util.OldEnumHolderable;
 import java.util.Locale;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.CraftRegistry;
 import org.bukkit.craftbukkit.legacy.FieldRename;
+import org.bukkit.craftbukkit.registry.CraftOldEnumRegistryItem;
 import org.bukkit.craftbukkit.util.ApiVersion;
+import org.jetbrains.annotations.NotNull;
 
-public class CraftAttribute extends OldEnumHolderable<Attribute, net.minecraft.world.entity.ai.attributes.Attribute> implements Attribute {
+public class CraftAttribute extends CraftOldEnumRegistryItem<Attribute, net.minecraft.world.entity.ai.attributes.Attribute> implements Attribute {
 
     private static int count = 0;
 
@@ -35,7 +36,7 @@ public class CraftAttribute extends OldEnumHolderable<Attribute, net.minecraft.w
         if (key == null) return null; // Paper - Fixup NamespacedKey handling
 
         // Now also convert from when keys where saved
-        return CraftRegistry.get(RegistryKey.ATTRIBUTE, key, ApiVersion.CURRENT);
+        return CraftRegistry.get(Registry.ATTRIBUTE, key, ApiVersion.CURRENT);
     }
 
     public static net.minecraft.world.entity.ai.attributes.Attribute bukkitToMinecraft(Attribute bukkit) {
@@ -52,8 +53,8 @@ public class CraftAttribute extends OldEnumHolderable<Attribute, net.minecraft.w
         return bukkit.getKey().toString();
     }
 
-    public CraftAttribute(final Holder<net.minecraft.world.entity.ai.attributes.Attribute> holder) {
-        super(holder, count++);
+    public CraftAttribute(NamespacedKey key, Holder<net.minecraft.world.entity.ai.attributes.Attribute> handle) {
+        super(key, handle, count++);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class CraftAttribute extends OldEnumHolderable<Attribute, net.minecraft.w
     }
 
     @Override
-    public String translationKey() {
-        return this.getHandle().getDescriptionId();
+    public @NotNull NamespacedKey getKey() {
+        return getKeyOrThrow();
     }
 }

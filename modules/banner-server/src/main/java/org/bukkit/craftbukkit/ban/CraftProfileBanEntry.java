@@ -6,8 +6,10 @@ import java.util.Date;
 import net.minecraft.server.players.UserBanList;
 import net.minecraft.server.players.UserBanListEntry;
 import org.bukkit.BanEntry;
+import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
+import org.bukkit.profile.PlayerProfile;
 
-public final class CraftProfileBanEntry implements BanEntry<com.destroystokyo.paper.profile.PlayerProfile> { // Paper
+public final class CraftProfileBanEntry implements BanEntry<PlayerProfile> { // Paper
     private static final Date minorDate = Date.from(Instant.parse("1899-12-31T04:00:00Z"));
     private final UserBanList list;
     private final GameProfile profile;
@@ -31,8 +33,8 @@ public final class CraftProfileBanEntry implements BanEntry<com.destroystokyo.pa
     }
 
     @Override
-    public com.destroystokyo.paper.profile.PlayerProfile getBanTarget() { // Paper
-        return new com.destroystokyo.paper.profile.CraftPlayerProfile(this.profile); // Paper
+    public PlayerProfile getBanTarget() {
+        return new CraftPlayerProfile(this.profile);
     }
 
     @Override

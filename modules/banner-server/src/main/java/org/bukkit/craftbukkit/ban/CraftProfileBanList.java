@@ -2,6 +2,7 @@ package org.bukkit.craftbukkit.ban;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.mohistmc.banner.bukkit.BukkitMethodHooks;
 import com.mojang.authlib.GameProfile;
 import java.time.Duration;
 import java.time.Instant;
@@ -13,6 +14,7 @@ import net.minecraft.server.players.UserBanList;
 import net.minecraft.server.players.UserBanListEntry;
 import org.bukkit.BanEntry;
 import org.bukkit.ban.ProfileBanList;
+import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
 import org.bukkit.profile.PlayerProfile;
 
 public class CraftProfileBanList implements ProfileBanList {
@@ -23,100 +25,63 @@ public class CraftProfileBanList implements ProfileBanList {
     }
 
     @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(String target) { // Paper
+    public BanEntry<PlayerProfile> getBanEntry(String target) {
         Preconditions.checkArgument(target != null, "Target cannot be null");
 
-        return this.getBanEntry(CraftProfileBanList.getProfile(target));
+        return this.getBanEntry(getProfile(target));
     }
 
     @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(PlayerProfile target) { // Paper
+    public BanEntry<PlayerProfile> getBanEntry(PlayerProfile target) {
         Preconditions.checkArgument(target != null, "Target cannot be null");
 
-        return this.getBanEntry(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile()); // Paper
+        return this.getBanEntry(((CraftPlayerProfile) target).buildGameProfile());
     }
 
     @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(final com.destroystokyo.paper.profile.PlayerProfile target) {
-        Preconditions.checkArgument(target != null, "target cannot be null");
-
-        return this.getBanEntry(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile());
-    }
-
-    @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(final com.destroystokyo.paper.profile.PlayerProfile target, final String reason, final Date expires, final String source) {
-        Preconditions.checkArgument(target != null, "PlayerProfile cannot be null");
-        Preconditions.checkArgument(target.getId() != null, "The PlayerProfile UUID cannot be null");
-
-        return this.addBan(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile(), reason, expires, source);
-    }
-
-    @Override
-    public boolean isBanned(final com.destroystokyo.paper.profile.PlayerProfile target) {
-        return this.isBanned((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
-    }
-
-    @Override
-    public void pardon(final com.destroystokyo.paper.profile.PlayerProfile target) {
-        this.pardon((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
-    }
-
-    @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(final com.destroystokyo.paper.profile.PlayerProfile target, final String reason, final Instant expires, final String source) {
-        Date date = expires != null ? Date.from(expires) : null;
-        return this.addBan(target, reason, date, source);
-    }
-
-    @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(final com.destroystokyo.paper.profile.PlayerProfile target, final String reason, final Duration duration, final String source) {
-        Instant instant = duration != null ? Instant.now().plus(duration) : null;
-        return this.addBan(target, reason, instant, source);
-    }
-
-    @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(String target, String reason, Date expires, String source) { // Paper - fix ban list API
+    public BanEntry<PlayerProfile> addBan(String target, String reason, Date expires, String source) {
         Preconditions.checkArgument(target != null, "Ban target cannot be null");
 
-        return this.addBan(CraftProfileBanList.getProfileByName(target), reason, expires, source);
+        return this.addBan(getProfileByName(target), reason, expires, source);
     }
 
     @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(PlayerProfile target, String reason, Date expires, String source) { // Paper - fix ban list API
+    public BanEntry<PlayerProfile> addBan(PlayerProfile target, String reason, Date expires, String source) {
         Preconditions.checkArgument(target != null, "PlayerProfile cannot be null");
         Preconditions.checkArgument(target.getUniqueId() != null, "The PlayerProfile UUID cannot be null");
 
-        return this.addBan(((com.destroystokyo.paper.profile.SharedPlayerProfile) target).buildGameProfile(), reason, expires, source); // Paper
+        return this.addBan(((CraftPlayerProfile) target).buildGameProfile(), reason, expires, source);
     }
 
     @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(PlayerProfile target, String reason, Instant expires, String source) { // Paper - fix ban list API
+    public BanEntry<PlayerProfile> addBan(PlayerProfile target, String reason, Instant expires, String source) {
         Date date = expires != null ? Date.from(expires) : null;
-        return this.addBan(target, reason, date, source);
+        return addBan(target, reason, date, source);
     }
 
     @Override
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(PlayerProfile target, String reason, Duration duration, String source) { // Paper - fix ban list API
+    public BanEntry<PlayerProfile> addBan(PlayerProfile target, String reason, Duration duration, String source) {
         Instant instant = duration != null ? Instant.now().plus(duration) : null;
-        return this.addBan(target, reason, instant, source);
+        return addBan(target, reason, instant, source);
     }
 
     @Override
     public Set<BanEntry> getBanEntries() {
         ImmutableSet.Builder<BanEntry> builder = ImmutableSet.builder();
-        for (UserBanListEntry entry : this.list.getEntries()) {
+        for (UserBanListEntry entry : list.getEntries()) {
             GameProfile profile = entry.getUser();
-            builder.add(new CraftProfileBanEntry(profile, entry, this.list));
+            builder.add(new CraftProfileBanEntry(profile, entry, list));
         }
 
         return builder.build();
     }
 
     @Override
-    public Set<BanEntry<com.destroystokyo.paper.profile.PlayerProfile>> getEntries() { // Paper
-        ImmutableSet.Builder<BanEntry<com.destroystokyo.paper.profile.PlayerProfile>> builder = ImmutableSet.builder(); // Paper
-        for (UserBanListEntry entry : this.list.getEntries()) {
+    public Set<BanEntry<PlayerProfile>> getEntries() {
+        ImmutableSet.Builder<BanEntry<PlayerProfile>> builder = ImmutableSet.builder();
+        for (UserBanListEntry entry : list.getEntries()) {
             GameProfile profile = entry.getUser();
-            builder.add(new CraftProfileBanEntry(profile, entry, this.list));
+            builder.add(new CraftProfileBanEntry(profile, entry, list));
         }
 
         return builder.build();
@@ -124,54 +89,46 @@ public class CraftProfileBanList implements ProfileBanList {
 
     @Override
     public boolean isBanned(PlayerProfile target) {
-        return this.isBanned((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
-    }
-
-    private boolean isBanned(com.destroystokyo.paper.profile.SharedPlayerProfile target) {
         Preconditions.checkArgument(target != null, "Target cannot be null");
 
-        return this.isBanned(target.buildGameProfile()); // Paper
+        return this.isBanned(((CraftPlayerProfile) target).buildGameProfile());
     }
 
     @Override
     public boolean isBanned(String target) {
         Preconditions.checkArgument(target != null, "Target cannot be null");
 
-        return this.isBanned(CraftProfileBanList.getProfile(target));
+        return this.isBanned(getProfile(target));
     }
 
     @Override
     public void pardon(PlayerProfile target) {
-        this.pardon((com.destroystokyo.paper.profile.SharedPlayerProfile) target);
-    }
-
-    private void pardon(com.destroystokyo.paper.profile.SharedPlayerProfile target) {
         Preconditions.checkArgument(target != null, "Target cannot be null");
 
-        this.pardon(target.buildGameProfile()); // Paper
+        this.pardon(((CraftPlayerProfile) target).buildGameProfile());
     }
 
     @Override
     public void pardon(String target) {
         Preconditions.checkArgument(target != null, "Target cannot be null");
 
-        this.pardon(CraftProfileBanList.getProfile(target));
+        this.pardon(getProfile(target));
     }
 
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> getBanEntry(GameProfile profile) { // Paper
+    public BanEntry<PlayerProfile> getBanEntry(GameProfile profile) {
         if (profile == null) {
             return null;
         }
 
-        UserBanListEntry entry = this.list.get(profile);
+        UserBanListEntry entry = list.get(profile);
         if (entry == null) {
             return null;
         }
 
-        return new CraftProfileBanEntry(profile, entry, this.list);
+        return new CraftProfileBanEntry(profile, entry, list);
     }
 
-    public BanEntry<com.destroystokyo.paper.profile.PlayerProfile> addBan(GameProfile profile, String reason, Date expires, String source) { // Paper
+    public BanEntry<PlayerProfile> addBan(GameProfile profile, String reason, Date expires, String source) {
         if (profile == null) {
             return null;
         }
@@ -180,17 +137,17 @@ public class CraftProfileBanList implements ProfileBanList {
                 (source == null || source.isBlank()) ? null : source, expires,
                 (reason == null || reason.isBlank()) ? null : reason);
 
-        this.list.add(entry);
+        list.add(entry);
 
-        return new CraftProfileBanEntry(profile, entry, this.list);
+        return new CraftProfileBanEntry(profile, entry, list);
     }
 
     private void pardon(GameProfile profile) {
-        this.list.remove(profile);
+        list.remove(profile);
     }
 
     private boolean isBanned(GameProfile profile) {
-        return profile != null && this.list.isBanned(profile);
+        return profile != null && list.isBanned(profile);
     }
 
     static GameProfile getProfile(String target) {
@@ -201,14 +158,14 @@ public class CraftProfileBanList implements ProfileBanList {
         } catch (IllegalArgumentException ignored) {
         }
 
-        return (uuid != null) ? CraftProfileBanList.getProfileByUUID(uuid) : CraftProfileBanList.getProfileByName(target);
+        return (uuid != null) ? getProfileByUUID(uuid) : getProfileByName(target);
     }
 
     static GameProfile getProfileByUUID(UUID uuid) {
-        return (MinecraftServer.getServer() != null) ? MinecraftServer.getServer().getProfileCache().get(uuid).orElse(null) : null;
+        return (BukkitMethodHooks.getServer() != null) ? BukkitMethodHooks.getServer().getProfileCache().get(uuid).orElse(null) : null;
     }
 
     static GameProfile getProfileByName(String name) {
-        return (MinecraftServer.getServer() != null) ? MinecraftServer.getServer().getProfileCache().get(name).orElse(null) : null;
+        return (BukkitMethodHooks.getServer() != null) ? BukkitMethodHooks.getServer().getProfileCache().get(name).orElse(null) : null;
     }
 }

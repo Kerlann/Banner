@@ -1,14 +1,6 @@
 package org.bukkit.craftbukkit;
 
 import com.google.common.base.Preconditions;
-import io.papermc.paper.registry.PaperRegistries;
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
-import io.papermc.paper.registry.entry.RegistryEntryMeta;
-import io.papermc.paper.registry.set.NamedRegistryKeySetImpl;
-import io.papermc.paper.registry.tag.Tag;
-import io.papermc.paper.util.Holderable;
-import io.papermc.paper.util.MCUtil;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -124,7 +116,7 @@ public class CraftRegistry<B extends Keyed, M> implements Registry<B> {
     }
 
     // Paper start - fixup upstream being dum
-    public static <T extends Keyed, M> Optional<T> unwrapAndConvertHolder(final RegistryKey<T> registryKey, final Holder<M> value) { // todo recheck usage with holderable support
+    public static <T extends Keyed, M> Optional<T> unwrapAndConvertHolder(final Registry<T> registryKey, final Holder<M> value) { // todo recheck usage with holderable support
         final Registry<T> registry = RegistryAccess.registryAccess().getRegistry(registryKey);
         if (registry instanceof final CraftRegistry<?,?> craftRegistry && craftRegistry.supportsDirectHolders() && value.kind() == Holder.Kind.DIRECT) {
             return Optional.of(((CraftRegistry<T, M>) registry).createBukkit(value));
@@ -136,7 +128,7 @@ public class CraftRegistry<B extends Keyed, M> implements Registry<B> {
     // Paper - move to PaperRegistries
 
     // Paper - NOTE: As long as all uses of the method below relate to *serialization* via ConfigurationSerializable, it's fine
-    public static <B extends Keyed> B get(RegistryKey<B> bukkitKey, NamespacedKey namespacedKey, ApiVersion apiVersion) {
+    public static <B extends Keyed> B get(Registry<B> bukkitKey, NamespacedKey namespacedKey, ApiVersion apiVersion) {
         final Registry<B> bukkit = RegistryAccess.registryAccess().getRegistry(bukkitKey);
         if (bukkit instanceof CraftRegistry<B, ?> craft) {
             return craft.get(craft.serializationUpdater.apply(namespacedKey, apiVersion)); // Paper

@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.block.impl;
 
 import com.google.common.base.Preconditions;
-import io.papermc.paper.generated.GeneratedFrom;
 import net.minecraft.world.level.block.BambooStalkBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BambooLeaves;
@@ -10,7 +9,6 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import org.bukkit.block.data.type.Bamboo;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
-@GeneratedFrom("1.21.6")
 public class CraftBambooStalk extends CraftBlockData implements Bamboo {
     private static final IntegerProperty AGE = BambooStalkBlock.AGE;
 
