@@ -55,6 +55,7 @@ public class CraftAttributeMap implements Attributable {
     @Override
     public void registerAttribute(Attribute attribute) {
         Preconditions.checkArgument(attribute != null, "attribute");
-        this.handle.registerAttribute(CraftAttribute.bukkitToMinecraftHolder(attribute));
+       // this.handle.registerAttribute(CraftAttribute.bukkitToMinecraftHolder(attribute));
+       // Banner TODO fix injections
     }
 }

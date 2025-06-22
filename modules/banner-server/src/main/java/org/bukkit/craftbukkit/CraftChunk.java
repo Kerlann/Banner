@@ -56,7 +56,7 @@ public class CraftChunk implements Chunk {
     private static final byte[] EMPTY_LIGHT = new byte[2048];
 
     public CraftChunk(net.minecraft.world.level.chunk.LevelChunk chunk) {
-        this.level = chunk.level;
+        this.level = chunk.banner$r();
         this.x = chunk.getPos().x;
         this.z = chunk.getPos().z;
     }
@@ -196,7 +196,7 @@ public class CraftChunk implements Chunk {
     @Override
     public boolean isSlimeChunk() {
         // 987234911L is taken from Slime when seeing if a slime can spawn in a chunk
-        return this.level.paperConfig().entities.spawning.allChunksAreSlimeChunks || WorldgenRandom.seedSlimeChunk(this.getX(), this.getZ(), this.getWorld().getSeed(), level.spigotConfig.slimeSeed).nextInt(10) == 0; // Paper
+        return WorldgenRandom.seedSlimeChunk(this.getX(), this.getZ(), this.getWorld().getSeed(), level.bridge$spigotConfig().slimeSeed).nextInt(10) == 0; // Paper
     }
 
     @Override

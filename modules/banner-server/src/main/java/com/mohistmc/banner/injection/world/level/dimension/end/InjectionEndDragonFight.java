@@ -5,4 +5,8 @@ public interface InjectionEndDragonFight {
     default boolean bridge$isRespawnDragon() {
         throw new IllegalStateException("Not implemented");
     }
+
+    default boolean spawnNewGatewayIfPossible() {
+        throw new IllegalStateException("Not implemented");
+    }
 }

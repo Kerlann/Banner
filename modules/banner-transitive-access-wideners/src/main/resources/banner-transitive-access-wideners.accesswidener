@@ -200,6 +200,8 @@ transitive-accessible method net/minecraft/world/level/NaturalSpawner$SpawnState
 transitive-accessible method net/minecraft/network/protocol/game/ClientboundAddEntityPacket <init> (Lnet/minecraft/network/RegistryFriendlyByteBuf;)V
 transitive-accessible method net/minecraft/world/entity/decoration/Painting offsetForPaintingSize (I)D
 transitive-accessible method net/minecraft/world/entity/LivingEntity setLivingEntityFlag (IZ)V
+transitive-accessible method net/minecraft/network/chat/contents/TranslatableContents filterAllowedArguments (Ljava/lang/Object;)Lcom/mojang/serialization/DataResult;
+transitive-accessible method net/minecraft/world/level/dimension/end/EndDragonFight spawnNewGateway (Lnet/minecraft/core/BlockPos;)V
 
 # public fields
 transitive-accessible field net/minecraft/world/level/block/entity/trialspawner/TrialSpawner stateAccessor Lnet/minecraft/world/level/block/entity/trialspawner/TrialSpawner$StateAccessor;
@@ -519,6 +521,9 @@ transitive-accessible field net/minecraft/world/level/levelgen/structure/templat
 transitive-accessible field net/minecraft/world/level/levelgen/structure/StructurePiece SHAPE_CHECK_BLOCKS Ljava/util/Set;
 transitive-accessible field net/minecraft/world/inventory/StonecutterMenu access Lnet/minecraft/world/inventory/ContainerLevelAccess;
 transitive-accessible field net/minecraft/world/level/block/entity/trialspawner/TrialSpawner isOminous Z
+transitive-accessible field net/minecraft/world/level/dimension/end/EndDragonFight GATEWAY_COUNT I
+transitive-accessible field net/minecraft/world/level/dimension/end/EndDragonFight gateways Lit/unimi/dsi/fastutil/objects/ObjectArrayList;
+transitive-accessible field net/minecraft/world/level/dimension/end/EndDragonFight respawnCrystals Ljava/util/List;
 
 # public -f fields
 transitive-accessible field net/minecraft/world/item/trading/MerchantOffer maxUses I

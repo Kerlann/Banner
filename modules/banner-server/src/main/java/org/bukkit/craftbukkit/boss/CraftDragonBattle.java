@@ -94,7 +94,8 @@ public class CraftDragonBattle implements DragonBattle {
                 return !((CraftWorld) world).getHandle().equals(this.handle.level);
             });
 
-            return this.handle.respawnDragon(list.stream().map(enderCrystal -> ((CraftEnderCrystal) enderCrystal).getHandle()).collect(Collectors.toList()));
+            // Banner TODO fixme
+            //return this.handle.respawnDragon(list.stream().map(enderCrystal -> ((CraftEnderCrystal) enderCrystal).getHandle()).collect(Collectors.toList()));
         }
         return false;
     }
@@ -162,7 +163,7 @@ public class CraftDragonBattle implements DragonBattle {
 
         final List<EnderCrystal> enderCrystals = new ArrayList<>();
         for (final net.minecraft.world.entity.boss.enderdragon.EndCrystal endCrystal : this.handle.respawnCrystals) {
-            if (!endCrystal.isRemoved() && endCrystal.isAlive() && endCrystal.valid) {
+            if (!endCrystal.isRemoved() && endCrystal.isAlive() && endCrystal.bridge$valid()) {
                 enderCrystals.add(((EnderCrystal) endCrystal.getBukkitEntity()));
             }
         }

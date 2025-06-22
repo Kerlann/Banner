@@ -2,6 +2,8 @@ package org.bukkit.craftbukkit.advancement;
 
 import java.util.Collection;
 import java.util.Collections;
+
+import com.mohistmc.banner.bukkit.BukkitMethodHooks;
 import net.minecraft.advancements.AdvancementHolder;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.AdvancementDisplay;
@@ -37,7 +39,9 @@ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
 
     @Override
     public io.papermc.paper.advancement.AdvancementDisplay getDisplay() {
-        return this.handle.value().display().map(d -> d.paper).orElse(null);
+        //return this.handle.value().display().map(d -> d.paper).orElse(null);
+        return null;
+        // Banner TODO fix injections
     }
 
     @Deprecated
@@ -53,7 +57,7 @@ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
     @Override
     public org.bukkit.advancement.Advancement getParent() {
         return this.handle.value().parent()
-            .map(net.minecraft.server.MinecraftServer.getServer().getAdvancements()::get)
+            .map(BukkitMethodHooks.getServer().getAdvancements()::get)
             .map(AdvancementHolder::toBukkit)
             .orElse(null);
     }
@@ -61,7 +65,7 @@ public class CraftAdvancement implements org.bukkit.advancement.Advancement {
     @Override
     public Collection<org.bukkit.advancement.Advancement> getChildren() {
         final com.google.common.collect.ImmutableList.Builder<org.bukkit.advancement.Advancement> children = com.google.common.collect.ImmutableList.builder();
-        final net.minecraft.advancements.AdvancementNode advancementNode = net.minecraft.server.MinecraftServer.getServer().getAdvancements().tree().get(this.handle);
+        final net.minecraft.advancements.AdvancementNode advancementNode = BukkitMethodHooks.getServer().getAdvancements().tree().get(this.handle);
         if (advancementNode != null) {
             for (final net.minecraft.advancements.AdvancementNode child : advancementNode.children()) {
                 children.add(child.holder().toBukkit());
