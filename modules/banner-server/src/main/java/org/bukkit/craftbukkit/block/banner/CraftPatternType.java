@@ -1,15 +1,13 @@
 package org.bukkit.craftbukkit.block.banner;
 
+import io.papermc.paper.util.OldEnumHolderable;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BannerPattern;
-import org.bukkit.NamespacedKey;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.craftbukkit.CraftRegistry;
-import org.bukkit.craftbukkit.registry.CraftOldEnumRegistryItem;
-import org.jetbrains.annotations.NotNull;
 
-public class CraftPatternType extends CraftOldEnumRegistryItem<PatternType, BannerPattern> implements PatternType {
+public class CraftPatternType extends OldEnumHolderable<PatternType, BannerPattern> implements PatternType {
 
     private static int count = 0;
 
@@ -29,13 +27,8 @@ public class CraftPatternType extends CraftOldEnumRegistryItem<PatternType, Bann
         return CraftRegistry.bukkitToMinecraftHolder(bukkit, Registries.BANNER_PATTERN);
     }
 
-    public CraftPatternType(NamespacedKey key, Holder<BannerPattern> handle) {
-        super(key, handle, count++);
-    }
-
-    @Override
-    public @NotNull NamespacedKey getKey() {
-        return getKeyOrThrow();
+    public CraftPatternType(Holder<BannerPattern> bannerPatternType) {
+       super(bannerPatternType, count++);
     }
 
     @Override

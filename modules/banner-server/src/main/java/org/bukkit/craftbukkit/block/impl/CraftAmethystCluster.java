@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.block.impl;
 
 import com.google.common.base.Preconditions;
+import io.papermc.paper.generated.GeneratedFrom;
 import java.util.Set;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.AmethystClusterBlock;
@@ -11,6 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.AmethystCluster;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
+@GeneratedFrom("1.21.6")
 public class CraftAmethystCluster extends CraftBlockData implements AmethystCluster {
     private static final EnumProperty<Direction> FACING = AmethystClusterBlock.FACING;
 

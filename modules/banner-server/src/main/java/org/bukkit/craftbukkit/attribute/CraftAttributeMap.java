@@ -51,4 +51,10 @@ public class CraftAttributeMap implements Attributable {
 
         return (nms == null) ? null : new CraftAttributeInstance(nms, attribute);
     }
+
+    @Override
+    public void registerAttribute(Attribute attribute) {
+        Preconditions.checkArgument(attribute != null, "attribute");
+        this.handle.registerAttribute(CraftAttribute.bukkitToMinecraftHolder(attribute));
+    }
 }
