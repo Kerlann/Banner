@@ -7,23 +7,27 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.InventoryView;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Called when an anvil is damaged from being used
  */
+@NullMarked
 public class AnvilDamagedEvent extends InventoryEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
-    private boolean cancel;
-    private DamageState damageState;
 
-    public AnvilDamagedEvent(@NotNull InventoryView inventory, @NotNull BlockData blockData) {
+    private static final HandlerList HANDLER_LIST = new HandlerList();
+
+    private DamageState damageState;
+    private boolean cancelled;
+
+    @ApiStatus.Internal
+    public AnvilDamagedEvent(final InventoryView inventory, final @Nullable BlockData blockData) {
         super(inventory);
         this.damageState = DamageState.getState(blockData);
     }
 
-    @NotNull
     @Override
     public AnvilInventory getInventory() {
         return (AnvilInventory) super.getInventory();
@@ -34,9 +38,8 @@ public class AnvilDamagedEvent extends InventoryEvent implements Cancellable {
      *
      * @return Damage state
      */
-    @NotNull
     public DamageState getDamageState() {
-        return damageState;
+        return this.damageState;
     }
 
     /**
@@ -44,48 +47,49 @@ public class AnvilDamagedEvent extends InventoryEvent implements Cancellable {
      *
      * @param damageState Damage state
      */
-    public void setDamageState(@NotNull DamageState damageState) {
+    public void setDamageState(final DamageState damageState) {
         this.damageState = damageState;
     }
 
     /**
      * Gets if anvil is breaking on this use
      *
-     * @return True if breaking
+     * @return {@code true} if breaking
      */
     public boolean isBreaking() {
-        return damageState == DamageState.BROKEN;
+        return this.damageState == DamageState.BROKEN;
     }
 
     /**
      * Sets if anvil is breaking on this use
      *
-     * @param breaking True if breaking
+     * @param breaking {@code true} if breaking
      */
-    public void setBreaking(boolean breaking) {
+    public void setBreaking(final boolean breaking) {
         if (breaking) {
-            damageState = DamageState.BROKEN;
-        } else if (damageState == DamageState.BROKEN) {
-            damageState = DamageState.DAMAGED;
+            this.damageState = DamageState.BROKEN;
+        } else if (this.damageState == DamageState.BROKEN) {
+            this.damageState = DamageState.DAMAGED;
         }
     }
 
+    @Override
     public boolean isCancelled() {
-        return cancel;
+        return this.cancelled;
     }
 
-    public void setCancelled(boolean cancel) {
-        this.cancel = cancel;
+    @Override
+    public void setCancelled(final boolean cancel) {
+        this.cancelled = cancel;
     }
 
-    @NotNull
+    @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
     /**
@@ -97,9 +101,9 @@ public class AnvilDamagedEvent extends InventoryEvent implements Cancellable {
         DAMAGED(Material.DAMAGED_ANVIL),
         BROKEN(Material.AIR);
 
-        private Material material;
+        private final Material material;
 
-        DamageState(@NotNull Material material) {
+        DamageState(final Material material) {
             this.material = material;
         }
 
@@ -108,9 +112,8 @@ public class AnvilDamagedEvent extends InventoryEvent implements Cancellable {
          *
          * @return Material
          */
-        @NotNull
         public Material getMaterial() {
-            return material;
+            return this.material;
         }
 
         /**
@@ -120,8 +123,7 @@ public class AnvilDamagedEvent extends InventoryEvent implements Cancellable {
          * @return DamageState
          * @throws IllegalArgumentException If non anvil block data is given
          */
-        @NotNull
-        public static DamageState getState(@Nullable BlockData blockData) {
+        public static DamageState getState(final @Nullable BlockData blockData) {
             return blockData == null ? BROKEN : getState(blockData.getMaterial());
         }
 
@@ -132,17 +134,16 @@ public class AnvilDamagedEvent extends InventoryEvent implements Cancellable {
          * @return DamageState
          * @throws IllegalArgumentException If non anvil material is given
          */
-        @NotNull
-        public static DamageState getState(@Nullable Material material) {
+        public static DamageState getState(final @Nullable Material material) {
             if (material == null) {
                 return BROKEN;
             }
-            for (DamageState state : values()) {
-                if (state.material == material) {
+            for (final DamageState state : values()) {
+                if (state.getMaterial() == material) {
                     return state;
                 }
             }
-            throw new IllegalArgumentException("Material not an anvil");
+            throw new IllegalArgumentException("Material is not an anvil state");
         }
     }
 }

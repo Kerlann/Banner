@@ -3,19 +3,21 @@ package io.papermc.paper.event.world.border;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.event.world.WorldEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public abstract class WorldBorderEvent extends WorldEvent {
 
-    private final WorldBorder worldBorder;
+    protected final WorldBorder worldBorder;
 
-    public WorldBorderEvent(@NotNull World world, @NotNull WorldBorder worldBorder) {
+    @ApiStatus.Internal
+    protected WorldBorderEvent(final World world, final WorldBorder worldBorder) {
         super(world);
         this.worldBorder = worldBorder;
     }
 
-    @NotNull
     public WorldBorder getWorldBorder() {
-        return worldBorder;
+        return this.worldBorder;
     }
 }

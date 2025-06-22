@@ -1,12 +1,13 @@
 package io.papermc.paper.entity;
 
-import org.bukkit.Sound;
+import net.kyori.adventure.sound.Sound;
 import org.bukkit.entity.Entity;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Represents an entity that can be sheared.
  */
+@NullMarked
 public interface Shearable extends Entity {
 
     /**
@@ -17,7 +18,7 @@ public interface Shearable extends Entity {
      * due to it being replaced by a different entity.
      */
     default void shear() {
-        this.shear(Sound.ENTITY_SHEEP_SHEAR);
+        this.shear(Sound.Source.PLAYER);
     }
 
     /**
@@ -32,7 +33,7 @@ public interface Shearable extends Entity {
      *
      * @param source Sound source to play any sound effects on
      */
-    void shear(@NotNull Sound source);
+    void shear(Sound.Source source);
 
     /**
      * Gets if the entity would be able to be sheared or not naturally using shears.

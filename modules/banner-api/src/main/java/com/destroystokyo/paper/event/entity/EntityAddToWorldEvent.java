@@ -1,31 +1,44 @@
 package com.destroystokyo.paper.event.entity;
 
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
- * Fired any time an entity is being added to the world for any reason.
- *
- * Not to be confused with {@link org.bukkit.event.entity.CreatureSpawnEvent}
- * This will fire anytime a chunk is reloaded too.
+ * Fired any time an entity is being added to the world for any reason (including a chunk loading).
+ * <p>
+ * Not to be confused with {@link CreatureSpawnEvent}
  */
+@NullMarked
 public class EntityAddToWorldEvent extends EntityEvent {
 
-    public EntityAddToWorldEvent(@NotNull Entity entity) {
+    private static final HandlerList HANDLER_LIST = new HandlerList();
+
+    private final World world;
+
+    @ApiStatus.Internal
+    public EntityAddToWorldEvent(final Entity entity, final World world) {
         super(entity);
+        this.world = world;
     }
 
-    private static final HandlerList handlers = new HandlerList();
+    /**
+     * @return The world that the entity is being added to
+     */
+    public World getWorld() {
+        return this.world;
+    }
 
-    @NotNull
+    @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLER_LIST;
     }
 }

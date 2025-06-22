@@ -4,11 +4,13 @@ import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Called when a world border changes its bounds, either over time, or instantly.
  */
+@NullMarked
 public class WorldBorderBoundsChangeEvent extends WorldBorderEvent implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
@@ -19,7 +21,8 @@ public class WorldBorderBoundsChangeEvent extends WorldBorderEvent implements Ca
     private long duration;
     private boolean cancelled;
 
-    public WorldBorderBoundsChangeEvent(@NotNull World world, @NotNull WorldBorder worldBorder, @NotNull Type type, double oldSize, double newSize, long duration) {
+    @ApiStatus.Internal
+    public WorldBorderBoundsChangeEvent(final World world, final WorldBorder worldBorder, final Type type, final double oldSize, final double newSize, final long duration) {
         super(world, worldBorder);
         this.type = type;
         this.oldSize = oldSize;
@@ -32,9 +35,8 @@ public class WorldBorderBoundsChangeEvent extends WorldBorderEvent implements Ca
      *
      * @return the change type
      */
-    @NotNull
     public Type getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -43,7 +45,7 @@ public class WorldBorderBoundsChangeEvent extends WorldBorderEvent implements Ca
      * @return the old size
      */
     public double getOldSize() {
-        return oldSize;
+        return this.oldSize;
     }
 
     /**
@@ -52,7 +54,7 @@ public class WorldBorderBoundsChangeEvent extends WorldBorderEvent implements Ca
      * @return the new size
      */
     public double getNewSize() {
-        return newSize;
+        return this.newSize;
     }
 
     /**
@@ -60,9 +62,8 @@ public class WorldBorderBoundsChangeEvent extends WorldBorderEvent implements Ca
      *
      * @param newSize the new size
      */
-    public void setNewSize(double newSize) {
-        // PAIL: TODO: Magic Values
-        this.newSize = Math.min(6.0E7D, Math.max(1.0D, newSize));
+    public void setNewSize(final double newSize) {
+        this.newSize = Math.min(this.worldBorder.getMaxSize(), Math.max(1.0D, newSize));
     }
 
     /**
@@ -71,7 +72,7 @@ public class WorldBorderBoundsChangeEvent extends WorldBorderEvent implements Ca
      * @return the time in milliseconds for the change
      */
     public long getDuration() {
-        return duration;
+        return this.duration;
     }
 
     /**
@@ -80,29 +81,29 @@ public class WorldBorderBoundsChangeEvent extends WorldBorderEvent implements Ca
      *
      * @param duration the time in milliseconds for the change
      */
-    public void setDuration(long duration) {
+    public void setDuration(final long duration) {
         // PAIL: TODO: Magic Values
         this.duration = Math.min(9223372036854775L, Math.max(0L, duration));
-        if (duration >= 0 && type == Type.INSTANT_MOVE) type = Type.STARTED_MOVE;
+        if (duration >= 0 && this.type == Type.INSTANT_MOVE) {
+            this.type = Type.STARTED_MOVE;
+        }
     }
 
     @Override
     public boolean isCancelled() {
-        return cancelled;
+        return this.cancelled;
     }
 
     @Override
-    public void setCancelled(boolean cancel) {
+    public void setCancelled(final boolean cancel) {
         this.cancelled = cancel;
     }
 
-    @NotNull
     @Override
     public HandlerList getHandlers() {
         return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
         return HANDLER_LIST;
     }

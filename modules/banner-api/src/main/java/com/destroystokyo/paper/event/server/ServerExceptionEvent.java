@@ -1,22 +1,26 @@
 package com.destroystokyo.paper.event.server;
 
 import com.destroystokyo.paper.exception.ServerException;
-import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Called whenever an exception is thrown in a recoverable section of the server.
  */
+@NullMarked
 public class ServerExceptionEvent extends Event {
-    private static final HandlerList handlers = new HandlerList();
-    @NotNull private ServerException exception;
 
-    public ServerExceptionEvent(@NotNull ServerException exception) {
+    private static final HandlerList HANDLER_LIST = new HandlerList();
+
+    private final ServerException exception;
+
+    @ApiStatus.Internal
+    public ServerExceptionEvent(final ServerException exception) {
         super(!Bukkit.isPrimaryThread());
-        this.exception = Preconditions.checkNotNull(exception, "exception");
+        this.exception = exception;
     }
 
     /**
@@ -24,19 +28,16 @@ public class ServerExceptionEvent extends Event {
      *
      * @return Exception thrown
      */
-    @NotNull
     public ServerException getException() {
-        return exception;
+        return this.exception;
     }
 
-    @NotNull
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLER_LIST;
     }
 }

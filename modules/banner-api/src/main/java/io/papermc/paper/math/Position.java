@@ -5,7 +5,7 @@ import org.bukkit.World;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Common interface for {@link FinePosition} and {@link BlockPosition}.
@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * <b>May see breaking changes until Experimental annotation is removed.</b>
  */
 @ApiStatus.Experimental
+@NullMarked
 public interface Position {
 
     FinePosition FINE_ZERO = new FinePositionImpl(0, 0, 0);
@@ -75,14 +76,11 @@ public interface Position {
     boolean isFine();
 
     /**
-     * Returns a position offset by the specified amounts.
-     *
-     * @param x x value to offset
-     * @param y y value to offset
-     * @param z z value to offset
-     * @return the offset position
+     * Checks if each component of this position is finite.
      */
-    @NotNull Position offset(int x, int y, int z);
+    default boolean isFinite() {
+        return Double.isFinite(this.x()) && Double.isFinite(this.y()) && Double.isFinite(this.z());
+    }
 
     /**
      * Returns a position offset by the specified amounts.
@@ -92,7 +90,17 @@ public interface Position {
      * @param z z value to offset
      * @return the offset position
      */
-    @NotNull FinePosition offset(double x, double y, double z);
+    Position offset(int x, int y, int z);
+
+    /**
+     * Returns a position offset by the specified amounts.
+     *
+     * @param x x value to offset
+     * @param y y value to offset
+     * @param z z value to offset
+     * @return the offset position
+     */
+    FinePosition offset(double x, double y, double z);
 
     /**
      * Returns a new position at the center of the block position this represents
@@ -100,7 +108,7 @@ public interface Position {
      * @return a new center position
      */
     @Contract(value = "-> new", pure = true)
-    default @NotNull FinePosition toCenter() {
+    default FinePosition toCenter() {
         return new FinePositionImpl(this.blockX() + 0.5, this.blockY() + 0.5, this.blockZ() + 0.5);
     }
 
@@ -111,7 +119,7 @@ public interface Position {
      * @return the block position
      */
     @Contract(pure = true)
-    @NotNull BlockPosition toBlock();
+    BlockPosition toBlock();
 
     /**
      * Converts this position to a vector
@@ -119,7 +127,7 @@ public interface Position {
      * @return a new vector
      */
     @Contract(value = "-> new", pure = true)
-    default @NotNull Vector toVector() {
+    default Vector toVector() {
         return new Vector(this.x(), this.y(), this.z());
     }
 
@@ -130,7 +138,7 @@ public interface Position {
      * @return a new location
      */
     @Contract(value = "_ -> new", pure = true)
-    default @NotNull Location toLocation(@NotNull World world) {
+    default Location toLocation(final World world) {
         return new Location(world, this.x(), this.y(), this.z());
     }
 
@@ -143,7 +151,7 @@ public interface Position {
      * @return a position with those coords
      */
     @Contract(value = "_, _, _ -> new", pure = true)
-    static @NotNull BlockPosition block(int x, int y, int z) {
+    static BlockPosition block(final int x, final int y, final int z) {
         return new BlockPositionImpl(x, y, z);
     }
 
@@ -154,7 +162,7 @@ public interface Position {
      * @return a new position at that location
      */
     @Contract(value = "_ -> new", pure = true)
-    static @NotNull BlockPosition block(@NotNull Location location) {
+    static BlockPosition block(final Location location) {
         return new BlockPositionImpl(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
@@ -167,7 +175,7 @@ public interface Position {
      * @return a position with those coords
      */
     @Contract(value = "_, _, _ -> new", pure = true)
-    static @NotNull FinePosition fine(double x, double y, double z) {
+    static FinePosition fine(final double x, final double y, final double z) {
         return new FinePositionImpl(x, y, z);
     }
 
@@ -178,7 +186,7 @@ public interface Position {
      * @return a new position at that location
      */
     @Contract(value = "_ -> new", pure = true)
-    static @NotNull FinePosition fine(@NotNull Location location) {
+    static FinePosition fine(final Location location) {
         return new FinePositionImpl(location.getX(), location.getY(), location.getZ());
     }
 }

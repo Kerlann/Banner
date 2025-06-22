@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.jar.Manifest;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @ApiStatus.Internal
 public final class JarManifests {
     private JarManifests() {

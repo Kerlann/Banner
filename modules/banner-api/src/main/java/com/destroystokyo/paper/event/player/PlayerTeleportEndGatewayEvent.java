@@ -4,15 +4,19 @@ import org.bukkit.Location;
 import org.bukkit.block.EndGateway;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Fired when a teleport is triggered for an End Gateway
  */
+@NullMarked
 public class PlayerTeleportEndGatewayEvent extends PlayerTeleportEvent {
-    @NotNull private final EndGateway gateway;
 
-    public PlayerTeleportEndGatewayEvent(@NotNull Player player, @NotNull Location from, @NotNull Location to, @NotNull EndGateway gateway) {
+    private final EndGateway gateway;
+
+    @ApiStatus.Internal
+    public PlayerTeleportEndGatewayEvent(final Player player, final Location from, final Location to, final EndGateway gateway) {
         super(player, from, to, PlayerTeleportEvent.TeleportCause.END_GATEWAY);
         this.gateway = gateway;
     }
@@ -22,8 +26,7 @@ public class PlayerTeleportEndGatewayEvent extends PlayerTeleportEvent {
      *
      * @return EndGateway used
      */
-    @NotNull
     public EndGateway getGateway() {
-        return gateway;
+        return this.gateway;
     }
 }

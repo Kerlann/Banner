@@ -1,63 +1,65 @@
 package com.destroystokyo.paper.event.entity;
 
-import com.google.common.base.Preconditions;
 import java.util.Collections;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LightningStrike;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityTransformEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
- *  Fired when lightning strikes an entity
+ * Fired when lightning strikes an entity
  */
+@NullMarked
 public class EntityZapEvent extends EntityTransformEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+
+    private static final HandlerList HANDLER_LIST = new HandlerList();
+
+    private final LightningStrike bolt;
     private boolean cancelled;
-    @NotNull private final LightningStrike bolt;
 
-    public EntityZapEvent(@NotNull final Entity entity, @NotNull final LightningStrike bolt, @NotNull final Entity replacementEntity) {
+    @ApiStatus.Internal
+    public EntityZapEvent(final Entity entity, final LightningStrike bolt, final Entity replacementEntity) {
         super(entity, Collections.singletonList(replacementEntity), TransformReason.LIGHTNING);
-        Preconditions.checkNotNull(bolt);
-        Preconditions.checkNotNull(replacementEntity);
         this.bolt = bolt;
-    }
-
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
     }
 
     /**
      * Gets the lightning bolt that is striking the entity.
+     *
      * @return The lightning bolt responsible for this event
      */
-    @NotNull
     public LightningStrike getBolt() {
-        return bolt;
+        return this.bolt;
     }
 
     /**
      * Gets the entity that will replace the struck entity.
+     *
      * @return The entity that will replace the struck entity
      */
-    @NotNull
     public Entity getReplacementEntity() {
-        return getTransformedEntity();
+        return super.getTransformedEntity();
     }
 
-    @NotNull
+    @Override
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
+
+    @Override
+    public void setCancelled(final boolean cancel) {
+        this.cancelled = cancel;
+    }
+
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLER_LIST;
     }
 }

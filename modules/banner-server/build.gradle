@@ -12,10 +12,7 @@ base {
 
 dependencies {
 	include(rootProject.project("banner-api"))
-	include(rootProject.project("banner-translate"))
 	include(rootProject.project("banner-transitive-access-wideners"))
-	include(rootProject.project("banner-bukkit-manager"))
-	include(rootProject.project("banner-compat"))
 	include(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:${property("mixin_squared_version")}"))
 }
 

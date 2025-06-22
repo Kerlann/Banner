@@ -1,6 +1,7 @@
 package org.bukkit;
 
 import com.google.common.base.Preconditions;
+import io.papermc.paper.world.flag.FeatureDependant;
 import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <T> type of rule (Boolean or Integer)
  */
-public final class GameRule<T> {
+public final class GameRule<T> implements net.kyori.adventure.translation.Translatable, FeatureDependant {
 
     private static Map<String, GameRule<?>> gameRules = new HashMap<>();
     // Boolean rules
@@ -54,11 +55,6 @@ public final class GameRule<T> {
      * Whether fire should spread and naturally extinguish.
      */
     public static final GameRule<Boolean> DO_FIRE_TICK = new GameRule<>("doFireTick", Boolean.class);
-
-    /**
-     * Whether fire should spread and naturally extinguish when there are no players nearby.
-     */
-    public static final GameRule<Boolean> ALLOW_FIRE_TICKS_AWAY_FROM_PLAYER = new GameRule<>("allowFireTicksAwayFromPlayer", Boolean.class);
 
     /**
      * Whether players should only be able to craft recipes they've unlocked
@@ -226,13 +222,13 @@ public final class GameRule<T> {
      */
     public static final GameRule<Boolean> ENDER_PEARLS_VANISH_ON_DEATH = new GameRule<>("enderPearlsVanishOnDeath", Boolean.class);
     /**
-     * Whether TNT explodes.
+     * Whether fire will still propagate far away from players (8 chunks).
+     */
+    public static final GameRule<Boolean> ALLOW_FIRE_TICKS_AWAY_FROM_PLAYER = new GameRule<>("allowFireTicksAwayFromPlayer", Boolean.class);
+    /**
+     * Whether primed tnt explodes.
      */
     public static final GameRule<Boolean> TNT_EXPLODES = new GameRule<>("tntExplodes", Boolean.class);
-    /**
-     * Whether the locator bar is enabled.
-     */
-    public static final GameRule<Boolean> LOCATOR_BAR = new GameRule<>("locatorBar", Boolean.class);
 
     // Numerical rules
     /**
@@ -300,12 +296,19 @@ public final class GameRule<T> {
      * The maximum speed of minecarts (when the new movement algorithm is
      * enabled).
      */
+    @MinecraftExperimental(MinecraftExperimental.Requires.MINECART_IMPROVEMENTS) // Paper - add missing annotation
+    @org.jetbrains.annotations.ApiStatus.Experimental // Paper - add missing annotation
     public static final GameRule<Integer> MINECART_MAX_SPEED = new GameRule<>("minecartMaxSpeed", Integer.class);
 
     /**
      * The number of chunks around spawn which will be kept loaded at all times.
      */
     public static final GameRule<Integer> SPAWN_CHUNK_RADIUS = new GameRule<>("spawnChunkRadius", Integer.class);
+
+    /**
+     * Configures if the world uses the locator bar.
+     */
+    public static final GameRule<Boolean> LOCATOR_BAR = new GameRule<>("locatorBar", Boolean.class);
 
     // All GameRules instantiated above this for organizational purposes
     private final String name;
@@ -379,4 +382,10 @@ public final class GameRule<T> {
     public static GameRule<?>[] values() {
         return gameRules.values().toArray(new GameRule<?>[gameRules.size()]);
     }
+
+    @Override
+    public @NotNull String translationKey() {
+        return "gamerule." + this.name;
+    }
+
 }

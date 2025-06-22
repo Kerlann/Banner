@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a raid event.
  */
-public interface Raid {
+public interface Raid extends org.bukkit.persistence.PersistentDataHolder { // Paper
 
     /**
      * Get whether this raid started.
@@ -131,4 +131,23 @@ public interface Raid {
          */
         STOPPED;
     }
+
+    // Paper start
+    /**
+     * Gets the id of this raid.
+     *
+     * @return the raid id
+     * @deprecated Raid identifiers are magic internal values and may or may not be present.
+     * -1 is returned for raids without an assigned id.
+     */
+    @Deprecated(forRemoval = true, since = "1.21.5")
+    int getId();
+
+    /**
+     * Get the boss bar to be displayed for this raid.
+     *
+     * @return the boss bar
+     */
+    org.bukkit.boss.@NotNull BossBar getBossBar();
+    // Paper end
 }

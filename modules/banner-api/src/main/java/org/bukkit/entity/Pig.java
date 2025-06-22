@@ -1,55 +1,47 @@
 package org.bukkit.entity;
 
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.registry.RegistryAware;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Represents a Pig.
  */
+@NullMarked
 public interface Pig extends Steerable, Vehicle {
 
     /**
-     * Get the variant of this pig.
+     * Gets the variant of this pig.
      *
-     * @return pig variant
+     * @return the pig variant
      */
-    @NotNull
     Variant getVariant();
 
     /**
-     * Set the variant of this pig.
+     * Sets the variant of this pig.
      *
-     * @param variant pig variant
+     * @param variant the pig variant
      */
-    void setVariant(@NotNull Variant variant);
+    void setVariant(Variant variant);
 
     /**
      * Represents the variant of a pig.
      */
-    interface Variant extends Keyed, RegistryAware {
+    interface Variant extends Keyed {
 
-        Variant TEMPERATE = getType("temperate");
-        Variant WARM = getType("warm");
-        Variant COLD = getType("cold");
+        // Start generate - PigVariant
+        // @GeneratedFrom 1.21.6
+        Variant COLD = getVariant("cold");
 
-        /**
-         * {@inheritDoc}
-         *
-         * @see #getKeyOrThrow()
-         * @see #isRegistered()
-         * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
-         */
-        @NotNull
-        @Override
-        @Deprecated(since = "1.21.5")
-        NamespacedKey getKey();
+        Variant TEMPERATE = getVariant("temperate");
 
-        @NotNull
-        private static Variant getType(@NotNull String key) {
-            return Registry.PIG_VARIANT.getOrThrow(NamespacedKey.minecraft(key));
+        Variant WARM = getVariant("warm");
+        // End generate - PigVariant
+
+        private static Variant getVariant(String key) {
+            return RegistryAccess.registryAccess().getRegistry(RegistryKey.PIG_VARIANT).getOrThrow(NamespacedKey.minecraft(key));
         }
     }
 }

@@ -3,11 +3,13 @@ package io.papermc.paper.event.world.border;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Called when a moving world border has finished its move.
  */
+@NullMarked
 public class WorldBorderBoundsChangeFinishEvent extends WorldBorderEvent {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
@@ -16,7 +18,8 @@ public class WorldBorderBoundsChangeFinishEvent extends WorldBorderEvent {
     private final double newSize;
     private final double duration;
 
-    public WorldBorderBoundsChangeFinishEvent(@NotNull World world, @NotNull WorldBorder worldBorder, double oldSize, double newSize, double duration) {
+    @ApiStatus.Internal
+    public WorldBorderBoundsChangeFinishEvent(final World world, final WorldBorder worldBorder, final double oldSize, final double newSize, final double duration) {
         super(world, worldBorder);
         this.oldSize = oldSize;
         this.newSize = newSize;
@@ -29,7 +32,7 @@ public class WorldBorderBoundsChangeFinishEvent extends WorldBorderEvent {
      * @return the old size
      */
     public double getOldSize() {
-        return oldSize;
+        return this.oldSize;
     }
 
     /**
@@ -38,27 +41,25 @@ public class WorldBorderBoundsChangeFinishEvent extends WorldBorderEvent {
      * @return the new size
      */
     public double getNewSize() {
-        return newSize;
+        return this.newSize;
     }
 
     /**
      * Gets the duration this worldborder took to make the change.
      * <p>
-     * Can be 0 if handlers for {@link io.papermc.paper.event.world.border.WorldBorderCenterChangeEvent} set the duration to 0.
+     * Can be 0 if handlers for {@link WorldBorderCenterChangeEvent} set the duration to 0.
      *
      * @return the duration of the transition
      */
     public double getDuration() {
-        return duration;
+        return this.duration;
     }
 
-    @NotNull
     @Override
     public HandlerList getHandlers() {
         return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
         return HANDLER_LIST;
     }

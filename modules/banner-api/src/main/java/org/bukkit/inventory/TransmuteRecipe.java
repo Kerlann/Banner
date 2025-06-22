@@ -20,26 +20,14 @@ public class TransmuteRecipe extends CraftingRecipe implements ComplexRecipe {
      * Create a transmute recipe to produce a result of the specified type.
      *
      * @param key the unique recipe key
-     * @param result the transmuted result item
-     * @param input the input ingredient
-     * @param material the additional ingredient
-     */
-    public TransmuteRecipe(@NotNull NamespacedKey key, @NotNull ItemStack result, @NotNull RecipeChoice input, @NotNull RecipeChoice material) {
-        super(key, checkResult(result));
-        this.input = input;
-        this.material = material;
-    }
-
-    /**
-     * Create a transmute recipe to produce a result of the specified type.
-     *
-     * @param key the unique recipe key
      * @param result the transmuted result material
      * @param input the input ingredient
      * @param material the additional ingredient
      */
     public TransmuteRecipe(@NotNull NamespacedKey key, @NotNull Material result, @NotNull RecipeChoice input, @NotNull RecipeChoice material) {
-        this(key, new ItemStack(result), input, material);
+        super(key, checkResult(new ItemStack(result)));
+        this.input = input.validate(false).clone(); // Paper
+        this.material = material.validate(false).clone(); // Paper
     }
 
     /**

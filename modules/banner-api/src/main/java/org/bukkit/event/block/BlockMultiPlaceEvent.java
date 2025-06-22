@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,10 +17,18 @@ import org.jetbrains.annotations.NotNull;
  * block.
  */
 public class BlockMultiPlaceEvent extends BlockPlaceEvent {
+
     private final List<BlockState> states;
 
+    @ApiStatus.Internal
+    @Deprecated(forRemoval = true)
     public BlockMultiPlaceEvent(@NotNull List<BlockState> states, @NotNull Block clicked, @NotNull ItemStack itemInHand, @NotNull Player thePlayer, boolean canBuild) {
-        super(states.get(0).getBlock(), states.get(0), clicked, itemInHand, thePlayer, canBuild);
+        this(states, clicked, itemInHand, thePlayer, canBuild, org.bukkit.inventory.EquipmentSlot.HAND);
+    }
+
+    @ApiStatus.Internal
+    public BlockMultiPlaceEvent(@NotNull List<BlockState> states, @NotNull Block clicked, @NotNull ItemStack itemInHand, @NotNull Player thePlayer, boolean canBuild, @NotNull org.bukkit.inventory.EquipmentSlot hand) {
+        super(states.get(0).getBlock(), states.get(0), clicked, itemInHand, thePlayer, canBuild, hand);
         this.states = ImmutableList.copyOf(states);
     }
 
@@ -32,6 +41,6 @@ public class BlockMultiPlaceEvent extends BlockPlaceEvent {
      */
     @NotNull
     public List<BlockState> getReplacedBlockStates() {
-        return states;
+        return this.states;
     }
 }

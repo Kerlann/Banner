@@ -4,17 +4,21 @@ import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.BlockEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Called when a beacon is activated.
  * Activation occurs when the beacon beam becomes visible.
  */
+@NullMarked
 public class BeaconActivatedEvent extends BlockEvent {
-    private static final HandlerList handlers = new HandlerList();
 
-    public BeaconActivatedEvent(@NotNull Block block) {
-        super(block);
+    private static final HandlerList HANDLER_LIST = new HandlerList();
+
+    @ApiStatus.Internal
+    public BeaconActivatedEvent(final Block beacon) {
+        super(beacon);
     }
 
     /**
@@ -22,19 +26,16 @@ public class BeaconActivatedEvent extends BlockEvent {
      *
      * @return the beacon that was activated.
      */
-    @NotNull
     public Beacon getBeacon() {
-        return (Beacon) block.getState();
+        return (Beacon) this.block.getState();
     }
 
-    @NotNull
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLER_LIST;
     }
 }

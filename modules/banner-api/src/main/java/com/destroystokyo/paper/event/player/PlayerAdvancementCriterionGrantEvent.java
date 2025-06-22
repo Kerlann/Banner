@@ -1,27 +1,35 @@
 package com.destroystokyo.paper.event.player;
 
 import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
- * Called when a player is granted a criteria in an advancement.
+ * Called after a player is granted a criteria in an advancement.
+ * If cancelled the criteria will be revoked.
  */
+@NullMarked
 public class PlayerAdvancementCriterionGrantEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
-    @NotNull
-    private final Advancement advancement;
-    @NotNull
-    private final String criterion;
-    private boolean cancel = false;
 
-    public PlayerAdvancementCriterionGrantEvent(@NotNull Player who, @NotNull Advancement advancement, @NotNull String criterion) {
-        super(who);
+    private static final HandlerList HANDLER_LIST = new HandlerList();
+
+    private final Advancement advancement;
+    private final String criterion;
+    private final AdvancementProgress advancementProgress;
+
+    private boolean cancelled;
+
+    @ApiStatus.Internal
+    public PlayerAdvancementCriterionGrantEvent(final Player player, final Advancement advancement, final String criterion) {
+        super(player);
         this.advancement = advancement;
         this.criterion = criterion;
+        this.advancementProgress = player.getAdvancementProgress(advancement);
     }
 
     /**
@@ -29,9 +37,8 @@ public class PlayerAdvancementCriterionGrantEvent extends PlayerEvent implements
      *
      * @return affected advancement
      */
-    @NotNull
     public Advancement getAdvancement() {
-        return advancement;
+        return this.advancement;
     }
 
     /**
@@ -39,27 +46,35 @@ public class PlayerAdvancementCriterionGrantEvent extends PlayerEvent implements
      *
      * @return granted criterion
      */
-    @NotNull
     public String getCriterion() {
-        return criterion;
+        return this.criterion;
     }
 
+    /**
+     * Gets the current AdvancementProgress.
+     *
+     * @return advancement progress
+     */
+    public AdvancementProgress getAdvancementProgress() {
+        return this.advancementProgress;
+    }
+
+    @Override
     public boolean isCancelled() {
-        return cancel;
+        return this.cancelled;
     }
 
-    public void setCancelled(boolean cancel) {
-        this.cancel = cancel;
+    @Override
+    public void setCancelled(final boolean cancel) {
+        this.cancelled = cancel;
     }
 
-    @NotNull
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLER_LIST;
     }
 }

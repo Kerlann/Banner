@@ -5,19 +5,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Triggered when a player starts spectating an entity in spectator mode.
  */
+@NullMarked
 public class PlayerStartSpectatingEntityEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
-    private boolean cancelled;
-    @NotNull private final Entity currentSpectatorTarget;
-    @NotNull private final Entity newSpectatorTarget;
+    private static final HandlerList HANDLER_LIST = new HandlerList();
 
-    public PlayerStartSpectatingEntityEvent(@NotNull Player player, @NotNull Entity currentSpectatorTarget, @NotNull Entity newSpectatorTarget) {
+    private final Entity currentSpectatorTarget;
+    private final Entity newSpectatorTarget;
+
+    private boolean cancelled;
+
+    @ApiStatus.Internal
+    public PlayerStartSpectatingEntityEvent(final Player player, final Entity currentSpectatorTarget, final Entity newSpectatorTarget) {
         super(player);
         this.currentSpectatorTarget = currentSpectatorTarget;
         this.newSpectatorTarget = newSpectatorTarget;
@@ -28,9 +33,8 @@ public class PlayerStartSpectatingEntityEvent extends PlayerEvent implements Can
      *
      * @return The entity the player is currently spectating (before they start spectating the new target).
      */
-    @NotNull
     public Entity getCurrentSpectatorTarget() {
-        return currentSpectatorTarget;
+        return this.currentSpectatorTarget;
     }
 
     /**
@@ -38,29 +42,27 @@ public class PlayerStartSpectatingEntityEvent extends PlayerEvent implements Can
      *
      * @return The entity the player is now going to be spectating.
      */
-    @NotNull
     public Entity getNewSpectatorTarget() {
-        return newSpectatorTarget;
+        return this.newSpectatorTarget;
     }
 
     @Override
     public boolean isCancelled() {
-        return cancelled;
+        return this.cancelled;
     }
 
     @Override
-    public void setCancelled(boolean cancel) {
+    public void setCancelled(final boolean cancel) {
         this.cancelled = cancel;
     }
 
-    @NotNull
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLER_LIST;
     }
 }
+

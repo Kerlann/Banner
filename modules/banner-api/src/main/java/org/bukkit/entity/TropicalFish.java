@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Tropical fish.
  */
-public interface TropicalFish extends Fish {
+public interface TropicalFish extends io.papermc.paper.entity.SchoolableFish { // Paper - Schooling Fish API
 
     /**
      * Gets the color of the fish's pattern.
@@ -60,6 +60,8 @@ public interface TropicalFish extends Fish {
      */
     public static enum Pattern {
 
+        // Start generate - TropicalFishPattern
+        // @GeneratedFrom 1.21.6
         KOB,
         SUNSTREAK,
         SNOOPER,
@@ -72,5 +74,6 @@ public interface TropicalFish extends Fish {
         BLOCKFISH,
         BETTY,
         CLAYFISH;
+        // End generate - TropicalFishPattern
     }
 }

@@ -6,33 +6,29 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.potion.PotionEffect;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Called when a beacon effect is being applied to a player.
  */
+@NullMarked
 public class BeaconEffectEvent extends BlockEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
-    private boolean cancelled;
-    private PotionEffect effect;
-    private Player player;
-    private boolean primary;
 
-    public BeaconEffectEvent(@NotNull Block block, @NotNull PotionEffect effect, @NotNull Player player, boolean primary) {
-        super(block);
+    private static final HandlerList HANDLER_LIST = new HandlerList();
+
+    private final Player player;
+    private final boolean primary;
+    private PotionEffect effect;
+
+    private boolean cancelled;
+
+    @ApiStatus.Internal
+    public BeaconEffectEvent(final Block beacon, final PotionEffect effect, final Player player, final boolean primary) {
+        super(beacon);
         this.effect = effect;
         this.player = player;
         this.primary = primary;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
     }
 
     /**
@@ -40,9 +36,8 @@ public class BeaconEffectEvent extends BlockEvent implements Cancellable {
      *
      * @return Potion effect
      */
-    @NotNull
     public PotionEffect getEffect() {
-        return effect;
+        return this.effect;
     }
 
     /**
@@ -50,7 +45,7 @@ public class BeaconEffectEvent extends BlockEvent implements Cancellable {
      *
      * @param effect Potion effect
      */
-    public void setEffect(@NotNull PotionEffect effect) {
+    public void setEffect(final PotionEffect effect) {
         this.effect = effect;
     }
 
@@ -59,28 +54,35 @@ public class BeaconEffectEvent extends BlockEvent implements Cancellable {
      *
      * @return Affected player
      */
-    @NotNull
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
     /**
      * Gets whether the effect is a primary beacon effect.
      *
-     * @return true if this event represents a primary effect
+     * @return {@code true} if this event represents a primary effect
      */
     public boolean isPrimary() {
-        return primary;
+        return this.primary;
     }
 
-    @NotNull
+    @Override
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
+
+    @Override
+    public void setCancelled(final boolean cancel) {
+        this.cancelled = cancel;
+    }
+
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLER_LIST;
     }
 }

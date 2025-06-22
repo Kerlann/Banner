@@ -4,7 +4,7 @@ import org.bukkit.entity.Minecart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface CommandMinecart extends Minecart {
+public interface CommandMinecart extends Minecart, io.papermc.paper.command.CommandBlockHolder { // Paper
 
     /**
      * Gets the command that this CommandMinecart will run when activated.
@@ -32,7 +32,9 @@ public interface CommandMinecart extends Minecart {
      * same as setting it to "@".
      *
      * @param name New name for this CommandMinecart.
+     * @deprecated in favour of {@link #customName(net.kyori.adventure.text.Component)}
      */
+    @Deprecated // Paper
     public void setName(@Nullable String name);
 
 }

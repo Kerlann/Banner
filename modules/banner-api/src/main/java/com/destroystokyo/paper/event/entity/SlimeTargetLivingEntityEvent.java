@@ -2,8 +2,8 @@ package com.destroystokyo.paper.event.entity;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Slime;
-import org.bukkit.event.Cancellable;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Fired when a Slime decides to change direction to target a LivingEntity.
@@ -11,10 +11,13 @@ import org.jetbrains.annotations.NotNull;
  * This event does not fire for the entity's actual movement. Only when it
  * is choosing to start moving.
  */
-public class SlimeTargetLivingEntityEvent extends SlimePathfindEvent implements Cancellable {
-    @NotNull private final LivingEntity target;
+@NullMarked
+public class SlimeTargetLivingEntityEvent extends SlimePathfindEvent {
 
-    public SlimeTargetLivingEntityEvent(@NotNull Slime slime, @NotNull LivingEntity target) {
+    private final LivingEntity target;
+
+    @ApiStatus.Internal
+    public SlimeTargetLivingEntityEvent(final Slime slime, final LivingEntity target) {
         super(slime);
         this.target = target;
     }
@@ -24,8 +27,7 @@ public class SlimeTargetLivingEntityEvent extends SlimePathfindEvent implements 
      *
      * @return Targeted entity
      */
-    @NotNull
     public LivingEntity getTarget() {
-        return target;
+        return this.target;
     }
 }

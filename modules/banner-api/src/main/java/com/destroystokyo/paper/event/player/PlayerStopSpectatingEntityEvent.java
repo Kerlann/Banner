@@ -5,18 +5,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Triggered when a player stops spectating an entity in spectator mode.
  */
+@NullMarked
 public class PlayerStopSpectatingEntityEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
-    private boolean cancelled;
-    @NotNull private final Entity spectatorTarget;
+    private static final HandlerList HANDLER_LIST = new HandlerList();
 
-    public PlayerStopSpectatingEntityEvent(@NotNull Player player, @NotNull Entity spectatorTarget) {
+    private final Entity spectatorTarget;
+    private boolean cancelled;
+
+    @ApiStatus.Internal
+    public PlayerStopSpectatingEntityEvent(final Player player, final Entity spectatorTarget) {
         super(player);
         this.spectatorTarget = spectatorTarget;
     }
@@ -26,29 +30,26 @@ public class PlayerStopSpectatingEntityEvent extends PlayerEvent implements Canc
      *
      * @return The entity the player is currently spectating (before they will stop).
      */
-    @NotNull
     public Entity getSpectatorTarget() {
-        return spectatorTarget;
+        return this.spectatorTarget;
     }
 
     @Override
     public boolean isCancelled() {
-        return cancelled;
+        return this.cancelled;
     }
 
     @Override
-    public void setCancelled(boolean cancel) {
+    public void setCancelled(final boolean cancel) {
         this.cancelled = cancel;
     }
 
-    @NotNull
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLER_LIST;
     }
 
-    @NotNull
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLER_LIST;
     }
 }

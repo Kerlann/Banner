@@ -1,5 +1,6 @@
 package org.bukkit.block;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
@@ -63,13 +64,30 @@ public interface Skull extends TileState {
      */
     public void setOwningPlayer(@NotNull OfflinePlayer player);
 
+    // Paper start
+    /**
+     * Sets this skull to use the supplied Player Profile, which can include textures already prefilled.
+     * @param profile The profile to set this Skull to use, may not be null
+     */
+    void setPlayerProfile(@NotNull com.destroystokyo.paper.profile.PlayerProfile profile);
+
+    /**
+     * If the skull has an owner, per {@link #hasOwner()}, return the owners {@link com.destroystokyo.paper.profile.PlayerProfile}
+     * @return The profile of the owner, if set
+     */
+    @Nullable com.destroystokyo.paper.profile.PlayerProfile getPlayerProfile();
+    // Paper end
+
     /**
      * Gets the profile of the player who owns the skull. This player profile
      * may appear as the texture depending on skull type.
      *
      * @return the profile of the owning player
+     *
+     * @deprecated Use {@link #getPlayerProfile()} instead.
      */
     @Nullable
+    @Deprecated // Paper
     PlayerProfile getOwnerProfile();
 
     /**
@@ -83,7 +101,10 @@ public interface Skull extends TileState {
      * @param profile the profile of the owning player
      * @throws IllegalArgumentException if the profile does not contain the
      * necessary information
+     *
+     * @deprecated Use {@link #setPlayerProfile(com.destroystokyo.paper.profile.PlayerProfile)} instead.
      */
+    @Deprecated // Paper
     void setOwnerProfile(@Nullable PlayerProfile profile);
 
     /**
@@ -135,7 +156,7 @@ public interface Skull extends TileState {
      * @return the type of skull
      * @deprecated check {@link Material} instead
      */
-    @Deprecated(since = "1.13")
+    @Deprecated(since = "1.13", forRemoval = true)
     @NotNull
     public SkullType getSkullType();
 
@@ -145,7 +166,27 @@ public interface Skull extends TileState {
      * @param skullType the type of skull
      * @deprecated check {@link Material} instead
      */
-    @Deprecated(since = "1.13")
+    @Deprecated(since = "1.13", forRemoval = true)
     @Contract("_ -> fail")
     public void setSkullType(SkullType skullType);
+
+    /**
+     * Get the custom name of skull.
+     * <p>This name is set when placing a skull item that has a custom name.
+     * This name is only carried back to the item when broken for player heads
+     * (skeleton/creeper heads will not retain the name).</p>
+     *
+     * @return Custom name of skull
+     */
+    public @Nullable Component customName();
+
+    /**
+     * Set the custom name of skull.
+     * <p>This name is set when placing a skull item that has a custom name.
+     * This name is only carried back to the item when broken for player heads
+     * (skeleton/creeper heads will not retain the name).</p>
+     *
+     * @param customName Custom name of skull
+     */
+    public void customName(@Nullable Component customName);
 }

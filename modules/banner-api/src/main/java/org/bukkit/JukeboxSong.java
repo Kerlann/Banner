@@ -1,6 +1,7 @@
 package org.bukkit;
 
-import org.bukkit.registry.RegistryAware;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,43 +9,63 @@ import org.jetbrains.annotations.NotNull;
  * Represents a song which may play in a Jukebox.
  */
 @ApiStatus.Experimental
-public interface JukeboxSong extends Keyed, Translatable, RegistryAware {
+public interface JukeboxSong extends Keyed, Translatable {
 
-    public static final JukeboxSong THIRTEEN = get("13");
-    public static final JukeboxSong CAT = get("cat");
-    public static final JukeboxSong BLOCKS = get("blocks");
-    public static final JukeboxSong CHIRP = get("chirp");
-    public static final JukeboxSong FAR = get("far");
-    public static final JukeboxSong MALL = get("mall");
-    public static final JukeboxSong MELLOHI = get("mellohi");
-    public static final JukeboxSong STAL = get("stal");
-    public static final JukeboxSong STRAD = get("strad");
-    public static final JukeboxSong WARD = get("ward");
-    public static final JukeboxSong ELEVEN = get("11");
-    public static final JukeboxSong WAIT = get("wait");
-    public static final JukeboxSong PIGSTEP = get("pigstep");
-    public static final JukeboxSong OTHERSIDE = get("otherside");
-    public static final JukeboxSong FIVE = get("5");
-    public static final JukeboxSong RELIC = get("relic");
-    public static final JukeboxSong PRECIPICE = get("precipice");
-    public static final JukeboxSong CREATOR = get("creator");
-    public static final JukeboxSong CREATOR_MUSIC_BOX = get("creator_music_box");
-    public static final JukeboxSong TEARS = get("tears");
+    // Start generate - JukeboxSong
+    // @GeneratedFrom 1.21.6
+    JukeboxSong ELEVEN = get("11");
+
+    JukeboxSong THIRTEEN = get("13");
+
+    JukeboxSong FIVE = get("5");
+
+    JukeboxSong BLOCKS = get("blocks");
+
+    JukeboxSong CAT = get("cat");
+
+    JukeboxSong CHIRP = get("chirp");
+
+    JukeboxSong CREATOR = get("creator");
+
+    JukeboxSong CREATOR_MUSIC_BOX = get("creator_music_box");
+
+    JukeboxSong FAR = get("far");
+
+    JukeboxSong MALL = get("mall");
+
+    JukeboxSong MELLOHI = get("mellohi");
+
+    JukeboxSong OTHERSIDE = get("otherside");
+
+    JukeboxSong PIGSTEP = get("pigstep");
+
+    JukeboxSong PRECIPICE = get("precipice");
+
+    JukeboxSong RELIC = get("relic");
+
+    JukeboxSong STAL = get("stal");
+
+    JukeboxSong STRAD = get("strad");
+
+    JukeboxSong TEARS = get("tears");
+
+    JukeboxSong WAIT = get("wait");
+
+    JukeboxSong WARD = get("ward");
+    // End generate - JukeboxSong
 
     @NotNull
     private static JukeboxSong get(@NotNull String key) {
-        return Registry.JUKEBOX_SONG.getOrThrow(NamespacedKey.minecraft(key));
+        return RegistryAccess.registryAccess().getRegistry(RegistryKey.JUKEBOX_SONG).getOrThrow(NamespacedKey.minecraft(key));
     }
 
+    // Paper start - adventure
     /**
-     * {@inheritDoc}
-     *
-     * @see #getKeyOrThrow()
-     * @see #isRegistered()
-     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     * @deprecated this method assumes that jukebox song description will
+     * always be a translatable component which is not guaranteed.
      */
-    @NotNull
     @Override
-    @Deprecated(since = "1.21.4")
-    NamespacedKey getKey();
+    @Deprecated(forRemoval = true)
+    @org.jetbrains.annotations.NotNull String getTranslationKey();
+    // Paper end - adventure
 }

@@ -37,7 +37,7 @@ public interface EquippableComponent extends ConfigurationSerializable {
      *
      * @return the sound
      */
-    @Nullable
+    @NotNull // Paper
     Sound getEquipSound();
 
     /**
@@ -152,45 +152,16 @@ public interface EquippableComponent extends ConfigurationSerializable {
     void setDamageOnHurt(boolean damage);
 
     /**
-     * Gets if the item will be equipped on interact.
+     * Gets if the item should be equipped when interacting with an entity.
      *
-     * @return whether the item will be equipped
+     * @return whether the item equips on interact
      */
     boolean isEquipOnInteract();
 
     /**
-     * Sets if the item will be equipped on interact.
+     * Sets if the item should be equipped when interacting with an entity.
      *
-     * @param equip whether the item will be equipped
+     * @param equip whether the item equips on interact
      */
     void setEquipOnInteract(boolean equip);
-
-    /**
-     * Gets if the item will be sheared off by shears.
-     *
-     * @return whether the item can be sheared off
-     */
-    boolean isCanBeSheared();
-
-    /**
-     * Sets if the item will be sheared off by shears.
-     *
-     * @param sheared whether the item can be sheared off
-     */
-    void setCanBeSheared(boolean sheared);
-
-    /**
-     * Gets the sound to play when the item is sheared.
-     *
-     * @return the sound
-     */
-    @Nullable
-    Sound getShearingSound();
-
-    /**
-     * Sets the sound to play when the item is sheared.
-     *
-     * @param sound sound or null for current default
-     */
-    void setShearingSound(@Nullable Sound sound);
 }

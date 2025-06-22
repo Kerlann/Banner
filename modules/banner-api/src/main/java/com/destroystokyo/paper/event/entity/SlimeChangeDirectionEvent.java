@@ -1,8 +1,8 @@
 package com.destroystokyo.paper.event.entity;
 
 import org.bukkit.entity.Slime;
-import org.bukkit.event.Cancellable;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Fired when a Slime decides to change its facing direction.
@@ -10,10 +10,13 @@ import org.jetbrains.annotations.NotNull;
  * This event does not fire for the entity's actual movement. Only when it
  * is choosing to change direction.
  */
-public class SlimeChangeDirectionEvent extends SlimePathfindEvent implements Cancellable {
+@NullMarked
+public class SlimeChangeDirectionEvent extends SlimePathfindEvent {
+
     private float yaw;
 
-    public SlimeChangeDirectionEvent(@NotNull Slime slime, float yaw) {
+    @ApiStatus.Internal
+    public SlimeChangeDirectionEvent(final Slime slime, final float yaw) {
         super(slime);
         this.yaw = yaw;
     }
@@ -24,7 +27,7 @@ public class SlimeChangeDirectionEvent extends SlimePathfindEvent implements Can
      * @return Chosen yaw
      */
     public float getNewYaw() {
-        return yaw;
+        return this.yaw;
     }
 
     /**
@@ -32,7 +35,7 @@ public class SlimeChangeDirectionEvent extends SlimePathfindEvent implements Can
      *
      * @param yaw Chosen yaw
      */
-    public void setNewYaw(float yaw) {
+    public void setNewYaw(final float yaw) {
         this.yaw = yaw;
     }
 }

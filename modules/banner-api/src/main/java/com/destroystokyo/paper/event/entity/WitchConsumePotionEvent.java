@@ -5,21 +5,27 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Fired when a witch consumes the potion in their hand to buff themselves.
  */
+@NullMarked
 public class WitchConsumePotionEvent extends EntityEvent implements Cancellable {
-    @Nullable private ItemStack potion;
 
-    public WitchConsumePotionEvent(@NotNull Witch witch, @Nullable ItemStack potion) {
+    private static final HandlerList HANDLER_LIST = new HandlerList();
+
+    private @Nullable ItemStack potion;
+    private boolean cancelled;
+
+    @ApiStatus.Internal
+    public WitchConsumePotionEvent(final Witch witch, final @Nullable ItemStack potion) {
         super(witch);
         this.potion = potion;
     }
 
-    @NotNull
     @Override
     public Witch getEntity() {
         return (Witch) super.getEntity();
@@ -28,43 +34,38 @@ public class WitchConsumePotionEvent extends EntityEvent implements Cancellable 
     /**
      * @return the potion the witch will consume and have the effects applied.
      */
-    @Nullable
-    public ItemStack getPotion() {
-        return potion;
+    public @Nullable ItemStack getPotion() {
+        return this.potion;
     }
 
     /**
      * Sets the potion to be consumed and applied to the witch.
+     *
      * @param potion The potion
      */
-    public void setPotion(@Nullable ItemStack potion) {
+    public void setPotion(final @Nullable ItemStack potion) {
         this.potion = potion != null ? potion.clone() : null;
     }
 
-    private static final HandlerList handlers = new HandlerList();
-
-    @NotNull
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    private boolean cancelled = false;
-
     /**
-     * @return Event was cancelled or potion was null
+     * @return Event was cancelled or potion was {@code null}
      */
     @Override
     public boolean isCancelled() {
-        return cancelled || potion == null;
+        return this.cancelled || this.potion == null;
     }
 
     @Override
-    public void setCancelled(boolean cancel) {
-        cancelled = cancel;
+    public void setCancelled(final boolean cancel) {
+        this.cancelled = cancel;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return HANDLER_LIST;
+    }
+
+    public static HandlerList getHandlerList() {
+        return HANDLER_LIST;
     }
 }
