@@ -16,9 +16,7 @@ public interface BanList<T> {
 
     /**
      * Represents a ban-type that a {@link BanList} may track.
-     * @deprecated use {@link io.papermc.paper.ban.BanListType} to enforce the correct return value at compile time.
      */
-    @Deprecated(since = "1.20.4") // Paper - BanList Type Improvements
     public enum Type {
         /**
          * Banned player names
@@ -40,9 +38,6 @@ public interface BanList<T> {
 
     /**
      * Gets a {@link BanEntry} by target.
-     * <p>
-     * Bans by name for ban type {@link Type#NAME NAME} are no longer supported and this method will return
-     * null when trying to request them. The replacement is bans by UUID.
      *
      * @param target entry parameter to search for
      * @return the corresponding entry, or null if none found
@@ -50,7 +45,7 @@ public interface BanList<T> {
      */
     @Deprecated(since = "1.20.1")
     @Nullable
-    public <E extends BanEntry<? super T>> E getBanEntry(@NotNull String target); // Paper
+    public BanEntry<T> getBanEntry(@NotNull String target);
 
     /**
      * Gets a {@link BanEntry} by target.
@@ -64,9 +59,6 @@ public interface BanList<T> {
     /**
      * Adds a ban to this list. If a previous ban exists, this will
      * update the previous entry.
-     * <p>
-     * Bans by name for ban type {@link Type#NAME NAME} are no longer supported and this method will return
-     * null when trying to request them. The replacement is bans by UUID.
      *
      * @param target the target of the ban
      * @param reason reason for the ban, null indicates implementation default
@@ -79,7 +71,7 @@ public interface BanList<T> {
      */
     @Deprecated(since = "1.20.1")
     @Nullable
-    public <E extends BanEntry<? super T>> E addBan(@NotNull String target, @Nullable String reason, @Nullable Date expires, @Nullable String source); // Paper
+    public BanEntry<T> addBan(@NotNull String target, @Nullable String reason, @Nullable Date expires, @Nullable String source);
 
     /**
      * Adds a ban to this list. If a previous ban exists, this will
@@ -142,14 +134,11 @@ public interface BanList<T> {
      * @return an immutable set containing every entry tracked by this list
      */
     @NotNull
-    public <E extends BanEntry<? super T>> Set<E> getEntries(); // Paper
+    public Set<BanEntry<T>> getEntries();
 
     /**
      * Gets if a {@link BanEntry} exists for the target, indicating an active
      * ban status.
-     * <p>
-     * Bans by name for ban type {@link Type#NAME NAME} are no longer supported.
-     * The replacement is bans by UUID.
      *
      * @param target the target to find
      * @return true if a {@link BanEntry} exists for the target, indicating an
@@ -172,9 +161,6 @@ public interface BanList<T> {
     /**
      * Removes the specified target from this list, therefore indicating a
      * "not banned" status.
-     * <p>
-     * Bans by name for ban type {@link Type#NAME NAME} are no longer supported.
-     * The replacement is bans by UUID.
      *
      * @param target the target to remove from this list
      */

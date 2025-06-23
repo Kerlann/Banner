@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a captured state of a lectern.
  */
-public interface Lectern extends io.papermc.paper.block.TileStateInventoryHolder { // Paper - TileStateInventoryHolder
+public interface Lectern extends TileState, BlockInventoryHolder {
 
     /**
      * Get the current lectern page.
@@ -26,5 +26,18 @@ public interface Lectern extends io.papermc.paper.block.TileStateInventoryHolder
      */
     void setPage(int page);
 
-    // Paper - moved to TileStateInventoryHolder
+    /**
+     * @return inventory
+     * @see Container#getInventory()
+     */
+    @NotNull
+    @Override
+    Inventory getInventory();
+
+    /**
+     * @return snapshot inventory
+     * @see Container#getSnapshotInventory()
+     */
+    @NotNull
+    Inventory getSnapshotInventory();
 }

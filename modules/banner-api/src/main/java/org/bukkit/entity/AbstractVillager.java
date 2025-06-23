@@ -21,11 +21,4 @@ public interface AbstractVillager extends Breedable, NPC, InventoryHolder, Merch
     @NotNull
     @Override
     Inventory getInventory();
-
-    // Paper start
-    /**
-     * Reset this villager's trade offers
-     */
-    public void resetOffers();
-    // Paper end
 }

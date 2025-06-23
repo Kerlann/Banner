@@ -18,14 +18,13 @@ import org.jetbrains.annotations.Nullable;
  * A RegionAccessor gives access to getting, modifying and spawning {@link Biome}, {@link BlockState} and {@link Entity},
  * as well as generating some basic structures.
  */
-public interface RegionAccessor extends Keyed, io.papermc.paper.world.flag.FeatureFlagSetHolder { // Paper - feature flag API
+public interface RegionAccessor {
 
     /**
      * Gets the {@link Biome} at the given {@link Location}.
      *
      * @param location the location of the biome
      * @return Biome at the given location
-     * @see #getComputedBiome(int, int, int)
      */
     @NotNull
     Biome getBiome(@NotNull Location location);
@@ -37,32 +36,9 @@ public interface RegionAccessor extends Keyed, io.papermc.paper.world.flag.Featu
      * @param y Y-coordinate of the block
      * @param z Z-coordinate of the block
      * @return Biome at the given coordinates
-     * @see #getComputedBiome(int, int, int)
      */
     @NotNull
     Biome getBiome(int x, int y, int z);
-
-    // Paper start
-    /**
-     * Gets the computed {@link Biome} at the given coordinates.
-     *
-     * <p>The computed Biome is the Biome as seen by clients for rendering
-     * purposes and in the "F3" debug menu. This is computed by looking at the noise biome
-     * at this and surrounding quarts and applying complex math operations.</p>
-     *
-     * <p>Most other Biome-related methods named getBiome, setBiome, and similar
-     * operate on the "noise biome", which is stored per-quart, or in other words,
-     * 1 Biome per 4x4x4 block region. This is how Biomes are currently generated and
-     * stored on disk.</p>
-     *
-     * @param x X-coordinate of the block
-     * @param y Y-coordinate of the block
-     * @param z Z-coordinate of the block
-     * @return Biome at the given coordinates
-     */
-    @NotNull
-    Biome getComputedBiome(int x, int y, int z);
-    // Paper end
 
     /**
      * Sets the {@link Biome} at the given {@link Location}.
@@ -101,41 +77,6 @@ public interface RegionAccessor extends Keyed, io.papermc.paper.world.flag.Featu
      */
     @NotNull
     BlockState getBlockState(int x, int y, int z);
-
-    // Paper start - FluidState API
-    /**
-     * Gets the {@link io.papermc.paper.block.fluid.FluidData} at the specified position.
-     *
-     * @param x The x-coordinate of the position
-     * @param y The y-coordinate of the position
-     * @param z The z-coordinate of the position
-     * @return The {@link io.papermc.paper.block.fluid.FluidData} at the specified position
-     */
-    @NotNull
-    io.papermc.paper.block.fluid.FluidData getFluidData(int x, int y, int z);
-
-    /**
-     * Gets the {@link io.papermc.paper.block.fluid.FluidData} at the given position
-     *
-     * @param position The position of the fluid
-     * @return The fluid data at the given position
-     */
-    @NotNull
-    default io.papermc.paper.block.fluid.FluidData getFluidData(@NotNull io.papermc.paper.math.Position position) {
-        return getFluidData(position.blockX(), position.blockY(), position.blockZ());
-    }
-
-    /**
-     * Gets the {@link io.papermc.paper.block.fluid.FluidData} at the given position
-     *
-     * @param location The location of the fluid
-     * @return The fluid data at the given position
-     */
-    @NotNull
-    default io.papermc.paper.block.fluid.FluidData getFluidData(@NotNull Location location) {
-        return getFluidData(location.blockX(), location.blockY(), location.blockZ());
-    }
-    // Paper end
 
     /**
      * Gets the {@link BlockData} at the given {@link Location}.
@@ -217,7 +158,7 @@ public interface RegionAccessor extends Keyed, io.papermc.paper.world.flag.Featu
      * Creates a tree at the given {@link Location}
      *
      * @param location Location to spawn the tree
-     * @param random Random to use to generate the tree
+     * @param random Random to use to generated the tree
      * @param type Type of the tree to create
      * @return true if the tree was created successfully, otherwise false
      */
@@ -229,14 +170,14 @@ public interface RegionAccessor extends Keyed, io.papermc.paper.world.flag.Featu
      * The provided consumer gets called for every block which gets changed
      * as a result of the tree generation. When the consumer gets called no
      * modifications to the world are done yet. Which means, that calling
-     * {@link #getBlockState(Location)} in the consumer will return the state
+     * {@link #getBlockState(Location)} in the consumer while return the state
      * of the block before the generation.
      * <p>
      * Modifications done to the {@link BlockState} in the consumer are respected,
      * which means that it is not necessary to call {@link BlockState#update()}
      *
      * @param location Location to spawn the tree
-     * @param random Random to use to generate the tree
+     * @param random Random to use to generated the tree
      * @param type Type of the tree to create
      * @param stateConsumer The consumer which should get called for every block which gets changed
      * @return true if the tree was created successfully, otherwise false
@@ -256,7 +197,7 @@ public interface RegionAccessor extends Keyed, io.papermc.paper.world.flag.Featu
      * If it returns {@code false} the block won't get set in the world.
      *
      * @param location Location to spawn the tree
-     * @param random Random to use to generate the tree
+     * @param random Random to use to generated the tree
      * @param type Type of the tree to create
      * @param statePredicate The predicate which should get used to test if a block should be set or not.
      * @return true if the tree was created successfully, otherwise false
@@ -385,31 +326,8 @@ public interface RegionAccessor extends Keyed, io.papermc.paper.world.flag.Featu
      * @throws IllegalArgumentException if either parameter is null or the
      *     {@link Entity} requested cannot be spawned
      */
-    // Paper start
-    default <T extends Entity> @NotNull T spawn(final @NotNull Location location, final @NotNull Class<T> clazz, final @Nullable Consumer<? super T> function) throws IllegalArgumentException {
-        return this.spawn(location, clazz, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CUSTOM, function);
-    }
-
-    default @NotNull <T extends Entity> T spawn(final @NotNull Location location, final @NotNull Class<T> clazz, final org.bukkit.event.entity.CreatureSpawnEvent.@NotNull SpawnReason reason) throws IllegalArgumentException {
-        return this.spawn(location, clazz, reason, null);
-    }
-
-    default @NotNull <T extends Entity> T spawn(final @NotNull Location location, final @NotNull Class<T> clazz, final org.bukkit.event.entity.CreatureSpawnEvent.@NotNull SpawnReason reason, final @Nullable Consumer<? super T> function) throws IllegalArgumentException {
-        return this.spawn(location, clazz, function, reason);
-    }
-
-    default @NotNull Entity spawnEntity(final @NotNull Location loc, final @NotNull EntityType type, final org.bukkit.event.entity.CreatureSpawnEvent.@NotNull SpawnReason reason) {
-        com.google.common.base.Preconditions.checkArgument(type.getEntityClass() != null, "%s is not a valid EntityType, must have an entity class", type);
-        return this.spawn(loc, type.getEntityClass(), reason, null);
-    }
-
-    default @NotNull Entity spawnEntity(final @NotNull Location loc, final @NotNull EntityType type, final org.bukkit.event.entity.CreatureSpawnEvent.@NotNull SpawnReason reason, final @Nullable Consumer<? super Entity> function) {
-        com.google.common.base.Preconditions.checkArgument(type.getEntityClass() != null, "%s is not a valid EntityType, must have an entity class", type);
-        return this.spawn(loc, type.getEntityClass(), reason, function);
-    }
-
-    <T extends Entity> @NotNull T spawn(@NotNull Location location, @NotNull Class<T> clazz, @Nullable Consumer<? super T> function, org.bukkit.event.entity.CreatureSpawnEvent.@NotNull SpawnReason reason) throws IllegalArgumentException;
-    // Paper end
+    @NotNull
+    <T extends Entity> T spawn(@NotNull Location location, @NotNull Class<T> clazz, @Nullable Consumer<? super T> function) throws IllegalArgumentException;
 
     /**
      * Creates a new entity at the given {@link Location} with the supplied
@@ -504,39 +422,4 @@ public interface RegionAccessor extends Keyed, io.papermc.paper.world.flag.Featu
      */
     @NotNull
     public <T extends Entity> T addEntity(@NotNull T entity);
-
-    // Paper start
-    /**
-     * @return the current moon phase at the current time in the world
-     */
-    @NotNull
-    io.papermc.paper.world.MoonPhase getMoonPhase();
-
-    /**
-     * Get the world's key
-     *
-     * @return the world's key
-     */
-    @NotNull
-    @Override
-    NamespacedKey getKey();
-
-    /**
-     * Tell whether a line of sight exists between the given locations
-     * @param from Location to start at
-     * @param to target Location
-     * @return whether a line of sight exists between {@code from} and {@code to}
-     */
-    public boolean lineOfSightExists(@NotNull Location from, @NotNull Location to);
-
-    /**
-     * Checks if the world collides with the given boundingbox.
-     * This will check for any colliding hard entities (boats, shulkers) / worldborder / blocks.
-     * Does not load chunks that are within the bounding box.
-     *
-     * @param boundingBox the box to check collisions in
-     * @return collides or not
-     */
-    boolean hasCollisionsIn(@NotNull org.bukkit.util.BoundingBox boundingBox);
-    // Paper end
 }

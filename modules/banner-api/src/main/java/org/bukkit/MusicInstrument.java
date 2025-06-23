@@ -1,68 +1,27 @@
 package org.bukkit;
 
 import com.google.common.collect.Lists;
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
 import java.util.Collection;
 import java.util.Collections;
-import net.kyori.adventure.text.Component;
-import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
+import org.bukkit.registry.RegistryAware;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-@NullMarked
-public abstract class MusicInstrument implements Keyed, net.kyori.adventure.translation.Translatable {
-
-    // Start generate - MusicInstrument
-    // @GeneratedFrom 1.21.6
-    public static final MusicInstrument ADMIRE_GOAT_HORN = getInstrument("admire_goat_horn");
-
-    public static final MusicInstrument CALL_GOAT_HORN = getInstrument("call_goat_horn");
-
-    public static final MusicInstrument DREAM_GOAT_HORN = getInstrument("dream_goat_horn");
-
-    public static final MusicInstrument FEEL_GOAT_HORN = getInstrument("feel_goat_horn");
+public abstract class MusicInstrument implements Keyed, RegistryAware {
 
     public static final MusicInstrument PONDER_GOAT_HORN = getInstrument("ponder_goat_horn");
-
-    public static final MusicInstrument SEEK_GOAT_HORN = getInstrument("seek_goat_horn");
-
     public static final MusicInstrument SING_GOAT_HORN = getInstrument("sing_goat_horn");
-
+    public static final MusicInstrument SEEK_GOAT_HORN = getInstrument("seek_goat_horn");
+    public static final MusicInstrument FEEL_GOAT_HORN = getInstrument("feel_goat_horn");
+    public static final MusicInstrument ADMIRE_GOAT_HORN = getInstrument("admire_goat_horn");
+    public static final MusicInstrument CALL_GOAT_HORN = getInstrument("call_goat_horn");
     public static final MusicInstrument YEARN_GOAT_HORN = getInstrument("yearn_goat_horn");
-    // End generate - MusicInstrument
+    public static final MusicInstrument DREAM_GOAT_HORN = getInstrument("dream_goat_horn");
 
     /**
-     * Returns a {@link MusicInstrument} by a {@link NamespacedKey}.
+     * Gets how long the use duration is for the instrument.
      *
-     * @param namespacedKey the key
-     * @return the event or null
-     * @deprecated Use {@link Registry#get(NamespacedKey)} instead.
-     */
-    @Nullable
-    @Deprecated(since = "1.20.1")
-    public static MusicInstrument getByKey(final NamespacedKey namespacedKey) {
-        return Registry.INSTRUMENT.get(namespacedKey);
-    }
-
-    /**
-     * Returns all known MusicInstruments.
-     *
-     * @return the memoryKeys
-     * @deprecated use {@link Registry#iterator()}.
-     */
-    @Deprecated(since = "1.20.1")
-    public static Collection<MusicInstrument> values() {
-        return Collections.unmodifiableCollection(Lists.newArrayList(Registry.INSTRUMENT));
-    }
-
-    private static MusicInstrument getInstrument(final String key) {
-        return RegistryAccess.registryAccess().getRegistry(RegistryKey.INSTRUMENT).getOrThrow(NamespacedKey.minecraft(key));
-    }
-
-    /**
-     * Gets the use duration of this music instrument.
-     *
-     * @return the duration expressed in seconds.
+     * @return the duration.
      */
     public abstract float getDuration();
 
@@ -74,42 +33,60 @@ public abstract class MusicInstrument implements Keyed, net.kyori.adventure.tran
     public abstract float getRange();
 
     /**
-     * Provides the description of this instrument as displayed to the client.
+     * Gets the description of this instrument.
      *
-     * @return the description component.
+     * @return the description.
      */
-    public abstract Component description();
+    @NotNull
+    public abstract String getDescription();
 
     /**
-     * Gets the sound for this instrument.
+     * Gets the sound/sound-event for this instrument.
      *
-     * @return the sound
+     * @return a sound.
      */
-    public abstract Sound getSound();
+    @NotNull
+    public abstract Sound getSoundEvent();
 
     /**
-     * @deprecated use {@link Registry#getKey(Keyed)}, {@link io.papermc.paper.registry.RegistryAccess#getRegistry(io.papermc.paper.registry.RegistryKey)},
-     * and {@link io.papermc.paper.registry.RegistryKey#INSTRUMENT}. MusicInstruments can exist without a key.
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
      */
-    @Deprecated(forRemoval = true, since = "1.20.5")
+    @NotNull
     @Override
+    @Deprecated(since = "1.21.4")
     public abstract NamespacedKey getKey();
 
     /**
-     * @deprecated use {@link Registry#getKey(Keyed)}, {@link io.papermc.paper.registry.RegistryAccess#getRegistry(io.papermc.paper.registry.RegistryKey)},
-     * and {@link io.papermc.paper.registry.RegistryKey#INSTRUMENT}. MusicInstruments can exist without a key.
+     * Returns a {@link MusicInstrument} by a {@link NamespacedKey}.
+     *
+     * @param namespacedKey the key
+     * @return the event or null
+     * @deprecated Use {@link Registry#get(NamespacedKey)} instead.
      */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    @Override
-    public net.kyori.adventure.key.@org.jetbrains.annotations.NotNull Key key() {
-        return Keyed.super.key();
+    @Nullable
+    @Deprecated(since = "1.20.1")
+    public static MusicInstrument getByKey(@NotNull NamespacedKey namespacedKey) {
+        return Registry.INSTRUMENT.get(namespacedKey);
     }
 
     /**
-     * @deprecated this method assumes that the instrument description
-     * always be a translatable component which is not guaranteed.
+     * Returns all known MusicInstruments.
+     *
+     * @return the memoryKeys
+     * @deprecated use {@link Registry#iterator()}.
      */
-    @Override
-    @Deprecated(forRemoval = true)
-    public abstract String translationKey();
+    @NotNull
+    @Deprecated(since = "1.20.1")
+    public static Collection<MusicInstrument> values() {
+        return Collections.unmodifiableCollection(Lists.newArrayList(Registry.INSTRUMENT));
+    }
+
+    @NotNull
+    private static MusicInstrument getInstrument(@NotNull String key) {
+        return Registry.INSTRUMENT.getOrThrow(NamespacedKey.minecraft(key));
+    }
 }

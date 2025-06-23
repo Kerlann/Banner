@@ -4,7 +4,7 @@ import org.bukkit.block.data.BlockData;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 'mode' is the reaction of the block to a redstone pulse or its supply.
+ * 'mode' indicates what mode this test block is in.
  */
 public interface TestBlock extends BlockData {
 
@@ -23,10 +23,26 @@ public interface TestBlock extends BlockData {
      */
     void setMode(@NotNull Mode mode);
 
-    enum Mode {
+    /**
+     * The mode in which a comparator will operate in.
+     */
+    public enum Mode {
+
+        /**
+         * Triggers a redstone pulse when the test starts.
+         */
         START,
+        /**
+         * Logs a message to the log file when powered by redstone.
+         */
         LOG,
+        /**
+         * Fails the test when powered by redstone.
+         */
         FAIL,
-        ACCEPT
+        /**
+         * Completes the test when powered by redstone.
+         */
+        ACCEPT;
     }
 }

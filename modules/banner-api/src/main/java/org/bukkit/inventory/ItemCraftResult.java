@@ -24,7 +24,8 @@ public interface ItemCraftResult {
      *
      * @return resulting matrix
      */
-    public @NotNull ItemStack @NotNull [] getResultingMatrix();
+    @NotNull
+    public ItemStack[] getResultingMatrix();
 
     /**
      * Gets the overflowed items for items that don't fit back into the crafting

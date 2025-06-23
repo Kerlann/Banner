@@ -6,7 +6,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a component which determines the cooldown applied when using this item before it is available for use again.
+ * Represents a component which determines the cooldown applied to use of this
+ * item.
  */
 @ApiStatus.Experimental
 public interface UseCooldownComponent extends ConfigurationSerializable {
@@ -38,7 +39,7 @@ public interface UseCooldownComponent extends ConfigurationSerializable {
     /**
      * Sets the custom cooldown group to be used for similar items.
      *
-     * @param group the cooldown group
+     * @param key the cooldown group
      */
-    void setCooldownGroup(@Nullable NamespacedKey group);
+    void setCooldownGroup(@Nullable NamespacedKey key);
 }

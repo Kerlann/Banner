@@ -55,7 +55,6 @@ public interface Conversable {
      *
      * @param message Message to be displayed
      */
-    @org.jetbrains.annotations.ApiStatus.Obsolete // Paper
     public void sendRawMessage(@NotNull String message);
 
     /**
@@ -63,8 +62,6 @@ public interface Conversable {
      *
      * @param message Message to be displayed
      * @param sender The sender of this message
-     * @deprecated sender UUID is ignored
      */
-    @Deprecated // Paper
     public void sendRawMessage(@Nullable UUID sender, @NotNull String message);
 }

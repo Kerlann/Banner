@@ -1,6 +1,5 @@
 package org.bukkit.inventory;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -18,17 +17,16 @@ import org.bukkit.inventory.view.StonecutterView;
 import org.bukkit.inventory.view.builder.InventoryViewBuilder;
 import org.bukkit.inventory.view.builder.LocationInventoryViewBuilder;
 import org.bukkit.inventory.view.builder.MerchantInventoryViewBuilder;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents different kinds of views, also known as menus, which can be
  * created and viewed by the player.
  */
-@NullMarked
 @ApiStatus.Experimental
-public interface MenuType extends Keyed, io.papermc.paper.world.flag.FeatureDependant { // Paper - make FeatureDependant
+public interface MenuType extends Keyed, RegistryAware {
 
     /**
      * A MenuType which represents a chest with 1 row.
@@ -53,7 +51,7 @@ public interface MenuType extends Keyed, io.papermc.paper.world.flag.FeatureDepe
     /**
      * A MenuType which represents a chest with 6 rows.
      */
-    MenuType.Typed<InventoryView, LocationInventoryViewBuilder<InventoryView>> GENERIC_9X6 = get("generic_9x6");
+    MenuType.Typed<InventoryView, InventoryViewBuilder<InventoryView>> GENERIC_9X6 = get("generic_9x6");
     /**
      * A MenuType which represents a dispenser/dropper like menu with 3 columns
      * and 3 rows.
@@ -116,7 +114,7 @@ public interface MenuType extends Keyed, io.papermc.paper.world.flag.FeatureDepe
      */
     MenuType.Typed<InventoryView, LocationInventoryViewBuilder<InventoryView>> SHULKER_BOX = get("shulker_box");
     /**
-     * A MenuType which represents a smithing table.
+     * A MenuType which represents a stonecutter.
      */
     MenuType.Typed<InventoryView, LocationInventoryViewBuilder<InventoryView>> SMITHING = get("smithing");
     /**
@@ -138,6 +136,8 @@ public interface MenuType extends Keyed, io.papermc.paper.world.flag.FeatureDepe
      *
      * @param <V> the generic type of {@link InventoryView} that represents the
      * view type.
+     * @param <B> the builder type of {@link InventoryViewBuilder} that
+     * represents the view builder.
      */
     interface Typed<V extends InventoryView, B extends InventoryViewBuilder<V>> extends MenuType {
 
@@ -149,59 +149,20 @@ public interface MenuType extends Keyed, io.papermc.paper.world.flag.FeatureDepe
          * for more information.
          *
          * @param player the player the view belongs to
-         * @return the created {@link InventoryView}
-         */
-        default V create(HumanEntity player) {
-            return create(player, (Component) null);
-        }
-
-        /**
-         * Creates a view of the specified menu type.
-         * <p>
-         * The player provided to create this view must be the player the view
-         * is opened for. See {@link HumanEntity#openInventory(InventoryView)}
-         * for more information.
-         *
-         * @param player the player the view belongs to
-         * @param title the title of the view
-         * @return the created {@link InventoryView}
-         * @deprecated Use {@link #create(HumanEntity, Component)} instead.
-         */
-        @Deprecated(since = "1.21") // Paper - adventure
-        V create(HumanEntity player, @Nullable String title);
-
-        // Paper start - adventure
-        /**
-         * Creates a view of the specified menu type.
-         * <p>
-         * The player provided to create this view must be the player the view
-         * is opened for. See {@link HumanEntity#openInventory(InventoryView)}
-         * for more information.
-         *
-         * @param player the player the view belongs to
          * @param title the title of the view
          * @return the created {@link InventoryView}
          */
-        V create(HumanEntity player, @Nullable Component title);
-        // Paper end - adventure
+        @NotNull
+        V create(@NotNull HumanEntity player, @NotNull String title);
 
+        /**
+         * Creates a builder for this type of InventoryView.
+         *
+         * @return the new builder
+         */
+        @NotNull
         B builder();
     }
-
-    // Paper start - adventure
-    /**
-     * Creates a view of the specified menu type.
-     * <p>
-     * The player provided to create this view must be the player the view
-     * is opened for. See {@link HumanEntity#openInventory(InventoryView)}
-     * for more information.
-     *
-     * @param player the player the view belongs to
-     * @param title the title of the view
-     * @return the created {@link InventoryView}
-     */
-    InventoryView create(HumanEntity player, @Nullable Component title);
-    // Paper end - adventure
 
     /**
      * Yields this MenuType as a typed version of itself with a plain
@@ -209,6 +170,7 @@ public interface MenuType extends Keyed, io.papermc.paper.world.flag.FeatureDepe
      *
      * @return the typed MenuType.
      */
+    @NotNull
     MenuType.Typed<InventoryView, InventoryViewBuilder<InventoryView>> typed();
 
     /**
@@ -225,16 +187,31 @@ public interface MenuType extends Keyed, io.papermc.paper.world.flag.FeatureDepe
      * @throws IllegalArgumentException if the provided viewClass cannot be
      * typed to this MenuType
      */
-    <V extends InventoryView, B extends InventoryViewBuilder<V>> MenuType.Typed<V, B> typed(final Class<V> viewClass) throws IllegalArgumentException;
+    @NotNull
+    <V extends InventoryView, B extends InventoryViewBuilder<V>> MenuType.Typed<V, B> typed(@NotNull final Class<V> viewClass) throws IllegalArgumentException;
 
     /**
      * Gets the {@link InventoryView} class of this MenuType.
      *
      * @return the {@link InventoryView} class of this MenuType
      */
+    @NotNull
     Class<? extends InventoryView> getInventoryViewClass();
 
-    private static <T extends MenuType> T get(final String key) {
+    /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
+    @NotNull
+    @Override
+    @Deprecated(since = "1.21.4")
+    NamespacedKey getKey();
+
+    @NotNull
+    private static <T extends MenuType> T get(@NotNull final String key) {
         return (T) Registry.MENU.getOrThrow(NamespacedKey.minecraft(key));
     }
 }

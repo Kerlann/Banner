@@ -2,20 +2,20 @@ package org.bukkit.attribute;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import io.papermc.paper.registry.RegistryKey;
 import java.util.Locale;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Translatable;
+import org.bukkit.registry.RegistryAware;
 import org.bukkit.util.OldEnum;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Types of attributes which may be present on an {@link Attributable}.
  */
-public interface Attribute extends OldEnum<Attribute>, Keyed, Translatable, net.kyori.adventure.translation.Translatable { // Paper - Adventure translations
+public interface Attribute extends OldEnum<Attribute>, Keyed, Translatable, RegistryAware {
 
     /**
      * Maximum health of an Entity.
@@ -94,7 +94,7 @@ public interface Attribute extends OldEnum<Attribute>, Keyed, Translatable, net.
      */
     Attribute BURNING_TIME = getAttribute("burning_time");
     /**
-     * The camera distance of a player to their own entity.
+     * The distance at which the camera is placed away.
      */
     Attribute CAMERA_DISTANCE = getAttribute("camera_distance");
     /**
@@ -150,11 +150,11 @@ public interface Attribute extends OldEnum<Attribute>, Keyed, Translatable, net.
      */
     Attribute SPAWN_REINFORCEMENTS = getAttribute("spawn_reinforcements");
     /**
-     * Attribute controlling the range an entity transmits itself as a waypoint.
+     * Waypoint transmission range.
      */
     Attribute WAYPOINT_TRANSMIT_RANGE = getAttribute("waypoint_transmit_range");
     /**
-     * Attribute controlling the range an entity receives other waypoints from.
+     * Waypoing receive range.
      */
     Attribute WAYPOINT_RECEIVE_RANGE = getAttribute("waypoint_receive_range");
 
@@ -164,14 +164,26 @@ public interface Attribute extends OldEnum<Attribute>, Keyed, Translatable, net.
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
+    @NotNull
+    @Override
+    @Deprecated(since = "1.21.4")
+    NamespacedKey getKey();
+
+    /**
      * @param name of the attribute.
      * @return the attribute with the given name.
      * @deprecated only for backwards compatibility, use {@link Registry#get(NamespacedKey)} instead.
      */
     @NotNull
-    @Deprecated(since = "1.21.3", forRemoval = true) @org.jetbrains.annotations.ApiStatus.ScheduledForRemoval(inVersion = "1.22") // Paper - will be removed via asm-utils
+    @Deprecated(since = "1.21.3")
     static Attribute valueOf(@NotNull String name) {
-        Attribute attribute = Bukkit.getUnsafe().get(RegistryKey.ATTRIBUTE, NamespacedKey.fromString(name.toLowerCase(Locale.ROOT)));
+        Attribute attribute = Bukkit.getUnsafe().get(Registry.ATTRIBUTE, NamespacedKey.fromString(name.toLowerCase(Locale.ROOT)));
         Preconditions.checkArgument(attribute != null, "No attribute found with the name %s", name);
         return attribute;
     }
@@ -181,7 +193,7 @@ public interface Attribute extends OldEnum<Attribute>, Keyed, Translatable, net.
      * @deprecated use {@link Registry#iterator()}.
      */
     @NotNull
-    @Deprecated(since = "1.21.3", forRemoval = true) @org.jetbrains.annotations.ApiStatus.ScheduledForRemoval(inVersion = "1.22") // Paper - will be removed via asm-utils
+    @Deprecated(since = "1.21.3")
     static Attribute[] values() {
         return Lists.newArrayList(Registry.ATTRIBUTE).toArray(new Attribute[0]);
     }

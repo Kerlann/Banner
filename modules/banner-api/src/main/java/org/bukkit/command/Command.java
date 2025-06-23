@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -31,17 +32,8 @@ public abstract class Command {
     protected String description;
     protected String usageMessage;
     private String permission;
-    private net.kyori.adventure.text.Component permissionMessage; // Paper
-    /**
-     * @deprecated Timings will be removed in the future
-     */
-    @Deprecated(forRemoval = true)
-    public co.aikar.timings.Timing timings; // Paper
-    /**
-     * @deprecated Timings will be removed in the future
-     */
-    @Deprecated(forRemoval = true)
-    @NotNull public String getTimingName() {return getName();} // Paper
+    private String permissionMessage;
+    public org.spigotmc.CustomTimingsHandler timings; // Spigot
 
     protected Command(@NotNull String name) {
         this(name, "", "/" + name, new ArrayList<String>());
@@ -55,6 +47,7 @@ public abstract class Command {
         this.usageMessage = (usageMessage == null) ? "/" + name : usageMessage;
         this.aliases = aliases;
         this.activeAliases = new ArrayList<String>(aliases);
+        this.timings = new org.spigotmc.CustomTimingsHandler("** Command: " + name); // Spigot
     }
 
     /**
@@ -65,7 +58,7 @@ public abstract class Command {
      * @param args All arguments passed to the command, split via ' '
      * @return true if the command was successful, otherwise false
      */
-    public abstract boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String @NotNull [] args);
+    public abstract boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args);
 
     /**
      * Executed on tab completion for this command, returning a list of
@@ -79,7 +72,7 @@ public abstract class Command {
      * @throws IllegalArgumentException if sender, alias, or args is null
      */
     @NotNull
-    public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String @NotNull [] args) throws IllegalArgumentException {
+    public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
         return tabComplete0(sender, alias, args, null);
     }
 
@@ -96,7 +89,7 @@ public abstract class Command {
      * @throws IllegalArgumentException if sender, alias, or args is null
      */
     @NotNull
-    public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String @NotNull [] args, @Nullable Location location) throws IllegalArgumentException {
+    public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args, @Nullable Location location) throws IllegalArgumentException {
         return tabComplete(sender, alias, args);
     }
 
@@ -106,7 +99,7 @@ public abstract class Command {
         Preconditions.checkArgument(args != null, "Arguments cannot be null");
         Preconditions.checkArgument(alias != null, "Alias cannot be null");
 
-        if (args.length == 0 || !sender.getServer().suggestPlayerNamesWhenNullTabCompletions()) { // Paper - allow preventing player name suggestions by default) {
+        if (args.length == 0) {
             return ImmutableList.of();
         }
 
@@ -191,11 +184,12 @@ public abstract class Command {
             return true;
         }
 
-            // Paper start - use components for permissionMessage
-        net.kyori.adventure.text.Component permissionMessage = this.permissionMessage != null ? this.permissionMessage : Bukkit.permissionMessage();
-        if (!permissionMessage.equals(net.kyori.adventure.text.Component.empty())) {
-            target.sendMessage(permissionMessage.replaceText(net.kyori.adventure.text.TextReplacementConfig.builder().matchLiteral("<permission>").replacement(permission).build()));
-            // Paper end
+        if (permissionMessage == null) {
+            target.sendMessage(ChatColor.RED + "I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is a mistake.");
+        } else if (permissionMessage.length() != 0) {
+            for (String line : permissionMessage.replace("<permission>", permission).split("\n")) {
+                target.sendMessage(line);
+            }
         }
 
         return false;
@@ -251,6 +245,7 @@ public abstract class Command {
         }
         this.nextLabel = name;
         if (!isRegistered()) {
+            this.timings = new org.spigotmc.CustomTimingsHandler("** Command: " + name); // Spigot
             this.label = name;
             return true;
         }
@@ -332,7 +327,7 @@ public abstract class Command {
     @Deprecated(since = "1.20.4")
     @Nullable
     public String getPermissionMessage() {
-        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serializeOrNull(permissionMessage); // Paper
+        return permissionMessage;
     }
 
     /**
@@ -403,7 +398,7 @@ public abstract class Command {
     @Deprecated(since = "1.20.4")
     @NotNull
     public Command setPermissionMessage(@Nullable String permissionMessage) {
-        this.permissionMessage = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserializeOrNull(permissionMessage); // Paper
+        this.permissionMessage = permissionMessage;
         return this;
     }
 
@@ -418,61 +413,13 @@ public abstract class Command {
         this.usageMessage = (usage == null) ? "" : usage;
         return this;
     }
-    // Paper start
-    /**
-     * Gets the permission message.
-     *
-     * @return the permission message
-     * @deprecated permission messages have not worked for player-executed
-     * commands since 1.13 as clients without permission to execute a command
-     * are unaware of its existence and therefore will not send an unknown
-     * command execution to the server. This message will only ever be shown to
-     * consoles or when this command is executed with
-     * {@link Bukkit#dispatchCommand(CommandSender, String)}.
-     */
-    @Deprecated
-    public net.kyori.adventure.text.@Nullable Component permissionMessage() {
-        return this.permissionMessage;
-    }
-
-    /**
-     * Sets the permission message.
-     *
-     * @param permissionMessage the permission message
-     * @deprecated permission messages have not worked for player-executed
-     * commands since 1.13 as clients without permission to execute a command
-     * are unaware of its existence and therefore will not send an unknown
-     * command execution to the server. This message will only ever be shown to
-     * consoles or when this command is executed with
-     * {@link Bukkit#dispatchCommand(CommandSender, String)}.
-     */
-    @Deprecated
-    public void permissionMessage(net.kyori.adventure.text.@Nullable Component permissionMessage) {
-        this.permissionMessage = permissionMessage;
-    }
-    // Paper end
 
     public static void broadcastCommandMessage(@NotNull CommandSender source, @NotNull String message) {
         broadcastCommandMessage(source, message, true);
     }
 
     public static void broadcastCommandMessage(@NotNull CommandSender source, @NotNull String message, boolean sendToSource) {
-        // Paper start
-        broadcastCommandMessage(source, net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(message), sendToSource);
-    }
-
-    public static void broadcastCommandMessage(@NotNull CommandSender source, net.kyori.adventure.text.@NotNull Component message) {
-        broadcastCommandMessage(source, message, true);
-    }
-
-    public static void broadcastCommandMessage(@NotNull CommandSender source, net.kyori.adventure.text.@NotNull Component message, boolean sendToSource) {
-        net.kyori.adventure.text.TextComponent.Builder result = net.kyori.adventure.text.Component.text()
-            .color(net.kyori.adventure.text.format.NamedTextColor.WHITE)
-            .decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false)
-            .append(source.name())
-            .append(net.kyori.adventure.text.Component.text(": "))
-            .append(message);
-        // Paper end
+        String result = source.getName() + ": " + message;
 
         if (source instanceof BlockCommandSender) {
             BlockCommandSender blockCommandSender = (BlockCommandSender) source;
@@ -491,12 +438,7 @@ public abstract class Command {
         }
 
         Set<Permissible> users = Bukkit.getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
-        // Paper start
-        net.kyori.adventure.text.TextComponent.Builder colored = net.kyori.adventure.text.Component.text()
-            .color(net.kyori.adventure.text.format.NamedTextColor.GRAY)
-            .decorate(net.kyori.adventure.text.format.TextDecoration.ITALIC)
-            .append(net.kyori.adventure.text.Component.text("["), result, net.kyori.adventure.text.Component.text("]"));
-        // Paper end
+        String colored = ChatColor.GRAY + "" + ChatColor.ITALIC + "[" + result + ChatColor.GRAY + ChatColor.ITALIC + "]";
 
         if (sendToSource && !(source instanceof ConsoleCommandSender)) {
             source.sendMessage(message);
@@ -519,9 +461,4 @@ public abstract class Command {
     public String toString() {
         return getClass().getName() + '(' + name + ')';
     }
-
-    // Paper start
-    @org.jetbrains.annotations.ApiStatus.Internal
-    public boolean canBeOverriden() { return false; }
-    // Paper end
 }

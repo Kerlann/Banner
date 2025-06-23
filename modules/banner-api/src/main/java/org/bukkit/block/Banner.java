@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a captured state of a banner.
  */
-public interface Banner extends TileState, org.bukkit.Nameable { // Paper - Nameable API
+public interface Banner extends TileState {
 
     /**
      * Returns the base color for this banner

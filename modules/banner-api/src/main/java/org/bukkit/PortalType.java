@@ -14,12 +14,6 @@ public enum PortalType {
      * This is an Ender portal.
      */
     ENDER,
-    // Paper start
-    /**
-     * This is an end gateway
-     */
-    END_GATEWAY,
-    // Paper end
 
     /**
      * This is a custom Plugin portal.

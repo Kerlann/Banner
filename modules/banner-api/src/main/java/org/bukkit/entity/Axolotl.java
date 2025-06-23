@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * An Axolotl.
  */
-public interface Axolotl extends Animals, io.papermc.paper.entity.Bucketable { // Paper - Bucketable API
+public interface Axolotl extends Animals {
 
     /**
      * Gets if this axolotl is playing dead.

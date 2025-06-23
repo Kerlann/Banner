@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a captured state of a chiseled bookshelf.
  */
-public interface ChiseledBookshelf extends io.papermc.paper.block.TileStateInventoryHolder { // Paper - TileStateInventoryHolder
+public interface ChiseledBookshelf extends TileState, BlockInventoryHolder {
 
     /**
      * Gets the last interacted inventory slot.
@@ -24,12 +24,18 @@ public interface ChiseledBookshelf extends io.papermc.paper.block.TileStateInven
      */
     void setLastInteractedSlot(int lastInteractedSlot);
 
-    // Paper - move docs to TileStateInventoryHolder
+    /**
+     * @return inventory
+     * @see Container#getInventory()
+     */
     @NotNull
     @Override
     ChiseledBookshelfInventory getInventory();
 
-    @Override // Paper - move docs to TileStateInventoryHolder
+    /**
+     * @return snapshot inventory
+     * @see Container#getSnapshotInventory()
+     */
     @NotNull
     ChiseledBookshelfInventory getSnapshotInventory();
 

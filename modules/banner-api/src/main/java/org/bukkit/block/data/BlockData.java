@@ -205,19 +205,6 @@ public interface BlockData extends Cloneable {
      */
     boolean isFaceSturdy(@NotNull BlockFace face, @NotNull BlockSupport support);
 
-    // Paper start
-    /**
-     * Calculates the collision shape this block data would have at a particular location.
-     * <p>
-     * This does not take into account any block updates that may occur if the block was to be actually placed in the world.
-     *
-     * @param location the location to calculate the collision shape at
-     *
-     * @return a {@link org.bukkit.util.VoxelShape} representing the collision shape of this block data.
-     */
-    @NotNull org.bukkit.util.VoxelShape getCollisionShape(@NotNull Location location);
-    // Paper end
-
     /**
      * Gets the color this block should appear as when rendered on a map.
      *
@@ -237,7 +224,7 @@ public interface BlockData extends Cloneable {
      * {@link Material#REDSTONE_WIRE} -> {@link Material#REDSTONE}
      * {@link Material#CARROTS} -> {@link Material#CARROT}
      * </pre>
-     * @return placement material or {@link Material#AIR} if it doesn't have one
+     * @return placement material
      */
     @NotNull
     Material getPlacementMaterial();
@@ -279,43 +266,4 @@ public interface BlockData extends Cloneable {
     @NotNull
     @ApiStatus.Experimental
     BlockState createBlockState();
-
-    // Paper start - destroy speed API
-    /**
-     * Gets the speed at which this block will be destroyed by a given {@link ItemStack}
-     * <p>
-     * Default value is 1.0
-     *
-     * @param itemStack {@link ItemStack} used to mine this Block
-     * @return the speed that this Block will be mined by the given {@link ItemStack}
-     * @apiNote this method assumes default player state and hence, e.g., does not take into account changed
-     * player attributes or potion effects.
-     */
-    default float getDestroySpeed(final @NotNull ItemStack itemStack) {
-        return this.getDestroySpeed(itemStack, false);
-    }
-
-    /**
-     * Gets the speed at which this block will be destroyed by a given {@link ItemStack}
-     * <p>
-     * Default value is 1.0
-     *
-     * @param itemStack {@link ItemStack} used to mine this Block
-     * @param considerEnchants true to look at enchants on the itemstack
-     * @return the speed that this Block will be mined by the given {@link ItemStack}
-     * @apiNote this method assumes default player state and hence, e.g., does not take into account changed
-     * player attributes or potion effects.
-     */
-    float getDestroySpeed(@NotNull ItemStack itemStack, boolean considerEnchants);
-    // Paper end - destroy speed API
-
-    // Paper start - Tick API
-    /**
-     * Gets if this block is ticked randomly in the world.
-     * The blocks current state may change this value.
-     *
-     * @return is ticked randomly
-     */
-    boolean isRandomlyTicked();
-    // Paper end - Tick API
 }

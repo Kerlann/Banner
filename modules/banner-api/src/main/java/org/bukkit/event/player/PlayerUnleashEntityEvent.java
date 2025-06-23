@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -13,26 +12,18 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PlayerUnleashEntityEvent extends EntityUnleashEvent implements Cancellable {
 
+    private boolean cancelled = false;
+
     private final Player player;
     private final EquipmentSlot hand;
 
-    private boolean cancelled;
-
-    @ApiStatus.Internal
-    public PlayerUnleashEntityEvent(@NotNull Entity entity, @NotNull Player player, @NotNull EquipmentSlot hand, boolean dropLeash) {
-        super(entity, UnleashReason.PLAYER_UNLEASH, dropLeash);
+    public PlayerUnleashEntityEvent(@NotNull Entity entity, @NotNull Player player, @NotNull EquipmentSlot hand) {
+        super(entity, UnleashReason.PLAYER_UNLEASH);
         this.player = player;
         this.hand = hand;
     }
 
-    @ApiStatus.Internal
-    @Deprecated(forRemoval = true)
-    public PlayerUnleashEntityEvent(@NotNull Entity entity, @NotNull Player player, @NotNull EquipmentSlot hand) {
-        this(entity, player, hand, false);
-    }
-
-    @ApiStatus.Internal
-    @Deprecated(since = "1.19.2", forRemoval = true)
+    @Deprecated(since = "1.19.2")
     public PlayerUnleashEntityEvent(@NotNull Entity entity, @NotNull Player player) {
         this(entity, player, EquipmentSlot.HAND);
     }
@@ -44,7 +35,7 @@ public class PlayerUnleashEntityEvent extends EntityUnleashEvent implements Canc
      */
     @NotNull
     public Player getPlayer() {
-        return this.player;
+        return player;
     }
 
     /**
@@ -54,12 +45,12 @@ public class PlayerUnleashEntityEvent extends EntityUnleashEvent implements Canc
      */
     @NotNull
     public EquipmentSlot getHand() {
-        return this.hand;
+        return hand;
     }
 
     @Override
     public boolean isCancelled() {
-        return this.cancelled;
+        return cancelled;
     }
 
     @Override

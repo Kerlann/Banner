@@ -1,75 +1,55 @@
 package org.bukkit.entity;
 
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.jspecify.annotations.NullMarked;
+import org.bukkit.Registry;
+import org.bukkit.registry.RegistryAware;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a Chicken.
  */
-@NullMarked
 public interface Chicken extends Animals {
 
     /**
-     * Gets the variant of this chicken.
+     * Get the variant of this chicken.
      *
-     * @return the chicken variant
+     * @return chicken variant
      */
+    @NotNull
     Variant getVariant();
 
     /**
-     * Sets the variant of this chicken.
+     * Set the variant of this chicken.
      *
-     * @param variant the chicken variant
+     * @param variant chicken variant
      */
-    void setVariant(Variant variant);
-
-    /**
-     * Gets if this chicken was spawned as a chicken jockey.
-     *
-     * @return is chicken jockey
-     */
-    boolean isChickenJockey();
-
-    /**
-     * Sets if this chicken was spawned as a chicken jockey.
-     *
-     * @param isChickenJockey is chicken jockey
-     */
-    void setIsChickenJockey(boolean isChickenJockey);
-
-    /**
-     * Gets the number of ticks till this chicken lays an egg.
-     *
-     * @return ticks till the chicken lays an egg
-     */
-    int getEggLayTime();
-
-    /**
-     * Sets the number of ticks till this chicken lays an egg.
-     *
-     * @param eggLayTime ticks till the chicken lays an egg
-     */
-    void setEggLayTime(int eggLayTime);
+    void setVariant(@NotNull Variant variant);
 
     /**
      * Represents the variant of a chicken.
      */
-    interface Variant extends Keyed {
+    interface Variant extends Keyed, RegistryAware {
 
-        // Start generate - ChickenVariant
-        // @GeneratedFrom 1.21.6
-        Variant COLD = getVariant("cold");
+        Variant TEMPERATE = getType("temperate");
+        Variant WARM = getType("warm");
+        Variant COLD = getType("cold");
 
-        Variant TEMPERATE = getVariant("temperate");
+        /**
+         * {@inheritDoc}
+         *
+         * @see #getKeyOrThrow()
+         * @see #isRegistered()
+         * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+         */
+        @NotNull
+        @Override
+        @Deprecated(since = "1.21.5")
+        NamespacedKey getKey();
 
-        Variant WARM = getVariant("warm");
-        // End generate - ChickenVariant
-
-        private static Variant getVariant(String key) {
-            return RegistryAccess.registryAccess().getRegistry(RegistryKey.CHICKEN_VARIANT).getOrThrow(NamespacedKey.minecraft(key));
+        @NotNull
+        private static Variant getType(@NotNull String key) {
+            return Registry.CHICKEN_VARIANT.getOrThrow(NamespacedKey.minecraft(key));
         }
     }
 }

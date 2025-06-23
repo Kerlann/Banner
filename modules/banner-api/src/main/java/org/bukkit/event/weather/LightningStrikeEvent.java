@@ -4,32 +4,36 @@ import org.bukkit.World;
 import org.bukkit.entity.LightningStrike;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Stores data for lightning striking
  */
 public class LightningStrikeEvent extends WeatherEvent implements Cancellable {
-
-    private static final HandlerList HANDLER_LIST = new HandlerList();
-
+    private static final HandlerList handlers = new HandlerList();
+    private boolean canceled;
     private final LightningStrike bolt;
     private final Cause cause;
 
-    private boolean cancelled;
-
-    @ApiStatus.Internal
-    @Deprecated(since = "1.13.1", forRemoval = true)
+    @Deprecated(since = "1.13.1")
     public LightningStrikeEvent(@NotNull final World world, @NotNull final LightningStrike bolt) {
         this(world, bolt, Cause.UNKNOWN);
     }
 
-    @ApiStatus.Internal
     public LightningStrikeEvent(@NotNull final World world, @NotNull final LightningStrike bolt, @NotNull final Cause cause) {
         super(world);
         this.bolt = bolt;
         this.cause = cause;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return canceled;
+    }
+
+    @Override
+    public void setCancelled(boolean cancel) {
+        canceled = cancel;
     }
 
     /**
@@ -39,7 +43,7 @@ public class LightningStrikeEvent extends WeatherEvent implements Cancellable {
      */
     @NotNull
     public LightningStrike getLightning() {
-        return this.bolt;
+        return bolt;
     }
 
     /**
@@ -49,28 +53,18 @@ public class LightningStrikeEvent extends WeatherEvent implements Cancellable {
      */
     @NotNull
     public Cause getCause() {
-        return this.cause;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
+        return cause;
     }
 
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return HANDLER_LIST;
+        return handlers;
     }
 
     @NotNull
     public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
+        return handlers;
     }
 
     public enum Cause {
@@ -105,6 +99,6 @@ public class LightningStrikeEvent extends WeatherEvent implements Cancellable {
         /**
          * Unknown trigger.
          */
-        UNKNOWN
+        UNKNOWN;
     }
 }

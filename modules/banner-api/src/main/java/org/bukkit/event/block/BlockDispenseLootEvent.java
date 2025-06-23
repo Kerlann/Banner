@@ -12,28 +12,25 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Called when a block dispenses loot from its designated LootTable.
- * <p>
- * This is not to be confused with events like {@link BlockDispenseEvent} which fires when a
+ * Called when a block dispenses loot from its designated LootTable. This is not
+ * to be confused with events like {@link BlockDispenseEvent} which fires when a
  * singular item is dispensed from its inventory container.
- * <br>
+ * <br><br>
  * Example: A player unlocks a trial chamber vault and the vault block dispenses
  * its loot.
  */
 @ApiStatus.Experimental
 public class BlockDispenseLootEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList HANDLER_LIST = new HandlerList();
-
+    private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private List<ItemStack> dispensedLoot;
-
     private boolean cancelled;
 
-    @ApiStatus.Internal
-    public BlockDispenseLootEvent(@Nullable Player player, @NotNull Block block, @NotNull List<ItemStack> dispensedLoot) {
-        super(block);
+    public BlockDispenseLootEvent(@Nullable Player player, @NotNull Block theBlock, @NotNull List<ItemStack> dispensedLoot) {
+        super(theBlock);
         this.player = player;
+        this.block = theBlock;
         this.dispensedLoot = dispensedLoot;
     }
 
@@ -44,7 +41,7 @@ public class BlockDispenseLootEvent extends BlockEvent implements Cancellable {
      */
     @NotNull
     public List<ItemStack> getDispensedLoot() {
-        return this.dispensedLoot;
+        return dispensedLoot;
     }
 
     /**
@@ -53,7 +50,7 @@ public class BlockDispenseLootEvent extends BlockEvent implements Cancellable {
      * @param dispensedLoot new loot to dispense
      */
     public void setDispensedLoot(@Nullable List<ItemStack> dispensedLoot) {
-        this.dispensedLoot = dispensedLoot == null ? new ArrayList<>() : dispensedLoot;
+        this.dispensedLoot = (dispensedLoot == null) ? new ArrayList<>() : dispensedLoot;
     }
 
     /**
@@ -61,18 +58,18 @@ public class BlockDispenseLootEvent extends BlockEvent implements Cancellable {
      * <br>
      * <b>Warning:</b> Some event instances like a
      * {@link org.bukkit.block.TrialSpawner} dispensing its reward loot may not
-     * have a player associated with them and will return {@code null}.
+     * have a player associated with them and will return null.
      *
      * @return the player who unlocked the vault
      */
     @Nullable
     public Player getPlayer() {
-        return this.player;
+        return player;
     }
 
     @Override
     public boolean isCancelled() {
-        return this.cancelled;
+        return cancelled;
     }
 
     @Override
@@ -83,11 +80,11 @@ public class BlockDispenseLootEvent extends BlockEvent implements Cancellable {
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return HANDLER_LIST;
+        return handlers;
     }
 
     @NotNull
     public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
+        return handlers;
     }
 }

@@ -13,13 +13,13 @@ public enum EquipmentSlot {
     CHEST(() -> EquipmentSlotGroup.CHEST),
     HEAD(() -> EquipmentSlotGroup.HEAD),
     /**
-     * Only for certain entities such as horses, happy ghasts and wolves.
+     * Only for certain entities such as horses and wolves.
      */
-    BODY(() -> EquipmentSlotGroup.BODY),
+    BODY(() -> EquipmentSlotGroup.ARMOR),
     /**
-     * Only for certain entities such as pigs, horses and striders.
+     * Only for certain entities such as horses and pigs.
      */
-    SADDLE(() -> EquipmentSlotGroup.SADDLE);
+    SADDLE(() -> EquipmentSlotGroup.ARMOR);
 
     private final Supplier<EquipmentSlotGroup> group; // Supplier because of class loading order, since EquipmentSlot and EquipmentSlotGroup reference each other on class init
 
@@ -36,42 +36,5 @@ public enum EquipmentSlot {
     @ApiStatus.Internal
     public EquipmentSlotGroup getGroup() {
         return group.get();
-    }
-
-    /**
-     * Checks whether this equipment slot is a hand:
-     * either {@link #HAND} or {@link #OFF_HAND}
-     *
-     * @return whether this is a hand slot
-     */
-    public boolean isHand() {
-        return this == HAND || this == OFF_HAND;
-    }
-
-    /**
-     * Gets the opposite hand
-     *
-     * @return the opposite hand
-     * @throws IllegalArgumentException if this equipment slot is not a hand
-     * @see #isHand()
-     */
-    public @NotNull EquipmentSlot getOppositeHand() {
-        return switch (this) {
-            case HAND -> OFF_HAND;
-            case OFF_HAND -> HAND;
-            default -> throw new IllegalArgumentException("Unable to determine an opposite hand for equipment slot: " + name());
-        };
-    }
-
-    /**
-     * Checks whether this equipment slot
-     * is one of the armor slots:
-     * {@link #HEAD}, {@link #CHEST},
-     * {@link #LEGS}, {@link #FEET}, or {@link #BODY}
-     *
-     * @return whether this is an armor slot
-     */
-    public boolean isArmor() {
-        return this == HEAD || this == CHEST || this == LEGS || this == FEET || this == BODY;
     }
 }

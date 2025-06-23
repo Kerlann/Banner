@@ -48,13 +48,11 @@ public interface Inventory extends Iterable<ItemStack> {
      * <b>Caveats:</b>
      * <ul>
      * <li>Not all inventories respect this value.
-     * <li>Stacks larger than 99 will throw errors when serialized.
+     * <li>Stacks larger than 127 may be clipped when the world is saved.
      * <li>This value is not guaranteed to be preserved; be sure to set it
      *     before every time you want to set a slot over the max stack size.
      * <li>Stacks larger than the default max size for this type of inventory
-     *     are ignored by the client, resulting in the vanilla client
-     *     always trimming it down to default maximum stack size.
-     * <li>Most operations ignore this value if it is over {@link ItemStack#getMaxStackSize()}
+     *     may not display correctly in the client.
      * </ul>
      *
      * @param size The new maximum stack size for items in this inventory.
@@ -87,12 +85,12 @@ public interface Inventory extends Iterable<ItemStack> {
      * index of the varargs parameter. If all items are stored, it will return
      * an empty HashMap.
      * <p>
-     * Items resulted from this method will not exceed the minimum
-     * of {@link ItemStack#getMaxStackSize()} and {@link #getMaxStackSize()}.
-     * <p>
-     * First, this method will try to fill all the partial stacks in the inventory.
-     * Then it will try to fill empty slots, over-stacked items being able to
-     * fill several empty slots. The rest are placed in the returned map.
+     * If you pass in ItemStacks which exceed the maximum stack size for the
+     * Material, first they will be added to partial stacks where
+     * Material.getMaxStackSize() is not exceeded, up to
+     * Material.getMaxStackSize(). When there are no partial stacks left
+     * stacks will be split on Inventory.getMaxStackSize() allowing you to
+     * exceed the maximum stack size for that material.
      * <p>
      * It is known that in some implementations this method will also set
      * the inputted argument amount to the number of that item not placed in
@@ -106,9 +104,7 @@ public interface Inventory extends Iterable<ItemStack> {
     public HashMap<Integer, ItemStack> addItem(@NotNull ItemStack... items) throws IllegalArgumentException;
 
     /**
-     * Removes the given ItemStacks from the storage contents of the inventory.
-     * For removing ItemStacks from the inventories that have other content groups,
-     * like Player inventories, see {@link #removeItemAnySlot(ItemStack...)}.
+     * Removes the given ItemStacks from the inventory.
      * <p>
      * It will try to remove 'as much as possible' from the types and amounts
      * you give as arguments.
@@ -125,45 +121,17 @@ public interface Inventory extends Iterable<ItemStack> {
      * @param items The ItemStacks to remove
      * @return A HashMap containing items that couldn't be removed.
      * @throws IllegalArgumentException if items is null
-     * @see #removeItemAnySlot(ItemStack...)
      */
     @NotNull
     public HashMap<Integer, ItemStack> removeItem(@NotNull ItemStack... items) throws IllegalArgumentException;
-
-    // Paper start
-    /**
-     * Searches all possible inventory slots in order to remove the given ItemStacks.
-     * <p>
-     * Similar to {@link Inventory#removeItem(ItemStack...)} in behavior, except this
-     * method will check all possible slots in the inventory, rather than just the main
-     * storage contents.
-     * <p>
-     * It will try to remove 'as much as possible' from the types and amounts
-     * you give as arguments.
-     * <p>
-     * The returned HashMap contains what it couldn't remove, where the key is
-     * the index of the parameter, and the value is the ItemStack at that
-     * index of the varargs parameter. If all the given ItemStacks are
-     * removed, it will return an empty HashMap.
-     * <p>
-     * It is known that in some implementations this method will also set the
-     * inputted argument amount to the number of that item not removed from
-     * slots.
-     *
-     * @param items The ItemStacks to remove
-     * @return A HashMap containing items that couldn't be removed.
-     * @throws IllegalArgumentException if items is null
-     */
-    @NotNull
-    public HashMap<Integer, ItemStack> removeItemAnySlot(@NotNull ItemStack... items) throws IllegalArgumentException;
-    // Paper end
 
     /**
      * Returns all ItemStacks from the inventory
      *
      * @return An array of ItemStacks from the inventory. Individual items may be null.
      */
-    public @Nullable ItemStack @NotNull [] getContents(); // Paper - make array elements nullable instead array
+    @NotNull
+    public ItemStack[] getContents();
 
     /**
      * Completely replaces the inventory's contents. Removes all existing
@@ -174,7 +142,7 @@ public interface Inventory extends Iterable<ItemStack> {
      * @throws IllegalArgumentException If the array has more items than the
      *     inventory.
      */
-    public void setContents(@Nullable ItemStack @NotNull [] items) throws IllegalArgumentException; // Paper - make array elements nullable instead array
+    public void setContents(@NotNull ItemStack[] items) throws IllegalArgumentException;
 
     /**
      * Return the contents from the section of the inventory where items can
@@ -187,7 +155,8 @@ public interface Inventory extends Iterable<ItemStack> {
      *
      * @return inventory storage contents. Individual items may be null.
      */
-    public @Nullable ItemStack @NotNull [] getStorageContents(); // Paper - make array elements nullable instead array
+    @NotNull
+    public ItemStack[] getStorageContents();
 
     /**
      * Put the given ItemStacks into the storage slots
@@ -196,7 +165,7 @@ public interface Inventory extends Iterable<ItemStack> {
      * @throws IllegalArgumentException If the array has more items than the
      * inventory.
      */
-    public void setStorageContents(@Nullable ItemStack @NotNull [] items) throws IllegalArgumentException; // Paper - make array elements nullable instead array
+    public void setStorageContents(@NotNull ItemStack[] items) throws IllegalArgumentException;
 
     /**
      * Checks if the inventory contains any ItemStacks with the given
@@ -357,15 +326,6 @@ public interface Inventory extends Iterable<ItemStack> {
      */
     public void clear();
 
-    // Paper start
-    /**
-     * Closes the inventory for all viewers.
-     *
-     * @return the number of viewers the inventory was closed for
-     */
-    public int close();
-    // Paper end
-
     /**
      * Gets a list of players viewing the inventory. Note that a player is
      * considered to be viewing their own inventory and internal crafting
@@ -395,17 +355,6 @@ public interface Inventory extends Iterable<ItemStack> {
      */
     @Nullable
     public InventoryHolder getHolder();
-
-    // Paper start - getHolder without snapshot
-    /**
-     * Gets the block or entity belonging to the open inventory
-     *
-     * @param useSnapshot Create a snapshot if the holder is a block entity
-     * @return The holder of the inventory; null if it has no holder.
-     */
-    @Nullable
-    public InventoryHolder getHolder(boolean useSnapshot);
-    // Paper end
 
     @NotNull
     @Override

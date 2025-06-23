@@ -1,13 +1,15 @@
 package org.bukkit.block.data.type;
 
 import org.bukkit.block.data.Orientable;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 'creaking_heart_state' is the state of the block depending on the time and its position.
+ * 'creaking_heart_state' indicates the current operational phase of the block.
  * <br>
  * 'natural' is whether this is a naturally generated block.
  */
+@ApiStatus.Experimental
 public interface CreakingHeart extends Orientable {
 
     /**
@@ -16,21 +18,31 @@ public interface CreakingHeart extends Orientable {
      * @return the 'active' value
      * @deprecated use {@link #getCreakingHeartState()}
      */
-    @Deprecated(since = "1.21.5", forRemoval = true)
-    default boolean isActive() {
-        return this.getCreakingHeartState() != State.UPROOTED;
-    }
+    @Deprecated(since = "1.21.5")
+    boolean isActive();
 
     /**
      * Sets the value of the 'active' property.
      *
      * @param active the new 'active' value
-     * @deprecated use {@link #setCreakingHeartState(State)}
+     * @deprecated use {@link #setCreakingHeartState(org.bukkit.block.data.type.CreakingHeart.State)}
      */
-    @Deprecated(since = "1.21.5", forRemoval = true)
-    default void setActive(boolean active) {
-        this.setCreakingHeartState(active ? State.AWAKE : State.UPROOTED);
-    }
+    @Deprecated(since = "1.21.5")
+    void setActive(boolean active);
+
+    /**
+     * Gets the value of the 'natural' property.
+     *
+     * @return the 'natural' value
+     */
+    boolean isNatural();
+
+    /**
+     * Sets the value of the 'natural' property.
+     *
+     * @param natural the new 'natural' value
+     */
+    void setNatural(boolean natural);
 
     /**
      * Gets the value of the 'creaking_heart_state' property.
@@ -47,23 +59,10 @@ public interface CreakingHeart extends Orientable {
      */
     void setCreakingHeartState(@NotNull State state);
 
-    /**
-     * Gets the value of the 'natural' property.
-     *
-     * @return the 'natural' value
-     */
-    boolean isNatural();
+    public enum State {
 
-    /**
-     * Sets the value of the 'natural' property.
-     *
-     * @param natural the new 'natural' value
-     */
-    void setNatural(boolean natural);
-
-    enum State {
         UPROOTED,
         DORMANT,
-        AWAKE
+        AWAKE;
     }
 }

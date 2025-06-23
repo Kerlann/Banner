@@ -1,19 +1,19 @@
 package org.bukkit.entity;
 
 /**
- * An entity that can sit still.
+ * An animal that can sit still.
  */
-public interface Sittable extends Entity {
+public interface Sittable {
 
     /**
-     * Checks if this entity is sitting
+     * Checks if this animal is sitting
      *
      * @return true if sitting
      */
     boolean isSitting();
 
     /**
-     * Sets if this entity is sitting. Will remove any path that the entity
+     * Sets if this animal is sitting. Will remove any path that the animal
      * was following beforehand.
      *
      * @param sitting true if sitting

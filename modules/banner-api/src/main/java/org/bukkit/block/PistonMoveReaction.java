@@ -48,9 +48,9 @@ public enum PistonMoveReaction {
 
     /**
      * @return The ID of the move reaction
-     * @apiNote Internal Use Only
+     * @deprecated Magic value
      */
-    @org.jetbrains.annotations.ApiStatus.Internal // Paper
+    @Deprecated(since = "1.6.2")
     public int getId() {
         return this.id;
     }
@@ -58,9 +58,9 @@ public enum PistonMoveReaction {
     /**
      * @param id An ID
      * @return The move reaction with that ID
-     * @apiNote Internal Use Only
+     * @deprecated Magic value
      */
-    @org.jetbrains.annotations.ApiStatus.Internal // Paper
+    @Deprecated(since = "1.6.2")
     @Nullable
     public static PistonMoveReaction getById(int id) {
         return byId.get(id);

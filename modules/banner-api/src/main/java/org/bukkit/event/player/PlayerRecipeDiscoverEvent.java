@@ -4,7 +4,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,14 +11,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PlayerRecipeDiscoverEvent extends PlayerEvent implements Cancellable {
 
-    private static final HandlerList HANDLER_LIST = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
 
+    private boolean cancel = false;
     private final NamespacedKey recipe;
-    private boolean cancelled;
 
-    @ApiStatus.Internal
-    public PlayerRecipeDiscoverEvent(@NotNull Player player, @NotNull NamespacedKey recipe) {
-        super(player);
+    public PlayerRecipeDiscoverEvent(@NotNull Player who, @NotNull NamespacedKey recipe) {
+        super(who);
         this.recipe = recipe;
     }
 
@@ -30,27 +28,27 @@ public class PlayerRecipeDiscoverEvent extends PlayerEvent implements Cancellabl
      */
     @NotNull
     public NamespacedKey getRecipe() {
-        return this.recipe;
+        return recipe;
     }
 
     @Override
     public boolean isCancelled() {
-        return this.cancelled;
+        return cancel;
     }
 
     @Override
     public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
+        this.cancel = cancel;
     }
 
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return HANDLER_LIST;
+        return handlers;
     }
 
     @NotNull
     public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
+        return handlers;
     }
 }

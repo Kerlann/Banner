@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Represents a captured state of a decorated pot.
  */
-public interface DecoratedPot extends io.papermc.paper.block.TileStateInventoryHolder, org.bukkit.loot.Lootable { // Paper - expose loot table & TileStateInventoryHolder
+public interface DecoratedPot extends TileState, BlockInventoryHolder {
 
     /**
      * Set the sherd on the provided side.
@@ -55,12 +55,18 @@ public interface DecoratedPot extends io.papermc.paper.block.TileStateInventoryH
     @NotNull
     public List<Material> getShards();
 
-    // Paper - move docs to TileStateInventoryHolder
+    /**
+     * @return inventory
+     * @see Container#getInventory()
+     */
     @NotNull
     @Override
     public DecoratedPotInventory getInventory();
 
-    @Override // Paper - move docs to TileStateInventoryHolder
+    /**
+     * @return snapshot inventory
+     * @see Container#getSnapshotInventory()
+     */
     @NotNull
     public DecoratedPotInventory getSnapshotInventory();
 

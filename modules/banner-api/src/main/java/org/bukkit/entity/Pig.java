@@ -1,47 +1,55 @@
 package org.bukkit.entity;
 
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.jspecify.annotations.NullMarked;
+import org.bukkit.Registry;
+import org.bukkit.registry.RegistryAware;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a Pig.
  */
-@NullMarked
 public interface Pig extends Steerable, Vehicle {
 
     /**
-     * Gets the variant of this pig.
+     * Get the variant of this pig.
      *
-     * @return the pig variant
+     * @return pig variant
      */
+    @NotNull
     Variant getVariant();
 
     /**
-     * Sets the variant of this pig.
+     * Set the variant of this pig.
      *
-     * @param variant the pig variant
+     * @param variant pig variant
      */
-    void setVariant(Variant variant);
+    void setVariant(@NotNull Variant variant);
 
     /**
      * Represents the variant of a pig.
      */
-    interface Variant extends Keyed {
+    interface Variant extends Keyed, RegistryAware {
 
-        // Start generate - PigVariant
-        // @GeneratedFrom 1.21.6
-        Variant COLD = getVariant("cold");
+        Variant TEMPERATE = getType("temperate");
+        Variant WARM = getType("warm");
+        Variant COLD = getType("cold");
 
-        Variant TEMPERATE = getVariant("temperate");
+        /**
+         * {@inheritDoc}
+         *
+         * @see #getKeyOrThrow()
+         * @see #isRegistered()
+         * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+         */
+        @NotNull
+        @Override
+        @Deprecated(since = "1.21.5")
+        NamespacedKey getKey();
 
-        Variant WARM = getVariant("warm");
-        // End generate - PigVariant
-
-        private static Variant getVariant(String key) {
-            return RegistryAccess.registryAccess().getRegistry(RegistryKey.PIG_VARIANT).getOrThrow(NamespacedKey.minecraft(key));
+        @NotNull
+        private static Variant getType(@NotNull String key) {
+            return Registry.PIG_VARIANT.getOrThrow(NamespacedKey.minecraft(key));
         }
     }
 }

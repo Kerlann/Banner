@@ -13,8 +13,8 @@ public class PlayerSpawnLocationEvent extends PlayerEvent {
     private static final HandlerList handlers = new HandlerList();
     private Location spawnLocation;
 
-    public PlayerSpawnLocationEvent(@NotNull final Player player, @NotNull Location spawnLocation) {
-        super(player);
+    public PlayerSpawnLocationEvent(@NotNull final Player who, @NotNull Location spawnLocation) {
+        super(who);
         this.spawnLocation = spawnLocation;
     }
 
@@ -37,7 +37,7 @@ public class PlayerSpawnLocationEvent extends PlayerEvent {
      * @param location the spawn location
      */
     public void setSpawnLocation(@NotNull Location location) {
-        this.spawnLocation = location.clone();
+        this.spawnLocation = location;
     }
 
     @NotNull

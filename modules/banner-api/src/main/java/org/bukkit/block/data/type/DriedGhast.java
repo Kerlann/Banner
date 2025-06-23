@@ -4,29 +4,28 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Waterlogged;
 
 /**
- * Represents a dried ghast block data.
+ * 'hydration' represents the hydration level of the block.
  */
 public interface DriedGhast extends Directional, Waterlogged {
 
     /**
-     * Gets the hydration level of this dried ghast.
+     * Gets the value of the 'hydration' property.
      *
-     * @return the hydration level, reaching from 0 to {@link #getMaximumHydration()}
+     * @return the 'hydration' value
      */
     int getHydration();
 
     /**
-     * Sets the hydration level of this dried ghast.
+     * Sets the value of the 'hydration' property.
      *
-     * @param hydration the hydration level, reaching from 0 to {@link #getMaximumHydration()}
+     * @param hydration the new 'hydration' value
      */
-    void setHydration(final int hydration);
+    void setHydration(int hydration);
 
     /**
-     * Provides the maximum hydration level this dried ghast can reach.
+     * Gets the maximum allowed value of the 'hydration' property.
      *
-     * @return the maximum level.
+     * @return the maximum 'hydration' value
      */
     int getMaximumHydration();
-
 }

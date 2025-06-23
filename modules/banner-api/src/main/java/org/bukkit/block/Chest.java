@@ -1,7 +1,5 @@
 package org.bukkit.block;
 
-import com.destroystokyo.paper.loottable.LootableBlockInventory; // Paper
-import org.bukkit.Nameable; // Paper
 import org.bukkit.inventory.Inventory;
 import org.bukkit.loot.Lootable;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a captured state of a chest.
  */
-public interface Chest extends Container, LootableBlockInventory, Lidded { // Paper
+public interface Chest extends Container, Lootable, Lidded {
 
     /**
      * Gets the inventory of the chest block represented by this block state.
@@ -27,14 +25,4 @@ public interface Chest extends Container, LootableBlockInventory, Lidded { // Pa
      */
     @NotNull
     Inventory getBlockInventory();
-
-    // Paper start - More Chest Block API
-    /**
-     * Checks whether this chest is blocked
-     * by either a block above or a sitting cat
-     *
-     * @return whether this chest is blocked
-     */
-    boolean isBlocked();
-    // Paper end - More Chest Block API
 }

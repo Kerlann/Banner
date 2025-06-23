@@ -3,9 +3,12 @@ package org.bukkit;
 import com.google.common.base.Preconditions;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.registry.RegistryAware;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public enum Particle implements Keyed {
+public enum Particle implements Keyed, RegistryAware {
     POOF("poof"),
     EXPLOSION("explosion"),
     EXPLOSION_EMITTER("explosion_emitter"),
@@ -21,7 +24,7 @@ public enum Particle implements Keyed {
     EFFECT("effect"),
     INSTANT_EFFECT("instant_effect"),
     /**
-     * Uses {@link Color} as DataType (with alpha support)
+     * Uses {@link Color} as DataType
      */
     ENTITY_EFFECT("entity_effect", Color.class),
     WITCH("witch"),
@@ -116,18 +119,18 @@ public enum Particle implements Keyed {
     SONIC_BOOM("sonic_boom"),
     SCULK_SOUL("sculk_soul"),
     /**
-     * Uses {@link Float} as DataType
+     * Use {@link Float} as DataType
      */
     SCULK_CHARGE("sculk_charge", Float.class),
     SCULK_CHARGE_POP("sculk_charge_pop"),
     /**
-     * Uses {@link Integer} as DataType
+     * Use {@link Integer} as DataType
      */
     SHRIEK("shriek", Integer.class),
     CHERRY_LEAVES("cherry_leaves"),
     PALE_OAK_LEAVES("pale_oak_leaves"),
     /**
-     * Uses {@link Color} as DataType (with alpha support)
+     * Uses {@link Color} as DataType
      */
     TINTED_LEAVES("tinted_leaves", Color.class),
     EGG_CRACK("egg_crack"),
@@ -149,11 +152,12 @@ public enum Particle implements Keyed {
     /**
      * Uses {@link BlockData} as DataType
      */
+    @ApiStatus.Experimental
     BLOCK_CRUMBLE("block_crumble", BlockData.class),
-    FIREFLY("firefly"),
     /**
      * Uses {@link Trail} as DataType
      */
+    @ApiStatus.Experimental
     TRAIL("trail", Trail.class),
     OMINOUS_SPAWNING("ominous_spawning"),
     RAID_OMEN("raid_omen"),
@@ -161,27 +165,34 @@ public enum Particle implements Keyed {
     /**
      * Uses {@link BlockData} as DataType
      */
-    BLOCK_MARKER("block_marker", BlockData.class);
+    BLOCK_MARKER("block_marker", BlockData.class),
+    FIREFLY("firefly"),
+    ;
 
     private final NamespacedKey key;
     private final Class<?> dataType;
-    // Paper - all particles are registered
+    final boolean register;
 
     Particle(String key) {
         this(key, Void.class);
     }
 
-    // Paper - all particles are registered
+    Particle(String key, boolean register) {
+        this(key, Void.class, register);
+    }
 
     Particle(String key, /*@NotNull*/ Class<?> data) {
-        // Paper - all particles are registered
+        this(key, data, true);
+    }
+
+    Particle(String key, /*@NotNull*/ Class<?> data, boolean register) {
         if (key != null) {
             this.key = NamespacedKey.minecraft(key);
         } else {
             this.key = null;
         }
         dataType = data;
-        // Paper - all particles are registered
+        this.register = register;
     }
 
     /**
@@ -195,28 +206,38 @@ public enum Particle implements Keyed {
 
     @NotNull
     @Override
-    public NamespacedKey getKey() {
-        if (key == null) {
-            throw new UnsupportedOperationException("Cannot get key from legacy particle");
-        }
-
-        return key;
+    public NamespacedKey getKeyOrThrow() {
+        Preconditions.checkState(isRegistered(), "Cannot get key of this registry item, because it is not registered. Use #isRegistered() before calling this method.");
+        return this.key;
     }
 
-    // Paper start - Particle API expansion
+    @Nullable
+    @Override
+    public NamespacedKey getKeyOrNull() {
+        return this.key;
+    }
+
+    @Override
+    public boolean isRegistered() {
+        return this.key != null;
+    }
+
     /**
-     * Creates a {@link com.destroystokyo.paper.ParticleBuilder}
+     * {@inheritDoc}
      *
-     * @return a {@link com.destroystokyo.paper.ParticleBuilder} for the particle
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
      */
     @NotNull
-    public com.destroystokyo.paper.ParticleBuilder builder() {
-        return new com.destroystokyo.paper.ParticleBuilder(this);
+    @Override
+    @Deprecated(since = "1.21.4")
+    public NamespacedKey getKey() {
+        return getKeyOrThrow();
     }
-    // Paper end
 
     /**
-     * Options which can be applied to dust particles - a particle
+     * Options which can be applied to redstone dust particles - a particle
      * color and size.
      */
     public static class DustOptions {
@@ -278,6 +299,7 @@ public enum Particle implements Keyed {
     /**
      * Options which can be applied to trail particles - a location, color and duration.
      */
+    @ApiStatus.Experimental
     public static class Trail {
 
         private final Location target;

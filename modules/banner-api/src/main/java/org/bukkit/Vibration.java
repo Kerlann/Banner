@@ -13,13 +13,6 @@ public class Vibration {
     private final Destination destination;
     private final int arrivalTime;
 
-    public Vibration(@NotNull Destination destination, @NotNull int arrivalTime) {
-        this.destination = destination;
-        this.arrivalTime = arrivalTime;
-        this.origin = new Location(null, 0, 0, 0); // Dummy origin because getter expects not null
-    }
-
-    @Deprecated(forRemoval = true)
     public Vibration(@NotNull Location origin, @NotNull Destination destination, int arrivalTime) {
         this.origin = origin;
         this.destination = destination;
@@ -29,11 +22,9 @@ public class Vibration {
     /**
      * Get the origin of the vibration.
      *
-     * @deprecated unused as of 1.19
      * @return origin
      */
     @NotNull
-    @Deprecated(forRemoval = true) // Paper
     public Location getOrigin() {
         return origin;
     }
@@ -78,7 +69,7 @@ public class Vibration {
             private final Location block;
 
             public BlockDestination(@NotNull Location block) {
-                this.block = block.clone();
+                this.block = block;
             }
 
             public BlockDestination(@NotNull Block block) {
@@ -87,7 +78,7 @@ public class Vibration {
 
             @NotNull
             public Location getLocation() {
-                return block.clone();
+                return block;
             }
 
             @NotNull

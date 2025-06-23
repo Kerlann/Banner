@@ -14,7 +14,6 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.material.MaterialData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 /**
  * A chunk generator is responsible for the initial shaping of an entire
@@ -628,7 +627,7 @@ public abstract class ChunkGenerator {
          * Get the biome at x, y, z within chunk being generated
          *
          * @param x the x location in the chunk from 0-15 inclusive
-         * @param y the y location in the chunk from minHeight (inclusive) -
+         * @param y the y location in the chunk from minimum (inclusive) -
          * maxHeight (exclusive)
          * @param z the z location in the chunk from 0-15 inclusive
          * @return Biome value
@@ -657,9 +656,7 @@ public abstract class ChunkGenerator {
          * @param y the y location in the chunk from minHeight (inclusive) - maxHeight (exclusive)
          * @param z the z location in the chunk from 0-15 inclusive
          * @param material the type to set the block to
-         * @deprecated use {@link #setBlock(int, int, int, BlockData)}
          */
-        @Deprecated // Paper
         public void setBlock(int x, int y, int z, @NotNull MaterialData material);
 
         /**
@@ -703,9 +700,7 @@ public abstract class ChunkGenerator {
          * @param yMax maximum y location (exclusive) in the chunk to set
          * @param zMax maximum z location (exclusive) in the chunk to set
          * @param material the type to set the blocks to
-         * @deprecated use {@link #setRegion(int, int, int, int, int, int, BlockData)}
          */
-        @Deprecated // Paper
         public void setRegion(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax, @NotNull MaterialData material);
 
         /**
@@ -746,10 +741,8 @@ public abstract class ChunkGenerator {
          * @param y the y location in the chunk from minHeight (inclusive) - maxHeight (exclusive)
          * @param z the z location in the chunk from 0-15 inclusive
          * @return the type and data of the block or the MaterialData for air if x, y or z are outside the chunk's bounds
-         * @deprecated use {@link #getBlockData(int, int, int)}
          */
         @NotNull
-        @Deprecated // Paper
         public MaterialData getTypeAndData(int x, int y, int z);
 
         /**
@@ -778,18 +771,5 @@ public abstract class ChunkGenerator {
          */
         @Deprecated(since = "1.8.8")
         public byte getData(int x, int y, int z);
-
-        /**
-         * Get the current height of a position in the chunk data.
-         * <p>This will differ based on which state generation of the chunk is currently at.
-         * If for example the chunk is in the generate surface stage,
-         * this will return what was already generated in the noise stage.</p>
-         *
-         * @param heightMap Heightmap to determine where to grab height
-         * @param x the x location in the chunk from 0-15 inclusive
-         * @param z the z location in the chunk from 0-15 inclusive
-         * @return Y coordinate at highest position
-         */
-        int getHeight(@NotNull HeightMap heightMap, @Range(from = 0L, to = 15L) int x, @Range(from = 0L, to = 15L) int z);
     }
 }

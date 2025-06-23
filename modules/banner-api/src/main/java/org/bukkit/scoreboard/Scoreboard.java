@@ -24,46 +24,7 @@ public interface Scoreboard {
      */
     @Deprecated(since = "1.13")
     @NotNull
-    default Objective registerNewObjective(@NotNull String name, @NotNull String criteria) {
-        return this.registerNewObjective(name, criteria, name);
-    }
-
-    /**
-     * Registers an Objective on this Scoreboard
-     *
-     * @param name Name of the Objective
-     * @param criteria Criteria for the Objective
-     * @param displayName display name for the Objective.
-     * @return The registered Objective
-     * @throws IllegalArgumentException if name is longer than 32767
-     *     characters.
-     * @throws IllegalArgumentException if an objective by that name already
-     *     exists
-     * @deprecated use {@link #registerNewObjective(String, Criteria, net.kyori.adventure.text.Component)}
-     */
-    @NotNull
-    @Deprecated
-    default Objective registerNewObjective(@NotNull String name, @NotNull String criteria, net.kyori.adventure.text.@Nullable Component displayName) {
-        return this.registerNewObjective(name, criteria, displayName, RenderType.INTEGER);
-    }
-
-    /**
-     * Registers an Objective on this Scoreboard
-     *
-     * @param name Name of the Objective
-     * @param criteria Criteria for the Objective
-     * @param displayName Name displayed to players for the Objective.
-     * @param renderType Manner of rendering the Objective
-     * @return The registered Objective
-     * @throws IllegalArgumentException if name is longer than 32767
-     *     characters.
-     * @throws IllegalArgumentException if an objective by that name already
-     *     exists
-     * @deprecated use {@link #registerNewObjective(String, Criteria, net.kyori.adventure.text.Component, RenderType)}
-     */
-    @NotNull
-    @Deprecated
-    Objective registerNewObjective(@NotNull String name, @NotNull String criteria, net.kyori.adventure.text.@Nullable Component displayName, @NotNull RenderType renderType) throws IllegalArgumentException;
+    Objective registerNewObjective(@NotNull String name, @NotNull String criteria);
 
     /**
      * Registers an Objective on this Scoreboard
@@ -76,46 +37,11 @@ public interface Scoreboard {
      *     characters.
      * @throws IllegalArgumentException if an objective by that name already
      *     exists
-     */
-    @NotNull
-    default Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, net.kyori.adventure.text.@Nullable Component displayName) throws IllegalArgumentException {
-        return this.registerNewObjective(name, criteria, displayName, RenderType.INTEGER);
-    }
-
-    /**
-     * Registers an Objective on this Scoreboard
-     *
-     * @param name Name of the Objective
-     * @param criteria Criteria for the Objective
-     * @param displayName Name displayed to players for the Objective.
-     * @param renderType Manner of rendering the Objective
-     * @return The registered Objective
-     * @throws IllegalArgumentException if name is longer than 32767
-     *     characters.
-     * @throws IllegalArgumentException if an objective by that name already
-     *     exists
-     */
-    @NotNull
-    Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, net.kyori.adventure.text.@Nullable Component displayName, @NotNull RenderType renderType) throws IllegalArgumentException;
-
-    /**
-     * Registers an Objective on this Scoreboard
-     *
-     * @param name Name of the Objective
-     * @param criteria Criteria for the Objective
-     * @param displayName Name displayed to players for the Objective.
-     * @return The registered Objective
-     * @throws IllegalArgumentException if name is longer than 32767
-     *     characters.
-     * @throws IllegalArgumentException if an objective by that name already
-     *     exists
-     * @deprecated use {@link #registerNewObjective(String, Criteria, net.kyori.adventure.text.Component)}
+     * @deprecated use {@link #registerNewObjective(String, Criteria, String)}
      */
     @Deprecated(since = "1.20.5")
     @NotNull
-    default Objective registerNewObjective(@NotNull String name, @NotNull String criteria, @NotNull String displayName) {
-        return this.registerNewObjective(name, criteria, displayName, RenderType.INTEGER);
-    }
+    Objective registerNewObjective(@NotNull String name, @NotNull String criteria, @NotNull String displayName);
 
     /**
      * Registers an Objective on this Scoreboard
@@ -129,7 +55,7 @@ public interface Scoreboard {
      *     characters.
      * @throws IllegalArgumentException if an objective by that name already
      *     exists
-     * @deprecated use {@link #registerNewObjective(String, Criteria, net.kyori.adventure.text.Component, RenderType)}
+     * @deprecated use {@link #registerNewObjective(String, Criteria, String, RenderType)}
      */
     @Deprecated(since = "1.20.5")
     @NotNull
@@ -146,13 +72,9 @@ public interface Scoreboard {
      *     characters.
      * @throws IllegalArgumentException if an objective by that name already
      *     exists
-     * @deprecated in favour of {@link #registerNewObjective(String, Criteria, net.kyori.adventure.text.Component)}
      */
     @NotNull
-    @Deprecated // Paper
-    default Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, @NotNull String displayName) {
-        return this.registerNewObjective(name, criteria, displayName, RenderType.INTEGER);
-    }
+    Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, @NotNull String displayName);
 
     /**
      * Registers an Objective on this Scoreboard
@@ -166,13 +88,9 @@ public interface Scoreboard {
      *     characters.
      * @throws IllegalArgumentException if an objective by that name already
      *     exists
-     * @deprecated in favour of {@link #registerNewObjective(String, Criteria, net.kyori.adventure.text.Component, RenderType)}
      */
     @NotNull
-    @Deprecated // Paper
-    default Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, @NotNull String displayName, @NotNull RenderType renderType) {
-        return this.registerNewObjective(name, criteria, net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(displayName), renderType); // Paper - Adventure
-    }
+    Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, @NotNull String displayName, @NotNull RenderType renderType);
 
     /**
      * Gets an Objective on this Scoreboard by name
@@ -228,8 +146,9 @@ public interface Scoreboard {
      * @param player the player whose scores are being retrieved
      * @return immutable set of all scores tracked for the player
      * @see #getScores(String)
+     * @deprecated Scoreboards can contain entries that aren't players
      */
-    // @Deprecated(since = "1.7.8") // Paper
+    @Deprecated(since = "1.7.8")
     @NotNull
     Set<Score> getScores(@NotNull OfflinePlayer player);
 
@@ -247,8 +166,9 @@ public interface Scoreboard {
      *
      * @param player the player to drop all current scores for
      * @see #resetScores(String)
+     * @deprecated Scoreboards can contain entries that aren't players
      */
-    // @Deprecated(since = "1.7.8") // Paper
+    @Deprecated(since = "1.7.8")
     void resetScores(@NotNull OfflinePlayer player);
 
     /**
@@ -264,8 +184,9 @@ public interface Scoreboard {
      * @param player the player to search for
      * @return the player's Team or null if the player is not on a team
      * @see #getEntryTeam(String)
+     * @deprecated Scoreboards can contain entries that aren't players
      */
-    // @Deprecated(since = "1.8.6") // Paper
+    @Deprecated(since = "1.8.6")
     @Nullable
     Team getPlayerTeam(@NotNull OfflinePlayer player);
 
@@ -330,35 +251,4 @@ public interface Scoreboard {
      * @param slot the slot to remove objectives
      */
     void clearSlot(@NotNull DisplaySlot slot);
-
-    // Paper start - improve scoreboard entries
-    /**
-     * Gets all scores for an entity on this Scoreboard
-     *
-     * @param entity the entity whose scores are being retrieved
-     * @return immutable set of all scores tracked for the entity
-     * @throws IllegalArgumentException if entity is null
-     * @see #getScores(String)
-     */
-    @NotNull Set<Score> getScoresFor(@NotNull org.bukkit.entity.Entity entity) throws IllegalArgumentException;
-
-    /**
-     * Removes all scores for an entity on this Scoreboard
-     *
-     * @param entity the entity to drop all current scores for
-     * @throws IllegalArgumentException if entity is null
-     * @see #resetScores(String)
-     */
-    void resetScoresFor(@NotNull org.bukkit.entity.Entity entity) throws IllegalArgumentException;
-
-    /**
-     * Gets an entity's Team on this Scoreboard
-     *
-     * @param entity the entity to search for
-     * @return the entity's Team or null if the entity is not on a team
-     * @throws IllegalArgumentException if entity is null
-     * @see #getEntryTeam(String)
-     */
-    @Nullable Team getEntityTeam(@NotNull org.bukkit.entity.Entity entity) throws IllegalArgumentException;
-    // Paper end - improve scoreboard entries
 }

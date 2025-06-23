@@ -54,23 +54,6 @@ public interface Damageable extends Entity {
     void setHealth(double health);
 
     /**
-     * Heal this entity by the given amount. This will call {@link org.bukkit.event.entity.EntityRegainHealthEvent}.
-     *
-     * @param amount heal amount
-     */
-    default void heal(final double amount) {
-        this.heal(amount, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.CUSTOM);
-    }
-
-    /**
-     * Heal this entity by the given amount. This will call {@link org.bukkit.event.entity.EntityRegainHealthEvent}.
-     *
-     * @param amount heal amount
-     * @param reason heal reason
-     */
-    void heal(double amount, @NotNull org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason reason);
-
-    /**
      * Gets the entity's absorption amount.
      *
      * @return absorption amount from 0

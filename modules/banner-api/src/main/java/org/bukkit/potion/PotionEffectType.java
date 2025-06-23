@@ -10,6 +10,7 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Translatable;
+import org.bukkit.registry.RegistryAware;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Represents a type of potion and its effect on an entity.
  */
-public abstract class PotionEffectType implements Keyed, Translatable, net.kyori.adventure.translation.Translatable, io.papermc.paper.world.flag.FeatureDependant { // Paper - implement Translatable & feature flag API
+public abstract class PotionEffectType implements Keyed, Translatable, RegistryAware {
     private static final BiMap<Integer, PotionEffectType> ID_MAP = HashBiMap.create();
 
     /**
@@ -266,21 +267,33 @@ public abstract class PotionEffectType implements Keyed, Translatable, net.kyori
     public abstract Color getColor();
 
     /**
+     * {@inheritDoc}
+     *
+     * @see #getKeyOrThrow()
+     * @see #isRegistered()
+     * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+     */
+    @NotNull
+    @Override
+    @Deprecated(since = "1.21.4")
+    public abstract NamespacedKey getKey();
+
+    /**
      * Returns the duration modifier applied to effects of this type.
      *
      * @return duration modifier
      * @deprecated unused, always 1.0
      */
-    @Deprecated(since = "1.14", forRemoval = true)
+    @Deprecated(since = "1.14")
     public abstract double getDurationModifier();
 
     /**
      * Returns the unique ID of this type.
      *
      * @return Unique ID
-     * @deprecated use {@link #key()}
+     * @deprecated Magic value
      */
-    @Deprecated(since = "1.6.2", forRemoval = true) // Paper
+    @Deprecated(since = "1.6.2")
     public abstract int getId();
 
     /**
@@ -316,9 +329,9 @@ public abstract class PotionEffectType implements Keyed, Translatable, net.kyori
      *
      * @param id Unique ID to fetch
      * @return Resulting type, or null if not found.
-     * @apiNote Internal Use Only
+     * @deprecated Magic value
      */
-    @org.jetbrains.annotations.ApiStatus.Internal // Paper
+    @Deprecated(since = "1.6.2")
     @Nullable
     public static PotionEffectType getById(int id) {
         PotionEffectType type = ID_MAP.get(id);
@@ -360,57 +373,4 @@ public abstract class PotionEffectType implements Keyed, Translatable, net.kyori
     public static PotionEffectType[] values() {
         return Lists.newArrayList(Registry.EFFECT).toArray(new PotionEffectType[0]);
     }
-
-    // Paper start
-    /**
-     * Gets the effect attributes in an immutable map.
-     *
-     * @return the attribute map
-     */
-    public abstract @NotNull java.util.Map<org.bukkit.attribute.Attribute, org.bukkit.attribute.AttributeModifier> getEffectAttributes();
-
-    /**
-     * Gets the true modifier amount based on the effect amplifier.
-     *
-     * @param attribute the attribute
-     * @param effectAmplifier the effect amplifier (0 indexed)
-     * @return the modifier amount
-     * @throws IllegalArgumentException if the supplied attribute is not present in the map from {@link #getEffectAttributes()}
-     */
-    public abstract double getAttributeModifierAmount(@NotNull org.bukkit.attribute.Attribute attribute, int effectAmplifier);
-
-    /**
-     * Gets the category of this effect
-     *
-     * @return the category
-     */
-    public abstract @NotNull PotionEffectType.Category getEffectCategory();
-
-    /**
-     * Category of {@link PotionEffectType}s
-     */
-    public enum Category {
-
-        BENEFICIAL(net.kyori.adventure.text.format.NamedTextColor.BLUE),
-        HARMFUL(net.kyori.adventure.text.format.NamedTextColor.RED),
-        NEUTRAL(net.kyori.adventure.text.format.NamedTextColor.BLUE);
-
-        private final net.kyori.adventure.text.format.TextColor color;
-
-        Category(net.kyori.adventure.text.format.TextColor color) {
-            this.color = color;
-        }
-
-        /**
-         * Gets the text color used when displaying potions
-         * of this category.
-         *
-         * @return the text color
-         */
-        @NotNull
-        public net.kyori.adventure.text.format.TextColor getColor() {
-            return color;
-        }
-    }
-    // Paper end
 }

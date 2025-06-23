@@ -4,7 +4,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.EquipmentSlot;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,44 +14,42 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EntityResurrectEvent extends EntityEvent implements Cancellable {
 
-    private static final HandlerList HANDLER_LIST = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
+    //
+    private boolean cancelled;
 
     private final EquipmentSlot hand;
 
-    private boolean cancelled;
-
-    @ApiStatus.Internal
-    public EntityResurrectEvent(@NotNull LivingEntity livingEntity, @Nullable EquipmentSlot hand) {
-        super(livingEntity);
+    public EntityResurrectEvent(@NotNull LivingEntity what, @Nullable EquipmentSlot hand) {
+        super(what);
         this.hand = hand;
     }
 
-    @ApiStatus.Internal
-    @Deprecated(since = "1.19.2", forRemoval = true)
-    public EntityResurrectEvent(@NotNull LivingEntity livingEntity) {
-        this(livingEntity, null);
+    @Deprecated(since = "1.19.2")
+    public EntityResurrectEvent(@NotNull LivingEntity what) {
+        this(what, null);
     }
 
     @NotNull
     @Override
     public LivingEntity getEntity() {
-        return (LivingEntity) this.entity;
+        return (LivingEntity) entity;
     }
 
     /**
-     * Get the hand in which the totem of undying was found, or {@code null} if the
+     * Get the hand in which the totem of undying was found, or null if the
      * entity did not have a totem of undying.
      *
-     * @return the hand, or {@code null}
+     * @return the hand, or null
      */
     @Nullable
     public EquipmentSlot getHand() {
-        return this.hand;
+        return hand;
     }
 
     @Override
     public boolean isCancelled() {
-        return this.cancelled;
+        return cancelled;
     }
 
     @Override
@@ -63,11 +60,11 @@ public class EntityResurrectEvent extends EntityEvent implements Cancellable {
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return HANDLER_LIST;
+        return handlers;
     }
 
     @NotNull
     public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
+        return handlers;
     }
 }

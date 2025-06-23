@@ -31,6 +31,6 @@ public abstract class PluginBase implements Plugin {
     @Override
     @NotNull
     public final String getName() {
-        return getPluginMeta().getName(); // Paper
+        return getDescription().getName();
     }
 }

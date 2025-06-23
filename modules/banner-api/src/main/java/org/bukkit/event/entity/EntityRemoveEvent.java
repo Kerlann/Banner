@@ -11,20 +11,15 @@ import org.jetbrains.annotations.NotNull;
  * This event should only be used for monitoring. The result
  * of modifying the entity during or after this event is unspecified.
  * This event is not called for a {@link org.bukkit.entity.Player}.
- * <p>
- * It differs from {@link com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent} as to when it is called.
- * Modifications to the entity, as noted above, are not defined and are expected to not be persisted in e.g., chunk
- * unloads.
  */
+@ApiStatus.Experimental
 public class EntityRemoveEvent extends EntityEvent {
 
-    private static final HandlerList HANDLER_LIST = new HandlerList();
-
+    private static final HandlerList handlers = new HandlerList();
     private final Cause cause;
 
-    @ApiStatus.Internal
-    public EntityRemoveEvent(@NotNull Entity entity, @NotNull Cause cause) {
-        super(entity);
+    public EntityRemoveEvent(@NotNull Entity what, @NotNull Cause cause) {
+        super(what);
         this.cause = cause;
     }
 
@@ -35,18 +30,18 @@ public class EntityRemoveEvent extends EntityEvent {
      */
     @NotNull
     public Cause getCause() {
-        return this.cause;
+        return cause;
     }
 
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return HANDLER_LIST;
+        return handlers;
     }
 
     @NotNull
     public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
+        return handlers;
     }
 
     /**
@@ -117,6 +112,5 @@ public class EntityRemoveEvent extends EntityEvent {
          * When the chunk an entity is in gets unloaded.
          */
         UNLOAD,
-        DISCARD
     }
 }

@@ -31,12 +31,7 @@ public class HandlerList {
     /**
      * List of all HandlerLists which have been created, for use in bakeAll()
      */
-    private static final ArrayList<HandlerList> allLists = new ArrayList<>();
-
-    /**
-     * Event types which have instantiated a {@link HandlerList}.
-     */
-    private static final java.util.Set<String> EVENT_TYPES = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private static ArrayList<HandlerList> allLists = new ArrayList<HandlerList>();
 
     /**
      * Bake all handler lists. Best used just after all normal event
@@ -99,14 +94,9 @@ public class HandlerList {
      * The HandlerList is then added to meta-list for use in bakeAll()
      */
     public HandlerList() {
-        java.lang.StackWalker.getInstance(java.util.EnumSet.of(java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE), 4)
-            .walk(s -> s.filter(f -> Event.class.isAssignableFrom(f.getDeclaringClass())).findFirst())
-            .map(f -> f.getDeclaringClass().getName())
-            .ifPresent(EVENT_TYPES::add);
-
-        handlerslots = new EnumMap<>(EventPriority.class);
+        handlerslots = new EnumMap<EventPriority, ArrayList<RegisteredListener>>(EventPriority.class);
         for (EventPriority o : EventPriority.values()) {
-            handlerslots.put(o, new ArrayList<>());
+            handlerslots.put(o, new ArrayList<RegisteredListener>());
         }
         synchronized (allLists) {
             allLists.add(this);
@@ -188,7 +178,7 @@ public class HandlerList {
      */
     public synchronized void bake() {
         if (handlers != null) return; // don't re-bake when still valid
-        List<RegisteredListener> entries = new ArrayList<>();
+        List<RegisteredListener> entries = new ArrayList<RegisteredListener>();
         for (Entry<EventPriority, ArrayList<RegisteredListener>> entry : handlerslots.entrySet()) {
             entries.addAll(entry.getValue());
         }
@@ -200,7 +190,8 @@ public class HandlerList {
      *
      * @return the array of registered listeners
      */
-    public @NotNull RegisteredListener @NotNull [] getRegisteredListeners() {
+    @NotNull
+    public RegisteredListener[] getRegisteredListeners() {
         RegisteredListener[] handlers;
         while ((handlers = this.handlers) == null) bake(); // This prevents fringe cases of returning null
         return handlers;

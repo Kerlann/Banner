@@ -172,7 +172,7 @@ public class StandardMessenger implements Messenger {
     public boolean isReservedChannel(@NotNull String channel) {
         channel = validateAndCorrectChannel(channel);
 
-        return channel.equals("minecraft:register") || channel.equals("minecraft:unregister"); // Paper
+        return channel.contains("minecraft") && !channel.equals("minecraft:brand");
     }
 
     @Override
@@ -439,7 +439,7 @@ public class StandardMessenger implements Messenger {
     }
 
     @Override
-    public void dispatchIncomingMessage(@NotNull Player source, @NotNull String channel, byte @NotNull [] message) {
+    public void dispatchIncomingMessage(@NotNull Player source, @NotNull String channel, @NotNull byte[] message) {
         if (source == null) {
             throw new IllegalArgumentException("Player source cannot be null");
         }
@@ -496,25 +496,18 @@ public class StandardMessenger implements Messenger {
         if (channel.equals("bungeecord:main")) {
             return "BungeeCord";
         }
-        // Paper start - improve error message
         if (channel.length() > Messenger.MAX_CHANNEL_SIZE) {
-            throw new ChannelNameTooLongException(channel.length(), shortened(channel));
+            throw new ChannelNameTooLongException(channel);
         }
         if (channel.indexOf(':') == -1) {
-            throw new IllegalArgumentException("Channel must contain : separator (attempted to use " + shortened(channel) + ")");
+            throw new IllegalArgumentException("Channel must contain : separator (attempted to use " + channel + ")");
         }
         if (!channel.toLowerCase(Locale.ROOT).equals(channel)) {
             // TODO: use NamespacedKey validation here
-            throw new IllegalArgumentException("Channel must be entirely lowercase (attempted to use " + shortened(channel) + ")");
+            throw new IllegalArgumentException("Channel must be entirely lowercase (attempted to use " + channel + ")");
         }
         return channel;
     }
-
-    private static String shortened(String channel) {
-        channel = org.apache.commons.lang3.StringUtils.normalizeSpace(channel);
-        return channel.length() > 32 ? channel.substring(0, 32) + "..." : channel;
-    }
-    // Paper end - improve error message
 
     /**
      * Validates the input of a Plugin Message, ensuring the arguments are all
@@ -534,7 +527,7 @@ public class StandardMessenger implements Messenger {
      * @throws ChannelNotRegisteredException Thrown if the channel is not
      *     registered for this plugin.
      */
-    public static void validatePluginMessage(@NotNull Messenger messenger, @NotNull Plugin source, @NotNull String channel, byte @NotNull [] message) {
+    public static void validatePluginMessage(@NotNull Messenger messenger, @NotNull Plugin source, @NotNull String channel, @NotNull byte[] message) {
         if (messenger == null) {
             throw new IllegalArgumentException("Messenger cannot be null");
         }

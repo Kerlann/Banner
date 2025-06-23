@@ -1,43 +1,47 @@
 package org.bukkit.entity;
 
 import org.bukkit.Location;
-import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a Creaking.
  */
-@NullMarked
+@ApiStatus.Experimental
 public interface Creaking extends Monster {
 
     /**
-     * Gets the home location for this creaking (where its {@link org.bukkit.block.CreakingHeart} could be found).
+     * Gets the home location for this Creaking (ie where its corresponding
+     * {@link org.bukkit.block.CreakingHeart} can be).
      *
-     * @return the location of the home if available, null otherwise
+     * @return the location of the home.
      */
-    @Nullable
-    Location getHome();
+    @NotNull
+    public Location getHome();
 
     /**
-     * Activates this creaking to target and follow a player.
+     * Sets the home location for this Creaking.
      *
-     * @param player the target
+     * @param location the location of the home.
      */
-    void activate(final Player player);
+    public void setHome(@NotNull Location location);
 
     /**
-     * Deactivates the creaking, clearing its current attack target and
-     * marking it as inactive.
+     * Activate this Creaking to target and follow a player.
+     *
+     * @param player the target.
      */
-    void deactivate();
+    public void activate(@NotNull Player player);
 
     /**
-     * Returns if this creaking is currently active and hunting.
-     *
-     * @see #activate(Player)
-     *
-     * @return true if active
+     * Deactivate this Creaking from the current target player.
      */
-    boolean isActive();
+    public void deactivate();
 
+    /**
+     * Gets if this Creaking is active.
+     *
+     * @return true if is active.
+     */
+    public boolean isActive();
 }

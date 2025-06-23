@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a salmon fish.
  */
-public interface Salmon extends io.papermc.paper.entity.SchoolableFish { // Paper - Schooling Fish API
+public interface Salmon extends Fish {
 
     /**
      * Get the variant of this salmon.
@@ -27,11 +27,17 @@ public interface Salmon extends io.papermc.paper.entity.SchoolableFish { // Pape
      */
     public enum Variant {
 
-        // Start generate - SalmonVariant
-        // @GeneratedFrom 1.21.6
+        /**
+         * Small salmon.
+         */
         SMALL,
+        /**
+         * Default salmon.
+         */
         MEDIUM,
+        /**
+         * Large salmon.
+         */
         LARGE;
-        // End generate - SalmonVariant
     }
 }

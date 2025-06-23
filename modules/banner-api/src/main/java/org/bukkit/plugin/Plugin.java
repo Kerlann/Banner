@@ -16,9 +16,9 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * The use of {@link PluginBase} is recommended for actual Implementation
  */
-public interface Plugin extends TabExecutor, io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner { // Paper
+public interface Plugin extends TabExecutor {
     /**
-     * Returns the folder that the plugin data files are located in. The
+     * Returns the folder that the plugin data's files are located in. The
      * folder may not yet exist.
      *
      * @return The folder
@@ -26,38 +26,14 @@ public interface Plugin extends TabExecutor, io.papermc.paper.plugin.lifecycle.e
     @NotNull
     public File getDataFolder();
 
-    // Paper start - add getDataPath()
     /**
-     * Returns the path that the plugin data files are located in.
-     * The folder may not yet exist.
+     * Returns the plugin.yaml file containing the details for this plugin
      *
-     * @see #getDataFolder()
-     * @return The folder
+     * @return Contents of the plugin.yaml file
      */
-    default @NotNull java.nio.file.Path getDataPath() {
-        return getDataFolder().toPath();
-    }
-    // Paper end - add getDataPath()
-
-    /**
-     * Returns the plugin.yml file containing the details for this plugin
-     *
-     * @return Contents of the plugin.yml file
-     * @deprecated May be inaccurate due to different plugin implementations.
-     * @see Plugin#getPluginMeta()
-     */
-    @Deprecated // Paper
     @NotNull
     public PluginDescriptionFile getDescription();
 
-    // Paper start
-    /**
-     * Gets the plugin meta for this plugin.
-     * @return configuration
-     */
-    @NotNull
-    io.papermc.paper.plugin.configuration.PluginMeta getPluginMeta();
-    // Paper end
     /**
      * Gets a {@link FileConfiguration} for this plugin, read through
      * "config.yml"
@@ -118,7 +94,6 @@ public interface Plugin extends TabExecutor, io.papermc.paper.plugin.lifecycle.e
      *
      * @return PluginLoader that controls this plugin
      */
-    @Deprecated(forRemoval = true) // Paper - The PluginLoader system will not function in the near future
     @NotNull
     public PluginLoader getPluginLoader();
 
@@ -204,29 +179,6 @@ public interface Plugin extends TabExecutor, io.papermc.paper.plugin.lifecycle.e
     @NotNull
     public Logger getLogger();
 
-    // Paper start - Adventure component logger
-    @NotNull
-    default net.kyori.adventure.text.logger.slf4j.ComponentLogger getComponentLogger() {
-        return net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger(getLogger().getName());
-    }
-    // Paper end
-
-    // Paper start - Add SLF4J/Log4J loggers
-    @NotNull
-    default org.slf4j.Logger getSLF4JLogger() {
-        return org.slf4j.LoggerFactory.getLogger(getLogger().getName());
-    }
-
-    /**
-     * @deprecated use {@link #getSLF4JLogger()}
-     */
-    @Deprecated
-    @NotNull
-    default org.apache.logging.log4j.Logger getLog4JLogger() {
-        return org.apache.logging.log4j.LogManager.getLogger(getLogger().getName());
-    }
-    // Paper end
-
     /**
      * Returns the name of the plugin.
      * <p>
@@ -237,14 +189,4 @@ public interface Plugin extends TabExecutor, io.papermc.paper.plugin.lifecycle.e
      */
     @NotNull
     public String getName();
-
-    // Paper start - lifecycle events
-    /**
-     * Get the lifecycle event manager for registering handlers
-     * for lifecycle events allowed on the {@link Plugin}.
-     *
-     * @return the lifecycle event manager
-     */
-    io.papermc.paper.plugin.lifecycle.event.@NotNull LifecycleEventManager<Plugin> getLifecycleManager();
-    // Paper end - lifecycle events
 }

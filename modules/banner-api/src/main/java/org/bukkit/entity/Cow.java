@@ -1,47 +1,55 @@
 package org.bukkit.entity;
 
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.jspecify.annotations.NullMarked;
+import org.bukkit.Registry;
+import org.bukkit.registry.RegistryAware;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a Cow.
+ * Represents a regular Cow.
  */
-@NullMarked
 public interface Cow extends AbstractCow {
 
     /**
-     * Gets the variant of this cow.
+     * Get the variant of this cow.
      *
-     * @return the cow variant
+     * @return cow variant
      */
+    @NotNull
     Variant getVariant();
 
     /**
-     * Sets the variant of this cow.
+     * Set the variant of this cow.
      *
-     * @param variant the cow variant
+     * @param variant cow variant
      */
-    void setVariant(Variant variant);
+    void setVariant(@NotNull Variant variant);
 
     /**
      * Represents the variant of a cow.
      */
-    interface Variant extends Keyed {
+    interface Variant extends Keyed, RegistryAware {
 
-        // Start generate - CowVariant
-        // @GeneratedFrom 1.21.6
-        Variant COLD = getVariant("cold");
+        Variant TEMPERATE = getType("temperate");
+        Variant WARM = getType("warm");
+        Variant COLD = getType("cold");
 
-        Variant TEMPERATE = getVariant("temperate");
+        /**
+         * {@inheritDoc}
+         *
+         * @see #getKeyOrThrow()
+         * @see #isRegistered()
+         * @deprecated A key might not always be present, use {@link #getKeyOrThrow()} instead.
+         */
+        @NotNull
+        @Override
+        @Deprecated(since = "1.21.5")
+        NamespacedKey getKey();
 
-        Variant WARM = getVariant("warm");
-        // End generate - CowVariant
-
-        private static Variant getVariant(String key) {
-            return RegistryAccess.registryAccess().getRegistry(RegistryKey.COW_VARIANT).getOrThrow(NamespacedKey.minecraft(key));
+        @NotNull
+        private static Variant getType(@NotNull String key) {
+            return Registry.COW_VARIANT.getOrThrow(NamespacedKey.minecraft(key));
         }
     }
 }

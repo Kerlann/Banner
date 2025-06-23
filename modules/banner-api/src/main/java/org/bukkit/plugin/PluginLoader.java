@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
  * Represents a plugin loader, which handles direct access to specific types
  * of plugins
  */
-@Deprecated(forRemoval = true) // Paper - The PluginLoader system will not function in the near future
 public interface PluginLoader {
 
     /**

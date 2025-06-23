@@ -7,7 +7,7 @@ import org.bukkit.block.BlockFace;
  * @deprecated all usage of MaterialData is deprecated and subject to removal.
  * Use {@link org.bukkit.block.data.BlockData}.
  */
-@Deprecated(forRemoval = true, since = "1.13")
+@Deprecated(since = "1.14.1")
 public class Banner extends MaterialData implements Attachable {
 
     public Banner() {

@@ -7,12 +7,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.EquipmentSlot;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Triggered when an entity is created in the world by a player "placing" an item
+ * Triggered when a entity is created in the world by a player "placing" an item
  * on a block.
  * <br>
  * Note that this event is currently only fired for four specific placements:
@@ -20,16 +19,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EntityPlaceEvent extends EntityEvent implements Cancellable {
 
-    private static final HandlerList HANDLER_LIST = new HandlerList();
-
+    private static final HandlerList handlers = new HandlerList();
+    private boolean cancelled;
     private final Player player;
     private final Block block;
     private final BlockFace blockFace;
     private final EquipmentSlot hand;
 
-    private boolean cancelled;
-
-    @ApiStatus.Internal
     public EntityPlaceEvent(@NotNull final Entity entity, @Nullable final Player player, @NotNull final Block block, @NotNull final BlockFace blockFace, @NotNull final EquipmentSlot hand) {
         super(entity);
         this.player = player;
@@ -38,8 +34,7 @@ public class EntityPlaceEvent extends EntityEvent implements Cancellable {
         this.hand = hand;
     }
 
-    @ApiStatus.Internal
-    @Deprecated(since = "1.19.2", forRemoval = true)
+    @Deprecated(since = "1.19.2")
     public EntityPlaceEvent(@NotNull final Entity entity, @Nullable final Player player, @NotNull final Block block, @NotNull final BlockFace blockFace) {
         this(entity, player, block, blockFace, EquipmentSlot.HAND);
     }
@@ -51,7 +46,7 @@ public class EntityPlaceEvent extends EntityEvent implements Cancellable {
      */
     @Nullable
     public Player getPlayer() {
-        return this.player;
+        return player;
     }
 
     /**
@@ -61,7 +56,7 @@ public class EntityPlaceEvent extends EntityEvent implements Cancellable {
      */
     @NotNull
     public Block getBlock() {
-        return this.block;
+        return block;
     }
 
     /**
@@ -71,7 +66,7 @@ public class EntityPlaceEvent extends EntityEvent implements Cancellable {
      */
     @NotNull
     public BlockFace getBlockFace() {
-        return this.blockFace;
+        return blockFace;
     }
 
     /**
@@ -81,12 +76,12 @@ public class EntityPlaceEvent extends EntityEvent implements Cancellable {
      */
     @NotNull
     public EquipmentSlot getHand() {
-        return this.hand;
+        return hand;
     }
 
     @Override
     public boolean isCancelled() {
-        return this.cancelled;
+        return cancelled;
     }
 
     @Override
@@ -97,11 +92,11 @@ public class EntityPlaceEvent extends EntityEvent implements Cancellable {
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return HANDLER_LIST;
+        return handlers;
     }
 
     @NotNull
     public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
+        return handlers;
     }
 }

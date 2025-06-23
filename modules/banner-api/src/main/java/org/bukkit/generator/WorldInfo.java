@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Holds various information of a World
  */
-public interface WorldInfo extends io.papermc.paper.world.flag.FeatureFlagSetHolder { // Paper - feature flag API
+public interface WorldInfo {
 
     /**
      * Gets the unique name of this world
@@ -57,13 +57,4 @@ public interface WorldInfo extends io.papermc.paper.world.flag.FeatureFlagSetHol
      * @return Maximum height of the world
      */
     int getMaxHeight();
-
-    // Paper start
-    /**
-     * Get the vanilla {@link BiomeProvider} for this world.
-     *
-     * @return vanilla biome provider
-     */
-    @NotNull BiomeProvider vanillaBiomeProvider();
-    // Paper end
 }

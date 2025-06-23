@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * underscores, hyphens, and forward slashes.
  *
  */
-public final class NamespacedKey implements net.kyori.adventure.key.Key, com.destroystokyo.paper.Namespaced { // Paper - implement Key and Namespaced
+public final class NamespacedKey {
 
     /**
      * The namespace representing all inbuilt keys.
@@ -30,7 +30,7 @@ public final class NamespacedKey implements net.kyori.adventure.key.Key, com.des
      * compatibility measures.
      */
     public static final String BUKKIT = "bukkit";
-
+    //
     private final String namespace;
     private final String key;
 
@@ -74,21 +74,21 @@ public final class NamespacedKey implements net.kyori.adventure.key.Key, com.des
 
     /**
      * Create a key in a specific namespace.
-     * <p>
-     * For most plugin related code, you should prefer using the
-     * {@link NamespacedKey#NamespacedKey(Plugin, String)} constructor.
      *
      * @param namespace namespace
      * @param key key
-     * @see #NamespacedKey(Plugin, String)
+     * @apiNote should never be used by plugins, for internal use only!!
      */
+    @ApiStatus.Internal
     public NamespacedKey(@NotNull String namespace, @NotNull String key) {
-        Preconditions.checkArgument(namespace != null, "Namespace cannot be null");
-        Preconditions.checkArgument(key != null, "Key cannot be null");
+        Preconditions.checkArgument(namespace != null && isValidNamespace(namespace), "Invalid namespace. Must be [a-z0-9._-]: %s", namespace);
+        Preconditions.checkArgument(key != null && isValidKey(key), "Invalid key. Must be [a-z0-9/._-]: %s", key);
+
         this.namespace = namespace;
         this.key = key;
 
-        this.validate();
+        String string = toString();
+        Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters", string);
     }
 
     /**
@@ -106,38 +106,34 @@ public final class NamespacedKey implements net.kyori.adventure.key.Key, com.des
     public NamespacedKey(@NotNull Plugin plugin, @NotNull String key) {
         Preconditions.checkArgument(plugin != null, "Plugin cannot be null");
         Preconditions.checkArgument(key != null, "Key cannot be null");
+
         this.namespace = plugin.getName().toLowerCase(Locale.ROOT);
         this.key = key.toLowerCase(Locale.ROOT);
 
         // Check validity after normalization
-        this.validate();
-    }
-
-    private void validate() {
-        Preconditions.checkArgument(this.namespace.length() + 1 + this.key.length() <= Short.MAX_VALUE, "NamespacedKey must be less than 32768 characters");
         Preconditions.checkArgument(isValidNamespace(this.namespace), "Invalid namespace. Must be [a-z0-9._-]: %s", this.namespace);
         Preconditions.checkArgument(isValidKey(this.key), "Invalid key. Must be [a-z0-9/._-]: %s", this.key);
+
+        String string = toString();
+        Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters (%s)", string);
     }
 
     @NotNull
-    @Override // Paper
     public String getNamespace() {
         return namespace;
     }
 
     @NotNull
-    @Override // Paper
     public String getKey() {
         return key;
     }
 
     @Override
     public int hashCode() {
-        // Paper start
-        int result = this.namespace.hashCode();
-        result = (31 * result) + this.key.hashCode();
-        return result;
-        // Paper end
+        int hash = 5;
+        hash = 47 * hash + this.namespace.hashCode();
+        hash = 47 * hash + this.key.hashCode();
+        return hash;
     }
 
     @Override
@@ -145,10 +141,11 @@ public final class NamespacedKey implements net.kyori.adventure.key.Key, com.des
         if (obj == null) {
             return false;
         }
-        // Paper start
-        if (!(obj instanceof net.kyori.adventure.key.Key key)) return false;
-        return this.namespace.equals(key.namespace()) && this.key.equals(key.value());
-        // Paper end
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NamespacedKey other = (NamespacedKey) obj;
+        return this.namespace.equals(other.namespace) && this.key.equals(other.key);
     }
 
     @Override
@@ -206,10 +203,7 @@ public final class NamespacedKey implements net.kyori.adventure.key.Key, com.des
      */
     @Nullable
     public static NamespacedKey fromString(@NotNull String string, @Nullable Plugin defaultNamespace) {
-        // Paper - Return null for empty string, check length
-        Preconditions.checkArgument(string != null, "Input string must not be null");
-        if (string.isEmpty() || string.length() > Short.MAX_VALUE) return null;
-        // Paper end - Return null for empty string, check length
+        Preconditions.checkArgument(string != null && !string.isEmpty(), "Input string must not be empty or null");
 
         String[] components = string.split(":", 3);
         if (components.length > 2) {
@@ -254,24 +248,4 @@ public final class NamespacedKey implements net.kyori.adventure.key.Key, com.des
     public static NamespacedKey fromString(@NotNull String key) {
         return fromString(key, null);
     }
-
-    // Paper start
-    @NotNull
-    @Override
-    public String namespace() {
-        return this.getNamespace();
-    }
-
-    @NotNull
-    @Override
-    public String value() {
-        return this.getKey();
-    }
-
-    @NotNull
-    @Override
-    public String asString() {
-        return this.namespace + ':' + this.key;
-    }
-    // Paper end
 }

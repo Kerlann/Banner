@@ -39,20 +39,22 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.SimplePluginManager;
+import org.bukkit.plugin.TimedRegisteredListener;
 import org.bukkit.plugin.UnknownDependencyException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spigotmc.CustomTimingsHandler; // Spigot
 import org.yaml.snakeyaml.error.YAMLException;
 
 /**
  * Represents a Java plugin loader, allowing plugins in the form of .jar
  */
-@Deprecated(forRemoval = true) // Paper - The PluginLoader system will not function in the near future. This implementation will be moved.
 public final class JavaPluginLoader implements PluginLoader {
     final Server server;
     private final Pattern[] fileFilters = new Pattern[]{Pattern.compile("\\.jar$")};
     private final List<PluginClassLoader> loaders = new CopyOnWriteArrayList<PluginClassLoader>();
     private final LibraryLoader libraryLoader;
+    public static final CustomTimingsHandler pluginParentTimer = new CustomTimingsHandler("** Plugins"); // Spigot
 
     /**
      * This class was not meant to be constructed explicitly
@@ -77,7 +79,6 @@ public final class JavaPluginLoader implements PluginLoader {
     @Override
     @NotNull
     public Plugin loadPlugin(@NotNull final File file) throws InvalidPluginException {
-        if (true) throw new UnsupportedOperationException(); // Paper
         Preconditions.checkArgument(file != null, "File cannot be null");
 
         if (!file.exists()) {
@@ -91,7 +92,7 @@ public final class JavaPluginLoader implements PluginLoader {
             throw new InvalidPluginException(ex);
         }
 
-        final File parentFile = this.server.getPluginsFolder(); // Paper
+        final File parentFile = file.getParentFile();
         final File dataFolder = new File(parentFile, description.getName());
         @SuppressWarnings("deprecation")
         final File oldDataFolder = new File(parentFile, description.getRawName());
@@ -141,7 +142,7 @@ public final class JavaPluginLoader implements PluginLoader {
 
         final PluginClassLoader loader;
         try {
-            loader = new PluginClassLoader(getClass().getClassLoader(), description, dataFolder, file, (libraryLoader != null) ? libraryLoader.createLoader(description) : null, null, null); // Paper
+            loader = new PluginClassLoader(this, getClass().getClassLoader(), description, dataFolder, file, (libraryLoader != null) ? libraryLoader.createLoader(description) : null);
         } catch (InvalidPluginException ex) {
             throw ex;
         } catch (Throwable ex) {
@@ -230,12 +231,13 @@ public final class JavaPluginLoader implements PluginLoader {
         Preconditions.checkArgument(plugin != null, "Plugin can not be null");
         Preconditions.checkArgument(listener != null, "Listener can not be null");
 
-        Map<Class<? extends Event>, Set<RegisteredListener>> ret = new HashMap<>();
+        boolean useTimings = server.getPluginManager().useTimings();
+        Map<Class<? extends Event>, Set<RegisteredListener>> ret = new HashMap<Class<? extends Event>, Set<RegisteredListener>>();
         Set<Method> methods;
         try {
             Method[] publicMethods = listener.getClass().getMethods();
             Method[] privateMethods = listener.getClass().getDeclaredMethods();
-            methods = new HashSet<>(publicMethods.length + privateMethods.length, 1.0f);
+            methods = new HashSet<Method>(publicMethods.length + privateMethods.length, 1.0f);
             for (Method method : publicMethods) {
                 methods.add(method);
             }
@@ -264,7 +266,7 @@ public final class JavaPluginLoader implements PluginLoader {
             method.setAccessible(true);
             Set<RegisteredListener> eventSet = ret.get(eventClass);
             if (eventSet == null) {
-                eventSet = new HashSet<>();
+                eventSet = new HashSet<RegisteredListener>();
                 ret.put(eventClass, eventSet);
             }
 
@@ -290,22 +292,32 @@ public final class JavaPluginLoader implements PluginLoader {
                 }
             }
 
-            EventExecutor executor = new co.aikar.timings.TimedEventExecutor(new EventExecutor() { // Paper
+            final CustomTimingsHandler timings = new CustomTimingsHandler("Plugin: " + plugin.getDescription().getFullName() + " Event: " + listener.getClass().getName() + "::" + method.getName() + "(" + eventClass.getSimpleName() + ")", pluginParentTimer); // Spigot
+            EventExecutor executor = new EventExecutor() {
                 @Override
-                public void execute(@NotNull Listener listener, @NotNull Event event) throws EventException { // Paper
+                public void execute(@NotNull Listener listener, @NotNull Event event) throws EventException {
                     try {
                         if (!eventClass.isAssignableFrom(event.getClass())) {
                             return;
                         }
+                        // Spigot start
+                        boolean isAsync = event.isAsynchronous();
+                        if (!isAsync) timings.startTiming();
                         method.invoke(listener, event);
+                        if (!isAsync) timings.stopTiming();
+                        // Spigot end
                     } catch (InvocationTargetException ex) {
                         throw new EventException(ex.getCause());
                     } catch (Throwable t) {
                         throw new EventException(t);
                     }
                 }
-            }, plugin, method, eventClass); // Paper
-            eventSet.add(new RegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled()));
+            };
+            if (false) { // Spigot - RL handles useTimings check now
+                eventSet.add(new TimedRegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled()));
+            } else {
+                eventSet.add(new RegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled()));
+            }
         }
         return ret;
     }
@@ -369,7 +381,8 @@ public final class JavaPluginLoader implements PluginLoader {
 
                 try {
                     loader.close();
-                } catch (IOException ignored) {
+                } catch (IOException ex) {
+                    //
                 }
             }
         }

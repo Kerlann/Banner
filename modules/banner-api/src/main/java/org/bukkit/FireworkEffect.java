@@ -18,44 +18,28 @@ public final class FireworkEffect implements ConfigurationSerializable {
     /**
      * The type or shape of the effect.
      */
-    public enum Type implements net.kyori.adventure.translation.Translatable { // Paper - Adventure translations
+    public enum Type {
         /**
          * A small ball effect.
          */
-        BALL("small_ball"), // Paper - add name
+        BALL,
         /**
          * A large ball effect.
          */
-        BALL_LARGE("large_ball"), // Paper - add name
+        BALL_LARGE,
         /**
          * A star-shaped effect.
          */
-        STAR("star"), // Paper - add name
+        STAR,
         /**
          * A burst effect.
          */
-        BURST("burst"), // Paper - add name
+        BURST,
         /**
          * A creeper-face effect.
          */
-        CREEPER("creeper"), // Paper - add name
+        CREEPER,
         ;
-        // Paper start
-        /**
-         * The name map.
-         */
-        public static final net.kyori.adventure.util.Index<String, org.bukkit.FireworkEffect.Type> NAMES = net.kyori.adventure.util.Index.create(Type.class, type -> type.name);
-        private final String name;
-
-        Type(final String name) {
-            this.name = name;
-        }
-
-        @Override
-        public @NotNull String translationKey() {
-            return "item.minecraft.firework_star.shape." + this.name;
-        }
-        // Paper end
     }
 
     /**
@@ -322,7 +306,9 @@ public final class FireworkEffect implements ConfigurationSerializable {
     private String string = null;
 
     FireworkEffect(boolean flicker, boolean trail, @NotNull ImmutableList<Color> colors, @NotNull ImmutableList<Color> fadeColors, @NotNull Type type) {
-        // Paper - can have empty colors
+        if (colors.isEmpty()) {
+            throw new IllegalStateException("Cannot make FireworkEffect without any color");
+        }
         this.flicker = flicker;
         this.trail = trail;
         this.colors = colors;

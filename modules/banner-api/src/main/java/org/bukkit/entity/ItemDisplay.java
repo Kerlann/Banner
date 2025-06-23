@@ -14,7 +14,7 @@ public interface ItemDisplay extends Display {
      *
      * @return the displayed item stack
      */
-    @NotNull // Paper
+    @Nullable
     ItemStack getItemStack();
 
     /**

@@ -7,11 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Switch extends Directional, FaceAttachable, Powerable {
 
-    @NotNull
-    AttachedFace getAttachedFace();
-
-    void setAttachedFace(@NotNull AttachedFace face);
-
     /**
      * Gets the value of the 'face' property.
      *
@@ -20,20 +15,16 @@ public interface Switch extends Directional, FaceAttachable, Powerable {
      */
     @NotNull
     @Deprecated(since = "1.15.2")
-    default Face getFace() {
-        return Face.valueOf(this.getAttachedFace().name());
-    }
+    Face getFace();
 
     /**
      * Sets the value of the 'face' property.
      *
      * @param face the new 'face' value
-     * @deprecated use {@link #setAttachedFace(AttachedFace)}
+     * @deprecated use {@link #getAttachedFace()}
      */
     @Deprecated(since = "1.15.2")
-    default void setFace(@NotNull Face face) {
-        this.setAttachedFace(AttachedFace.valueOf(face.name()));
-    }
+    void setFace(@NotNull Face face);
 
     /**
      * The face to which a switch type block is stuck.
@@ -51,7 +42,7 @@ public interface Switch extends Directional, FaceAttachable, Powerable {
          */
         WALL,
         /**
-         * The switch is mounted to the ceiling and pointing downwards.
+         * The switch is mounted to the ceiling and pointing dowanrds.
          */
         CEILING;
     }
